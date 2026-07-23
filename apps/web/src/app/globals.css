@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 33, 37, 41;
+  --background-start-rgb: 248, 249, 250;
+  --background-end-rgb: 240, 242, 245;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-start-rgb));
+  min-height: 100vh;
+}
+
+/* Scoped light theme rules for the main content workspace */
+main {
+  background-color: #f3f4f6 !important;
+  color: #1f2937 !important;
+}
+
+main select,
+main input,
+main textarea {
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+  border-color: #d1d5db !important;
+}
+
+/* Target tailwind background classes in main workspace using attribute prefix matching */
+main [class*="bg-slate-9"] {
+  background-color: #ffffff !important;
+}
+main [class*="bg-slate-8"] {
+  background-color: #f8f9fa !important;
+}
+main [class*="bg-[#0b0f"] {
+  background-color: #ffffff !important;
+}
+main [class*="bg-[#0f17"] {
+  background-color: #ffffff !important;
+}
+main [class*="bg-[#1e29"] {
+  background-color: #ffffff !important;
+}
+
+/* Target border classes in main workspace */
+main [class*="border-slate-"] {
+  border-color: #e5e7eb !important;
+}
+main [class*="border-indigo-"] {
+  border-color: #e5e7eb !important;
+}
+main [class*="border-violet-"] {
+  border-color: #e5e7eb !important;
+}
+main [class*="border-[#"] {
+  border-color: #e5e7eb !important;
+}
+
+/* Target text classes in main workspace */
+main [class*="text-slate-1"] {
+  color: #1f2937 !important;
+}
+main [class*="text-slate-2"] {
+  color: #1f2937 !important;
+}
+main [class*="text-slate-3"] {
+  color: #1f2937 !important;
+}
+main [class*="text-slate-4"] {
+  color: #4b5563 !important;
+}
+main [class*="text-slate-5"] {
+  color: #6b7280 !important;
+}
+
+/* Specific highlight elements (emerald/red/amber blocks) */
+main [class*="bg-emerald-9"] {
+  background-color: #ecfdf5 !important;
+  color: #065f46 !important;
+}
+main [class*="bg-red-9"] {
+  background-color: #fef2f2 !important;
+  color: #991b1b !important;
+}
+main [class*="bg-amber-9"] {
+  background-color: #fffbeb !important;
+  color: #92400e !important;
+}
+
+/* Hover effects */
+main [class*="hover:bg-slate-"]:hover {
+  background-color: #f3f4f6 !important;
+}
+
+/* Invert audio player elements for light theme */
+main audio {
+  filter: invert(0.9) hue-rotate(180deg);
+}
