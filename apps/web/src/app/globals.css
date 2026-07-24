@@ -12,20 +12,25 @@ body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-start-rgb));
   min-height: 100vh;
+  font-size: 17px !important;
 }
 
 /* Scoped light theme rules for the main content workspace */
 main {
   background-color: #f3f4f6 !important;
   color: #1f2937 !important;
+  font-size: 17px !important;
 }
 
 main select,
 main input,
-main textarea {
+main textarea,
+main option {
   background-color: #ffffff !important;
   color: #1f2937 !important;
   border-color: #d1d5db !important;
+  font-size: 16px !important;
+  padding: 6px 10px !important;
 }
 
 /* Target tailwind background classes in main workspace using attribute prefix matching */
