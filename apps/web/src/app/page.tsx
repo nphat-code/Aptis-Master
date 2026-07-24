@@ -228,7 +228,6 @@ export default function Home() {
   }, [selectedSubPart, selectedItemIndex, data]);
 
   const movePart2Item = (fromIdx: number, toIdx: number) => {
-    if (checked) return;
     if (toIdx < 0 || toIdx >= part2UserOrder.length) return;
     const newArr = [...part2UserOrder];
     const [moved] = newArr.splice(fromIdx, 1);
@@ -237,7 +236,6 @@ export default function Home() {
   };
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
-    if (checked) return;
     setDraggedIndex(index);
     e.dataTransfer.effectAllowed = 'move';
   };
@@ -249,7 +247,7 @@ export default function Home() {
 
   const handleDrop = (e: React.DragEvent, targetIndex: number) => {
     e.preventDefault();
-    if (checked || draggedIndex === null || draggedIndex === targetIndex) return;
+    if (draggedIndex === null || draggedIndex === targetIndex) return;
     movePart2Item(draggedIndex, targetIndex);
     setDraggedIndex(null);
   };
@@ -962,9 +960,9 @@ export default function Home() {
                             </h2>
                             <p className="text-sm font-semibold text-slate-500">
                               {selectedSubPart === 'part1' && 'Choose the word that fits in the gap. The first one is done for you.'}
-                              {selectedSubPart === 'part2' && 'Read the text and assign speaker statements to Speaker A, B, C or D.'}
-                              {selectedSubPart === 'part4' && 'Arrange the sentences below to form a logically coherent paragraph.'}
-                              {selectedSubPart === 'part5' && 'Read the text and fill in the missing words from the selections.'}
+                              {selectedSubPart === 'part2' && 'The sentences below make a complete text. Put them in the correct order.'}
+                              {selectedSubPart === 'part4' && 'Read the text and assign speaker statements to Speaker A, B, C or D.'}
+                              {selectedSubPart === 'part5' && 'Read the text and choose the correct heading for each paragraph.'}
                             </p>
                           </div>
 
@@ -982,7 +980,6 @@ export default function Home() {
                                         <span>{q.questionStart}</span>
                                         <select
                                           value={answers[qKey] || ''}
-                                          disabled={checked}
                                           onChange={(e) => setAnswers({ ...answers, [qKey]: e.target.value })}
                                           className={`px-3 py-1.5 rounded-lg border text-sm font-bold transition-all bg-white text-slate-805 focus:outline-none ${
                                             checked
@@ -1020,7 +1017,7 @@ export default function Home() {
                                   return (
                                     <div
                                       key={sentence}
-                                      draggable={!checked}
+                                      draggable={true}
                                       onDragStart={(e) => handleDragStart(e, idx)}
                                       onDragOver={(e) => handleDragOver(e, idx)}
                                       onDrop={(e) => handleDrop(e, idx)}
@@ -1036,11 +1033,9 @@ export default function Home() {
                                     >
                                       {/* Order Badge & Drag Handle */}
                                       <div className="flex items-center gap-2 select-none">
-                                        {!checked && (
-                                          <span className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-indigo-600 text-lg font-bold px-1" title="Kéo thả để sắp xếp">
-                                            ⋮⋮
-                                          </span>
-                                        )}
+                                        <span className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-indigo-600 text-lg font-bold px-1" title="Kéo thả để sắp xếp">
+                                          ⋮⋮
+                                        </span>
                                         <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-extrabold ${
                                           checked
                                             ? (isCorrect ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white')
@@ -1056,28 +1051,26 @@ export default function Home() {
                                       </div>
 
                                       {/* Up / Down Controls */}
-                                      {!checked && (
-                                        <div className="flex flex-col gap-1 select-none">
-                                          <button
-                                            type="button"
-                                            disabled={idx === 0}
-                                            onClick={() => movePart2Item(idx, idx - 1)}
-                                            className="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-300 disabled:opacity-20 text-xs font-bold transition-all"
-                                            title="Chuyển lên"
-                                          >
-                                            ▲
-                                          </button>
-                                          <button
-                                            type="button"
-                                            disabled={idx === part2UserOrder.length - 1}
-                                            onClick={() => movePart2Item(idx, idx + 1)}
-                                            className="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-300 disabled:opacity-20 text-xs font-bold transition-all"
-                                            title="Chuyển xuống"
-                                          >
-                                            ▼
-                                          </button>
-                                        </div>
-                                      )}
+                                      <div className="flex flex-col gap-1 select-none">
+                                        <button
+                                          type="button"
+                                          disabled={idx === 0}
+                                          onClick={() => movePart2Item(idx, idx - 1)}
+                                          className="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-300 disabled:opacity-20 text-xs font-bold transition-all"
+                                          title="Chuyển lên"
+                                        >
+                                          ▲
+                                        </button>
+                                        <button
+                                          type="button"
+                                          disabled={idx === part2UserOrder.length - 1}
+                                          onClick={() => movePart2Item(idx, idx + 1)}
+                                          className="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-300 disabled:opacity-20 text-xs font-bold transition-all"
+                                          title="Chuyển xuống"
+                                        >
+                                          ▼
+                                        </button>
+                                      </div>
                                     </div>
                                   );
                                 })}
@@ -1097,7 +1090,6 @@ export default function Home() {
                                         {['A', 'B', 'C', 'D'].map((person) => (
                                           <button
                                             key={person}
-                                            disabled={checked}
                                             onClick={() => setAnswers({ ...answers, [qKey]: person })}
                                             className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all ${
                                               answers[qKey] === person
@@ -1143,7 +1135,6 @@ export default function Home() {
                                           <span className="text-xs font-bold text-slate-400">Ô trống {bIdx + 1}:</span>
                                           <select
                                             value={answers[qKey] || ''}
-                                            disabled={checked}
                                             onChange={(e) => setAnswers({ ...answers, [qKey]: e.target.value })}
                                             className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all bg-white text-slate-850 focus:outline-none ${
                                               checked
