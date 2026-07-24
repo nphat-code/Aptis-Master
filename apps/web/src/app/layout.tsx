@@ -1,16 +1,17 @@
 import type { Metadata } from 'next';
-import { Source_Sans_3 } from 'next/font/google';
+import { Montserrat } from 'next/font/google';
 import './globals.css';
 
-const sourceSans = Source_Sans_3({
+const montserrat = Montserrat({
   subsets: ['latin', 'vietnamese'],
-  weight: ['300', '400', '500', '600', '700', '800'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-montserrat',
   display: 'swap',
 });
 
 export const metadata: Metadata = {
-  title: 'Aptis Prep Master - Modern Exam Preparation & Simulation',
-  description: 'Practice reading, listening, writing, and speaking for Aptis ESOL exams with realistic visual tests and auto-grading simulators.',
+  title: 'Aptis Kỳ Tích — Luyện thi Aptis & Thi thử miễn phí',
+  description: 'Luyện thi Aptis với format làm bài mô phỏng đề thi thật, AI chấm bài nhận kết quả ngay.',
 };
 
 export default function RootLayout({
@@ -19,8 +20,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={sourceSans.className}>
-      <body>{children}</body>
+    <html lang="vi" className={`${montserrat.className} ${montserrat.variable}`}>
+      <body className="font-sans antialiased">{children}</body>
     </html>
   );
 }
