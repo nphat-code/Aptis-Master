@@ -5,6 +5,9 @@ import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
 import StatsAndFeaturesSection from '@/components/StatsAndFeaturesSection';
 import RoadmapSection from '@/components/RoadmapSection';
+import FeaturesGridSection from '@/components/FeaturesGridSection';
+import ExamStructureSection from '@/components/ExamStructureSection';
+import StrengthsGridSection from '@/components/StrengthsGridSection';
 import Footer from '@/components/Footer';
 
 export default function AptisPage() {
@@ -53,6 +56,15 @@ export default function AptisPage() {
 
       {/* 4. Study Roadmap Section (Main Content Part 2 - Block B) */}
       <RoadmapSection onSelectRoadmap={(type) => setActiveTab(type === 'urgent' ? 'mock-test' : 'reading')} />
+
+      {/* 5. Main Features Showcase (Main Content Part 3 - Block A) */}
+      <FeaturesGridSection />
+
+      {/* 6. Exam Structure 5 Skills (Main Content Part 3 - Block B) */}
+      <ExamStructureSection />
+
+      {/* 7. Why Choose Us / Strengths Grid (Main Content Part 3 - Block C) */}
+      <StrengthsGridSection />
 
       {/* 3. Main Workspace Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
