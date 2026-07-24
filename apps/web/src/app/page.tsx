@@ -49,13 +49,10 @@ interface AppData {
       correctAnswer: string;
     }[][];
     question2: {
-      questionSets: {
-        paragraph: string;
-        questions: { questionText: string; answer: string }[];
-      }[];
+      questionSets: any[];
     };
     question4: {
-      question4Content: string[][];
+      question4Content: any[];
     };
     question5: {
       options: string[][];
@@ -187,9 +184,13 @@ export default function Home() {
 
   // Load state for currently selected item to practice
   const [selectedItemIndex, setSelectedItemIndex] = useState<number>(0);
+  const [questionInputVal, setQuestionInputVal] = useState<string>('1');
   const [selectedSubPart, setSelectedSubPart] = useState<string | null>(null);
 
-  // User interaction states
+  useEffect(() => {
+    setQuestionInputVal(String(selectedItemIndex + 1));
+  }, [selectedItemIndex]);
+
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [checked, setChecked] = useState(false);
   const [showExplanation, setShowExplanation] = useState<Record<string, boolean>>({});
@@ -203,6 +204,97 @@ export default function Home() {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Part 2 Sentence Ordering State & Handlers
+  const [part2UserOrder, setPart2UserOrder] = useState<string[]>([]);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (selectedSubPart === 'part2' && data?.reading?.question2?.questionSets?.[selectedItemIndex]) {
+      const orig = data.reading.question2.questionSets[selectedItemIndex] as string[];
+      if (orig && orig.length > 1) {
+        let shuffled = [...orig];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        if (shuffled.join('|||') === orig.join('|||')) {
+          [shuffled[0], shuffled[1]] = [shuffled[1], shuffled[0]];
+        }
+        setPart2UserOrder(shuffled);
+      }
+    }
+  }, [selectedSubPart, selectedItemIndex, data]);
+
+  const movePart2Item = (fromIdx: number, toIdx: number) => {
+    if (checked) return;
+    if (toIdx < 0 || toIdx >= part2UserOrder.length) return;
+    const newArr = [...part2UserOrder];
+    const [moved] = newArr.splice(fromIdx, 1);
+    newArr.splice(toIdx, 0, moved);
+    setPart2UserOrder(newArr);
+  };
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    if (checked) return;
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    if (checked || draggedIndex === null || draggedIndex === targetIndex) return;
+    movePart2Item(draggedIndex, targetIndex);
+    setDraggedIndex(null);
+  };
+
+  const calculateReadingScore = () => {
+    if (!data?.reading) return { score: 0, total: 0 };
+    let score = 0;
+    let total = 0;
+
+    if (selectedSubPart === 'part1') {
+      const list = data.reading.question1[selectedItemIndex] || [];
+      total = list.length * 2;
+      list.forEach((q: any, idx: number) => {
+        if (answers[`p1_${selectedItemIndex}_${idx}`] === q.correctAnswer) {
+          score += 2;
+        }
+      });
+    } else if (selectedSubPart === 'part2') {
+      const orig = data.reading.question2.questionSets[selectedItemIndex] || [];
+      total = orig.length;
+      orig.forEach((origSentence: string, idx: number) => {
+        if (part2UserOrder[idx] === origSentence) {
+          score++;
+        }
+      });
+    } else if (selectedSubPart === 'part4') {
+      const list = data.reading.question4.question4Content[selectedItemIndex] || [];
+      total = list.length * 2;
+      list.forEach((q: any, idx: number) => {
+        if (answers[`p4_${selectedItemIndex}_${idx}`] === q.answer) {
+          score += 2;
+        }
+      });
+    } else if (selectedSubPart === 'part5') {
+      const list = data.reading.question5.paragraph_question5[selectedItemIndex] || [];
+      const options = data.reading.question5.options[selectedItemIndex] || [];
+      total = list.length * 2;
+      list.forEach((_: any, idx: number) => {
+        if (answers[`p5_${selectedItemIndex}_${idx}`] === options[idx]) {
+          score += 2;
+        }
+      });
+    }
+
+    return { score, total };
   };
 
   // Audio player global state
@@ -296,176 +388,177 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#f3f4f6] text-slate-800 flex font-sans overflow-hidden">
-      {/* Sidebar Navigation */}
-      <aside className="w-64 bg-[#343a40] text-slate-200 flex flex-col flex-shrink-0 z-20 border-r border-[#2b3035]">
-        <div className="p-5 border-b border-[#495057] flex items-center gap-3 bg-[#2d3238]">
-          <div className="w-8 h-8 rounded-full border border-slate-400 bg-slate-600 flex items-center justify-center font-bold text-white shadow-sm">
-            A
-          </div>
-          <div>
-            <h1 className="font-bold text-sm leading-none text-white tracking-wide">Aptis keys</h1>
-          </div>
-        </div>
-
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto bg-[#343a40]">
-          {/* Trang chủ / Dashboard */}
-          <button
-            onClick={() => { setActiveTab('dashboard'); }}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm md:text-base font-bold transition-all ${
-              activeTab === 'dashboard'
-                ? 'bg-[#495057] text-white shadow-sm'
-                : 'text-slate-300 hover:text-white hover:bg-[#495057]/60'
-            }`}
-          >
-            <span className="text-sm">⚙️</span> Trang chủ
-          </button>
-
-          {/* Học Reading */}
-          <div>
-            <button
-              onClick={() => setSidebarOpen({ ...sidebarOpen, reading: !sidebarOpen.reading })}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm md:text-base font-bold text-slate-300 hover:text-white hover:bg-[#495057]/60"
-            >
-              <div className="flex items-center gap-3">
-                <span className="text-sm">📖</span> Học reading
-              </div>
-              <span className={`text-[10px] text-slate-400 transform transition-transform duration-300 ${sidebarOpen.reading ? 'rotate-180' : ''}`}>▼</span>
-            </button>
-            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${sidebarOpen.reading ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
-              <div className="pl-6 pr-2 py-1 space-y-1 bg-[#2b3035]/20 rounded-lg">
-                <button
-                  onClick={() => { setActiveTab('reading'); setSubView('practice'); setSelectedSubPart(null); setSelectedItemIndex(0); }}
-                  className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'reading' && subView === 'practice' && selectedSubPart === null ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
-                >
-                  • Học theo câu hỏi
-                </button>
-                <button
-                  onClick={() => { setActiveTab('reading'); setSubView('tests'); setSelectedItemIndex(0); }}
-                  className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'reading' && subView === 'tests' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
-                >
-                  • Học theo bộ đề
-                </button>
-                <button
-                  onClick={() => { setActiveTab('reading'); setSubView('tips'); setSelectedItemIndex(0); }}
-                  className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'reading' && subView === 'tips' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
-                >
-                  • Mẹo học nhanh
-                </button>
-              </div>
+      {/* Sidebar Navigation - Hidden during active practice session */}
+      {!(subView === 'practice' && selectedSubPart !== null) && (
+        <aside className="w-64 bg-[#343a40] text-slate-200 flex flex-col flex-shrink-0 z-20 border-r border-[#2b3035]">
+          <div className="p-5 border-b border-[#495057] flex items-center gap-3 bg-[#2d3238]">
+            <div className="w-8 h-8 rounded-full border border-slate-400 bg-slate-600 flex items-center justify-center font-bold text-white shadow-sm">
+              A
+            </div>
+            <div>
+              <h1 className="font-bold text-sm leading-none text-white tracking-wide">Aptis keys</h1>
             </div>
           </div>
 
-          {/* Học Listening */}
-          <div>
+          <nav className="flex-1 p-3 space-y-1 overflow-y-auto bg-[#343a40]">
+            {/* Trang chủ / Dashboard */}
             <button
-              onClick={() => setSidebarOpen({ ...sidebarOpen, listening: !sidebarOpen.listening })}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm md:text-base font-bold text-slate-300 hover:text-white hover:bg-[#495057]/60"
+              onClick={() => { setActiveTab('dashboard'); }}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm md:text-base font-bold transition-all ${
+                activeTab === 'dashboard'
+                  ? 'bg-[#495057] text-white shadow-sm'
+                  : 'text-slate-300 hover:text-white hover:bg-[#495057]/60'
+              }`}
             >
-              <div className="flex items-center gap-3">
-                <span className="text-sm">🎧</span> Học Listening
-                <span className="px-1.5 py-0.2 rounded bg-slate-700 text-[9px] font-bold text-slate-300">3</span>
-              </div>
-              <span className={`text-[10px] text-slate-400 transform transition-transform duration-300 ${sidebarOpen.listening ? 'rotate-180' : ''}`}>▼</span>
+              <span className="text-sm">⚙️</span> Trang chủ
             </button>
-            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${sidebarOpen.listening ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
-              <div className="pl-6 pr-2 py-1 space-y-1 bg-[#2b3035]/20 rounded-lg">
-                <button
-                  onClick={() => { setActiveTab('listening'); setSubView('practice'); setSelectedSubPart(null); setSelectedItemIndex(0); }}
-                  className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'listening' && subView === 'practice' && selectedSubPart === null ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
-                >
-                  • Học theo câu hỏi
-                </button>
-                <button
-                  onClick={() => { setActiveTab('listening'); setSubView('tests'); setSelectedItemIndex(0); }}
-                  className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'listening' && subView === 'tests' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
-                >
-                  • Học theo bộ đề
-                </button>
-                <button
-                  onClick={() => { setActiveTab('listening'); setSubView('tips'); setSelectedItemIndex(0); }}
-                  className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'listening' && subView === 'tips' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
-                >
-                  • Mẹo nhớ
-                </button>
+
+            {/* Học Reading */}
+            <div>
+              <button
+                onClick={() => setSidebarOpen({ ...sidebarOpen, reading: !sidebarOpen.reading })}
+                className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm md:text-base font-bold text-slate-300 hover:text-white hover:bg-[#495057]/60"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-sm">📖</span> Học reading
+                </div>
+                <span className={`text-[10px] text-slate-400 transform transition-transform duration-300 ${sidebarOpen.reading ? 'rotate-180' : ''}`}>▼</span>
+              </button>
+              <div className={`overflow-hidden transition-all duration-300 ease-in-out ${sidebarOpen.reading ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+                <div className="pl-6 pr-2 py-1 space-y-1 bg-[#2b3035]/20 rounded-lg">
+                  <button
+                    onClick={() => { setActiveTab('reading'); setSubView('practice'); setSelectedSubPart(null); setSelectedItemIndex(0); }}
+                    className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'reading' && subView === 'practice' && selectedSubPart === null ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
+                  >
+                    • Học theo câu hỏi
+                  </button>
+                  <button
+                    onClick={() => { setActiveTab('reading'); setSubView('tests'); setSelectedItemIndex(0); }}
+                    className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'reading' && subView === 'tests' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
+                  >
+                    • Học theo bộ đề
+                  </button>
+                  <button
+                    onClick={() => { setActiveTab('reading'); setSubView('tips'); setSelectedItemIndex(0); }}
+                    className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'reading' && subView === 'tips' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
+                  >
+                    • Mẹo học nhanh
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Học Writing */}
-          <div>
-            <button
-              onClick={() => setSidebarOpen({ ...sidebarOpen, writing: !sidebarOpen.writing })}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm md:text-base font-bold text-slate-300 hover:text-white hover:bg-[#495057]/60"
-            >
-              <div className="flex items-center gap-3">
-                <span className="text-sm">✍️</span> Học Writing
-              </div>
-              <span className={`text-[10px] text-slate-400 transform transition-transform duration-300 ${sidebarOpen.writing ? 'rotate-180' : ''}`}>▼</span>
-            </button>
-            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${sidebarOpen.writing ? 'max-h-32 opacity-100' : 'max-h-0 opacity-0'}`}>
-              <div className="pl-6 pr-2 py-1 space-y-1 bg-[#2b3035]/20 rounded-lg">
-                <button
-                  onClick={() => { setActiveTab('writing'); setSubView('practice'); setSelectedItemIndex(0); }}
-                  className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'writing' && subView === 'practice' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
-                >
-                  • Học câu lạc bộ
-                </button>
-                <button
-                  onClick={() => { setActiveTab('writing'); setSubView('tips'); setSelectedItemIndex(0); }}
-                  className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'writing' && subView === 'tips' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
-                >
-                  • Mẹo viết thư
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Học Speaking */}
-          <div>
-            <button
-              onClick={() => setSidebarOpen({ ...sidebarOpen, speaking: !sidebarOpen.speaking })}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm md:text-base font-bold text-slate-300 hover:text-white hover:bg-[#495057]/60"
-            >
-              <div className="flex items-center gap-3">
-                <span className="text-sm">🗣️</span> Học speaking
-              </div>
-              <span className={`text-[10px] text-slate-400 transform transition-transform duration-300 ${sidebarOpen.speaking ? 'rotate-180' : ''}`}>▼</span>
-            </button>
-            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${sidebarOpen.speaking ? 'max-h-32 opacity-100' : 'max-h-0 opacity-0'}`}>
-              <div className="pl-6 pr-2 py-1 space-y-1 bg-[#2b3035]/20 rounded-lg">
-                <button
-                  onClick={() => { setActiveTab('speaking'); setSubView('practice'); setSelectedSubPart(null); setSelectedItemIndex(0); }}
-                  className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'speaking' && subView === 'practice' && selectedSubPart === null ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
-                >
-                  • Học theo câu hỏi
-                </button>
-                <button
-                  onClick={() => { setActiveTab('speaking'); setSubView('tips'); setSelectedItemIndex(0); }}
-                  className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'speaking' && subView === 'tips' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
-                >
-                  • Mẹo học nhanh
-                </button>
+            {/* Học Listening */}
+            <div>
+              <button
+                onClick={() => setSidebarOpen({ ...sidebarOpen, listening: !sidebarOpen.listening })}
+                className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm md:text-base font-bold text-slate-300 hover:text-white hover:bg-[#495057]/60"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-sm">🎧</span> Học Listening
+                </div>
+                <span className={`text-[10px] text-slate-400 transform transition-transform duration-300 ${sidebarOpen.listening ? 'rotate-180' : ''}`}>▼</span>
+              </button>
+              <div className={`overflow-hidden transition-all duration-300 ease-in-out ${sidebarOpen.listening ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+                <div className="pl-6 pr-2 py-1 space-y-1 bg-[#2b3035]/20 rounded-lg">
+                  <button
+                    onClick={() => { setActiveTab('listening'); setSubView('practice'); setSelectedSubPart(null); setSelectedItemIndex(0); }}
+                    className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'listening' && subView === 'practice' && selectedSubPart === null ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
+                  >
+                    • Học theo câu hỏi
+                  </button>
+                  <button
+                    onClick={() => { setActiveTab('listening'); setSubView('tests'); setSelectedItemIndex(0); }}
+                    className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'listening' && subView === 'tests' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
+                  >
+                    • Học theo bộ đề
+                  </button>
+                  <button
+                    onClick={() => { setActiveTab('listening'); setSubView('tips'); setSelectedItemIndex(0); }}
+                    className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'listening' && subView === 'tips' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
+                  >
+                    • Mẹo nhớ
+                  </button>
+                </div>
               </div>
             </div>
+
+            {/* Học Writing */}
+            <div>
+              <button
+                onClick={() => setSidebarOpen({ ...sidebarOpen, writing: !sidebarOpen.writing })}
+                className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm md:text-base font-bold text-slate-300 hover:text-white hover:bg-[#495057]/60"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-sm">✍️</span> Học Writing
+                </div>
+                <span className={`text-[10px] text-slate-400 transform transition-transform duration-300 ${sidebarOpen.writing ? 'rotate-180' : ''}`}>▼</span>
+              </button>
+              <div className={`overflow-hidden transition-all duration-300 ease-in-out ${sidebarOpen.writing ? 'max-h-32 opacity-100' : 'max-h-0 opacity-0'}`}>
+                <div className="pl-6 pr-2 py-1 space-y-1 bg-[#2b3035]/20 rounded-lg">
+                  <button
+                    onClick={() => { setActiveTab('writing'); setSubView('practice'); setSelectedItemIndex(0); }}
+                    className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'writing' && subView === 'practice' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
+                  >
+                    • Học câu lạc bộ
+                  </button>
+                  <button
+                    onClick={() => { setActiveTab('writing'); setSubView('tips'); setSelectedItemIndex(0); }}
+                    className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'writing' && subView === 'tips' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
+                  >
+                    • Mẹo viết thư
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Học Speaking */}
+            <div>
+              <button
+                onClick={() => setSidebarOpen({ ...sidebarOpen, speaking: !sidebarOpen.speaking })}
+                className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm md:text-base font-bold text-slate-300 hover:text-white hover:bg-[#495057]/60"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-sm">🗣️</span> Học speaking
+                </div>
+                <span className={`text-[10px] text-slate-400 transform transition-transform duration-300 ${sidebarOpen.speaking ? 'rotate-180' : ''}`}>▼</span>
+              </button>
+              <div className={`overflow-hidden transition-all duration-300 ease-in-out ${sidebarOpen.speaking ? 'max-h-32 opacity-100' : 'max-h-0 opacity-0'}`}>
+                <div className="pl-6 pr-2 py-1 space-y-1 bg-[#2b3035]/20 rounded-lg">
+                  <button
+                    onClick={() => { setActiveTab('speaking'); setSubView('practice'); setSelectedSubPart(null); setSelectedItemIndex(0); }}
+                    className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'speaking' && subView === 'practice' && selectedSubPart === null ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
+                  >
+                    • Học theo câu hỏi
+                  </button>
+                  <button
+                    onClick={() => { setActiveTab('speaking'); setSubView('tips'); setSelectedItemIndex(0); }}
+                    className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'speaking' && subView === 'tips' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
+                  >
+                    • Mẹo học nhanh
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Học Grammar */}
+            <button
+              onClick={() => { setActiveTab('grammar'); setSubView('practice'); setSelectedItemIndex(0); }}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm md:text-base font-bold transition-all ${
+                activeTab === 'grammar'
+                  ? 'bg-[#495057] text-white shadow-sm'
+                  : 'text-slate-300 hover:text-white hover:bg-[#495057]/60'
+              }`}
+            >
+              <span className="text-sm">✏️</span> Học ngữ pháp
+            </button>
+          </nav>
+
+          <div className="p-4 border-t border-[#495057] text-center bg-[#2d3238]">
+            <p className="text-[10px] text-slate-400 font-medium font-mono">Bản cập nhật 07/2026</p>
           </div>
-
-          {/* Học Grammar */}
-          <button
-            onClick={() => { setActiveTab('grammar'); setSubView('practice'); setSelectedItemIndex(0); }}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm md:text-base font-bold transition-all ${
-              activeTab === 'grammar'
-                ? 'bg-[#495057] text-white shadow-sm'
-                : 'text-slate-300 hover:text-white hover:bg-[#495057]/60'
-            }`}
-          >
-            <span className="text-sm">✏️</span> Học ngữ pháp
-          </button>
-        </nav>
-
-        <div className="p-4 border-t border-[#495057] text-center bg-[#2d3238]">
-          <p className="text-[10px] text-slate-400 font-medium font-mono">Bản cập nhật 07/2026</p>
-        </div>
-      </aside>
+        </aside>
+      )}
 
       {/* Main Content Area */}
       <main className="flex-1 bg-[#f3f4f6] flex flex-col overflow-hidden relative text-slate-800">
@@ -811,18 +904,61 @@ export default function Home() {
                 ) : (
                   /* Render Practice Exercises workspaces or Mock test or Tips */
                   <div className="flex-1 flex flex-col justify-between min-h-[450px]">
-                    <div className="max-w-4xl mx-auto w-full space-y-6 pb-24 font-sans">
+                    <div className="w-full space-y-6 pb-24 font-sans text-left">
                       {subView === 'practice' && (
                         <>
                           {/* Heading structure */}
-                          <div className="text-center space-y-3 py-6">
-                            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-850">
-                              Reading Question <span className="border-b-2 border-slate-800 pb-1 px-3 underline decoration-slate-800 underline-offset-8 font-extrabold">{selectedItemIndex + 1}</span> of {
+                          <div className="text-left space-y-3 py-6">
+                            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-850 flex items-center flex-wrap gap-2 md:gap-3">
+                              <span>Reading Question</span>
+                              <input
+                                type="number"
+                                min={1}
+                                max={
+                                  selectedSubPart === 'part1' ? data?.reading.question1.length
+                                  : selectedSubPart === 'part2' ? data?.reading.question2.questionSets.length
+                                  : selectedSubPart === 'part4' ? data?.reading.question4.question4Content.length
+                                  : data?.reading.question5.paragraph_question5.length
+                                }
+                                value={questionInputVal}
+                                onChange={(e) => {
+                                  const raw = e.target.value;
+                                  setQuestionInputVal(raw);
+                                  const total = selectedSubPart === 'part1' ? (data?.reading.question1.length || 1)
+                                    : selectedSubPart === 'part2' ? (data?.reading.question2.questionSets.length || 1)
+                                    : selectedSubPart === 'part4' ? (data?.reading.question4.question4Content.length || 1)
+                                    : (data?.reading.question5.paragraph_question5.length || 1);
+                                  const val = parseInt(raw, 10);
+                                  if (!isNaN(val) && val >= 1 && val <= total) {
+                                    setSelectedItemIndex(val - 1);
+                                    setAnswers({});
+                                    setChecked(false);
+                                  }
+                                }}
+                                onBlur={() => {
+                                  const total = selectedSubPart === 'part1' ? (data?.reading.question1.length || 1)
+                                    : selectedSubPart === 'part2' ? (data?.reading.question2.questionSets.length || 1)
+                                    : selectedSubPart === 'part4' ? (data?.reading.question4.question4Content.length || 1)
+                                    : (data?.reading.question5.paragraph_question5.length || 1);
+                                  const val = parseInt(questionInputVal, 10);
+                                  if (isNaN(val) || val < 1) {
+                                    setSelectedItemIndex(0);
+                                    setQuestionInputVal('1');
+                                  } else if (val > total) {
+                                    setSelectedItemIndex(total - 1);
+                                    setQuestionInputVal(String(total));
+                                  } else {
+                                    setQuestionInputVal(String(val));
+                                  }
+                                }}
+                                className="w-16 md:w-20 text-center font-extrabold bg-white border-2 border-indigo-600 rounded-xl py-0.5 px-1 text-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-100 shadow-sm transition-all text-2xl md:text-3xl"
+                              />
+                              <span>of {
                                 selectedSubPart === 'part1' ? data?.reading.question1.length
                                 : selectedSubPart === 'part2' ? data?.reading.question2.questionSets.length
                                 : selectedSubPart === 'part4' ? data?.reading.question4.question4Content.length
                                 : data?.reading.question5.paragraph_question5.length
-                              }
+                              }</span>
                             </h2>
                             <p className="text-sm font-semibold text-slate-500">
                               {selectedSubPart === 'part1' && 'Choose the word that fits in the gap. The first one is done for you.'}
@@ -836,13 +972,12 @@ export default function Home() {
                           <div className="bg-white border border-slate-200 p-8 rounded-2xl shadow-sm space-y-6">
                             {/* Part 1 Content */}
                             {selectedSubPart === 'part1' && data && (
-                              <div className="space-y-4">
-                                {(data.reading.question1[selectedItemIndex] as any[]).map((q, qIdx) => {
+                              <div className="space-y-2">
+                                {(data.reading.question1[selectedItemIndex] as any[] || []).map((q, qIdx) => {
                                   const qKey = `p1_${selectedItemIndex}_${qIdx}`;
                                   const isCorrect = answers[qKey] === q.correctAnswer;
                                   return (
-                                    <div key={qIdx} className="flex flex-col md:flex-row md:items-center gap-3 py-4 border-b border-slate-100 last:border-0">
-                                      <span className="text-sm font-bold text-slate-400 min-w-[24px]">{qIdx + 1}.</span>
+                                    <div key={qIdx} className="py-2 border-b border-slate-100 last:border-0">
                                       <div className="flex-1 text-base text-slate-800 leading-relaxed flex flex-wrap items-center gap-2">
                                         <span>{q.questionStart}</span>
                                         <select
@@ -870,70 +1005,111 @@ export default function Home() {
                               </div>
                             )}
 
-                            {/* Part 2 Content */}
+                            {/* Part 2 Content (Sentence Ordering Drag & Drop) */}
                             {selectedSubPart === 'part2' && data && (
-                              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                                <div 
-                                  className="lg:col-span-6 bg-slate-50 p-6 rounded-xl border border-slate-200 text-sm leading-relaxed text-slate-800 max-h-[500px] overflow-y-auto"
-                                  dangerouslySetInnerHTML={{ __html: data.reading.question2.questionSets[selectedItemIndex].paragraph }}
-                                />
-                                <div className="lg:col-span-6 space-y-4">
-                                  {data.reading.question2.questionSets[selectedItemIndex].questions.map((q, idx) => {
-                                    const qKey = `p2_${selectedItemIndex}_${idx}`;
-                                    const isCorrect = answers[qKey] === q.answer;
-                                    return (
-                                      <div key={idx} className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
-                                        <p className="text-sm font-bold text-slate-800">{idx + 1}. {q.questionText}</p>
-                                        <div className="flex gap-2">
-                                          {['A', 'B', 'C', 'D'].map((person) => (
-                                            <button
-                                              key={person}
-                                              disabled={checked}
-                                              onClick={() => setAnswers({ ...answers, [qKey]: person })}
-                                              className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all ${
-                                                answers[qKey] === person
-                                                  ? (checked
-                                                    ? (isCorrect ? 'bg-emerald-100 text-emerald-700 border-emerald-500' : 'bg-red-100 text-red-700 border-red-500')
-                                                    : 'bg-indigo-600 text-white border-indigo-500 shadow-sm')
-                                                  : 'bg-white text-slate-650 border-slate-300 hover:text-slate-800 hover:bg-slate-50'
-                                              }`}
-                                            >
-                                              Speaker {person}
-                                            </button>
-                                          ))}
-                                        </div>
+                              <div className="space-y-3">
+                                <p className="text-xs font-semibold text-slate-500 mb-3 flex items-center gap-1.5">
+                                  <span>💡</span>
+                                  <span>Gương mặt các câu đã được xáo trộn. Kéo biểu tượng <strong className="text-indigo-600">⋮⋮</strong> hoặc dùng các nút <strong className="text-indigo-600">▲ / ▼</strong> để sắp xếp thứ tự đoạn văn đúng từ trên xuống dưới.</span>
+                                </p>
+                                {part2UserOrder.map((sentence: string, idx: number) => {
+                                  const orig = data.reading.question2.questionSets[selectedItemIndex] || [];
+                                  const isCorrect = checked && sentence === orig[idx];
+                                  const isDragging = draggedIndex === idx;
+
+                                  return (
+                                    <div
+                                      key={sentence}
+                                      draggable={!checked}
+                                      onDragStart={(e) => handleDragStart(e, idx)}
+                                      onDragOver={(e) => handleDragOver(e, idx)}
+                                      onDrop={(e) => handleDrop(e, idx)}
+                                      className={`p-4 rounded-xl border transition-all flex items-center gap-4 ${
+                                        isDragging ? 'opacity-40 border-dashed border-indigo-400 bg-indigo-50' : ''
+                                      } ${
+                                        checked
+                                          ? (isCorrect
+                                            ? 'bg-emerald-50 border-emerald-500 text-emerald-800'
+                                            : 'bg-red-50 border-red-500 text-red-800')
+                                          : 'bg-slate-50 border-slate-200 hover:border-indigo-300 hover:shadow-sm'
+                                      }`}
+                                    >
+                                      {/* Order Badge & Drag Handle */}
+                                      <div className="flex items-center gap-2 select-none">
+                                        {!checked && (
+                                          <span className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-indigo-600 text-lg font-bold px-1" title="Kéo thả để sắp xếp">
+                                            ⋮⋮
+                                          </span>
+                                        )}
+                                        <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-extrabold ${
+                                          checked
+                                            ? (isCorrect ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white')
+                                            : 'bg-indigo-100 text-indigo-700'
+                                        }`}>
+                                          {idx + 1}
+                                        </span>
                                       </div>
-                                    );
-                                  })}
-                                </div>
+
+                                      {/* Sentence Content */}
+                                      <div className="flex-1">
+                                        <p className="text-sm font-medium leading-relaxed text-slate-800">{sentence}</p>
+                                      </div>
+
+                                      {/* Up / Down Controls */}
+                                      {!checked && (
+                                        <div className="flex flex-col gap-1 select-none">
+                                          <button
+                                            type="button"
+                                            disabled={idx === 0}
+                                            onClick={() => movePart2Item(idx, idx - 1)}
+                                            className="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-300 disabled:opacity-20 text-xs font-bold transition-all"
+                                            title="Chuyển lên"
+                                          >
+                                            ▲
+                                          </button>
+                                          <button
+                                            type="button"
+                                            disabled={idx === part2UserOrder.length - 1}
+                                            onClick={() => movePart2Item(idx, idx + 1)}
+                                            className="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-300 disabled:opacity-20 text-xs font-bold transition-all"
+                                            title="Chuyển xuống"
+                                          >
+                                            ▼
+                                          </button>
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
                               </div>
                             )}
 
-                            {/* Part 4 Content */}
+                            {/* Part 4 Content (Matching Speaker A, B, C, D) */}
                             {selectedSubPart === 'part4' && data && (
                               <div className="space-y-4">
-                                {data.reading.question4.question4Content[selectedItemIndex].map((sentence, idx) => {
+                                {(data.reading.question4.question4Content[selectedItemIndex] || []).map((q: any, idx: number) => {
                                   const qKey = `p4_${selectedItemIndex}_${idx}`;
-                                  const isCorrect = parseInt(answers[qKey]) === idx;
+                                  const isCorrect = answers[qKey] === q.answer;
                                   return (
-                                    <div key={idx} className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-start gap-4">
-                                      <select
-                                        value={answers[qKey] || ''}
-                                        disabled={checked}
-                                        onChange={(e) => setAnswers({ ...answers, [qKey]: e.target.value })}
-                                        className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all bg-white text-slate-800 focus:outline-none ${
-                                          checked
-                                            ? (isCorrect ? 'border-emerald-500 text-emerald-700 bg-emerald-50' : 'border-red-500 text-red-700 bg-red-50')
-                                            : 'border-slate-300 text-slate-700'
-                                        }`}
-                                      >
-                                        <option value=""></option>
-                                        {data.reading.question4.question4Content[selectedItemIndex].map((_, oIdx) => (
-                                          <option key={oIdx} value={oIdx}>Câu {oIdx + 1}</option>
+                                    <div key={idx} className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                                      <p className="text-sm font-bold text-slate-800">{idx + 1}. {q.question}</p>
+                                      <div className="flex gap-2">
+                                        {['A', 'B', 'C', 'D'].map((person) => (
+                                          <button
+                                            key={person}
+                                            disabled={checked}
+                                            onClick={() => setAnswers({ ...answers, [qKey]: person })}
+                                            className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all ${
+                                              answers[qKey] === person
+                                                ? (checked
+                                                  ? (isCorrect ? 'bg-emerald-100 text-emerald-700 border-emerald-500 font-bold' : 'bg-red-100 text-red-700 border-red-500 font-bold')
+                                                  : 'bg-indigo-600 text-white border-indigo-500 shadow-sm')
+                                                : 'bg-white text-slate-650 border-slate-300 hover:text-slate-800 hover:bg-slate-50'
+                                            }`}
+                                          >
+                                            Speaker {person}
+                                          </button>
                                         ))}
-                                      </select>
-                                      <div className="flex-1">
-                                        <p className="text-sm text-slate-800 leading-relaxed">{sentence}</p>
                                       </div>
                                     </div>
                                   );
@@ -947,7 +1123,7 @@ export default function Home() {
                                 <div className="lg:col-span-4 bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3">
                                   <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider block mb-1">Từ khóa lựa chọn</span>
                                   <div className="flex flex-wrap gap-2">
-                                    {data.reading.question5.options[selectedItemIndex].map((opt, oIdx) => (
+                                    {(data.reading.question5.options[selectedItemIndex] || []).map((opt, oIdx) => (
                                       <span key={oIdx} className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-slate-750 shadow-sm">
                                         {opt}
                                       </span>
@@ -955,9 +1131,9 @@ export default function Home() {
                                   </div>
                                 </div>
                                 <div className="lg:col-span-8 space-y-4 bg-slate-50 p-6 rounded-xl border border-slate-200 text-sm leading-relaxed text-slate-800">
-                                  {data.reading.question5.paragraph_question5[selectedItemIndex].map((block, bIdx) => {
+                                  {(data.reading.question5.paragraph_question5[selectedItemIndex] || []).map((block, bIdx) => {
                                     const qKey = `p5_${selectedItemIndex}_${bIdx}`;
-                                    const optionsList = data.reading.question5.options[selectedItemIndex];
+                                    const optionsList = data.reading.question5.options[selectedItemIndex] || [];
                                     const correctWord = optionsList[bIdx];
                                     const isCorrect = answers[qKey] === correctWord;
                                     return (
@@ -1028,7 +1204,7 @@ export default function Home() {
 
                     {/* Fixed/Sticky bottom toolbar bar for Practice Mode */}
                     {subView === 'practice' && selectedSubPart !== null && (
-                      <div className="fixed bottom-0 left-64 right-0 bg-[#e9ecef] border-t border-slate-300 py-4 px-8 flex items-center justify-between z-30">
+                      <div className="fixed bottom-0 left-0 right-0 bg-[#e9ecef] border-t border-slate-300 py-4 px-8 flex items-center justify-between z-30 font-sans">
                         <button
                           disabled={selectedItemIndex === 0}
                           onClick={() => { setSelectedItemIndex(prev => prev - 1); setAnswers({}); setChecked(false); }}
@@ -1083,10 +1259,27 @@ export default function Home() {
         {/* LISTENING PRACTICE / MOCK / TIPS */}
         {activeTab === 'listening' && (
           <div className="flex-1 flex flex-col overflow-hidden">
+            {/* If practicing a specific part, show Topbar Header */}
+            {subView === 'practice' && selectedSubPart !== null && (
+              <header className="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between shadow-sm shrink-0 z-10 font-sans">
+                <button
+                  onClick={() => setSelectedSubPart(null)}
+                  className="flex items-center gap-2 font-bold text-white text-sm hover:text-slate-300 transition-all"
+                >
+                  🏠 <span className="text-base font-bold text-indigo-400 font-sans">Aptis Keys</span>
+                </button>
+                <div className="text-center font-bold text-slate-200 text-sm tracking-wide font-sans">
+                  Listening Practice
+                </div>
+                <div className="text-right font-bold text-slate-400 text-xs md:text-sm tracking-wide uppercase font-sans">
+                  {selectedSubPart === 'part1' ? 'Part 1: Nghe ngắn' : selectedSubPart === 'part2' ? 'Part 2: Nối ý kiến' : selectedSubPart === 'part3' ? 'Part 3: Hội thoại dài' : 'Part 4: Phân tích sâu'}
+                </div>
+              </header>
+            )}
 
             <div className="flex-1 flex overflow-hidden">
               {/* Practice mode sidebar selector */}
-              {subView === 'practice' && (
+              {subView === 'practice' && selectedSubPart !== null && (
                 <div className="w-64 border-r border-slate-900 bg-slate-900/30 flex flex-col overflow-y-auto shrink-0">
                   <div className="p-4 space-y-1 border-b border-slate-900">
                     <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Chọn phần học</span>
@@ -1246,7 +1439,7 @@ export default function Home() {
                 )}
 
                 {subView === 'practice' && selectedSubPart === 'part1' && (
-                  <div className="max-w-3xl mx-auto space-y-6">
+                  <div className="w-full space-y-6 text-left">
                     {(() => {
                       const item = data.listening.listening_question1_13[selectedItemIndex];
                       const qKey = `l1_${selectedItemIndex}`;
@@ -1329,7 +1522,7 @@ export default function Home() {
                 )}
 
                 {subView === 'practice' && selectedSubPart === 'part2' && (
-                  <div className="max-w-3xl mx-auto space-y-6">
+                  <div className="w-full space-y-6 text-left">
                     {(() => {
                       const item = data.listening.listening_question14[selectedItemIndex];
                       return (
@@ -1411,7 +1604,7 @@ export default function Home() {
                 )}
 
                 {subView === 'practice' && selectedSubPart === 'part3' && (
-                  <div className="max-w-3xl mx-auto space-y-6">
+                  <div className="w-full space-y-6 text-left">
                     {(() => {
                       const item = data.listening.listening_question15[selectedItemIndex];
                       return (
@@ -1458,7 +1651,7 @@ export default function Home() {
                 )}
 
                 {subView === 'practice' && selectedSubPart === 'part4' && (
-                  <div className="max-w-3xl mx-auto space-y-6">
+                  <div className="w-full space-y-6 text-left">
                     {(() => {
                       const item = data.listening.listening_question16_17[selectedItemIndex];
                       return (
@@ -1695,10 +1888,27 @@ export default function Home() {
         {/* SPEAKING PRACTICE & TIPS */}
         {activeTab === 'speaking' && (
           <div className="flex-1 flex flex-col overflow-hidden">
+            {/* If practicing a specific part, show Topbar Header */}
+            {subView === 'practice' && selectedSubPart !== null && (
+              <header className="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between shadow-sm shrink-0 z-10 font-sans">
+                <button
+                  onClick={() => setSelectedSubPart(null)}
+                  className="flex items-center gap-2 font-bold text-white text-sm hover:text-slate-300 transition-all"
+                >
+                  🏠 <span className="text-base font-bold text-indigo-400 font-sans">Aptis Keys</span>
+                </button>
+                <div className="text-center font-bold text-slate-200 text-sm tracking-wide font-sans">
+                  Speaking Practice
+                </div>
+                <div className="text-right font-bold text-slate-400 text-xs md:text-sm tracking-wide uppercase font-sans">
+                  {selectedSubPart === 'part1' ? 'Part 1: Câu hỏi cá nhân' : selectedSubPart === 'part2' ? 'Part 2: Mô tả 1 ảnh' : selectedSubPart === 'part3' ? 'Part 3: So sánh 2 ảnh' : 'Part 4: Thảo luận sâu'}
+                </div>
+              </header>
+            )}
 
             <div className="flex-1 flex overflow-hidden">
               {/* Practice mode sidebar selector */}
-              {subView === 'practice' && (
+              {subView === 'practice' && selectedSubPart !== null && (
                 <div className="w-64 border-r border-slate-900 bg-slate-900/30 flex flex-col overflow-y-auto shrink-0">
                   <div className="p-4 space-y-1 border-b border-slate-900">
                     <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Chọn phần học</span>
@@ -1835,7 +2045,7 @@ export default function Home() {
                 )}
 
                 {subView === 'practice' && selectedSubPart !== null && (
-                  <div className="max-w-3xl mx-auto space-y-6">
+                  <div className="w-full space-y-6 text-left">
                     <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl space-y-6">
                       <h3 className="text-xl font-bold text-slate-200 capitalize">
                         Speaking {selectedSubPart === 'part1' ? 'Part 1: Câu hỏi cá nhân' : selectedSubPart === 'part2' ? 'Part 2: Mô tả tranh' : selectedSubPart === 'part3' ? 'Part 3: So sánh 2 tranh' : 'Part 4: Thảo luận chủ đề'}
@@ -2007,7 +2217,7 @@ export default function Home() {
               {/* Main Content Workspace for Writing */}
               <div className="flex-1 overflow-y-auto p-6 md:p-8">
                 {subView === 'practice' && (
-                  <div className="max-w-4xl mx-auto space-y-8">
+                  <div className="w-full space-y-8 text-left">
                     {(() => {
                       const item = data.writing[Object.keys(data.writing)[selectedItemIndex]];
                       return (
@@ -2314,7 +2524,7 @@ export default function Home() {
                   }
 
                   return (
-                    <div className="max-w-4xl mx-auto space-y-8">
+                    <div className="w-full space-y-8 text-left">
                       <div className="bg-indigo-600/10 border border-indigo-500/30 p-6 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div>
                           <span className="text-2xs text-indigo-400 uppercase tracking-widest font-bold">Grammar & Vocabulary Simulator</span>
@@ -2611,6 +2821,136 @@ export default function Home() {
             </div>
           </div>
           )}
+
+        {/* Result Modal Overlay */}
+        {showResultModal && (
+          <div
+            className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 font-sans"
+            onClick={() => setShowResultModal(false)}
+          >
+            <div
+              className="bg-white rounded-xl shadow-2xl border border-slate-200 max-w-2xl w-full p-6 space-y-5 animate-in fade-in zoom-in duration-150"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header: Part Title + Close 'X' Button in same row */}
+              <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                <h3 className="text-lg md:text-xl font-bold text-slate-800">
+                  {selectedSubPart === 'part1' && 'Test and Answer Review Question 1'}
+                  {selectedSubPart === 'part2' && 'Test and Answer Review Question 2 & 3'}
+                  {selectedSubPart === 'part4' && 'Test and Answer Review Question 4'}
+                  {selectedSubPart === 'part5' && 'Test and Answer Review Question 5'}
+                </h3>
+                <button
+                  onClick={() => setShowResultModal(false)}
+                  className="text-slate-400 hover:text-slate-700 text-xl font-bold px-2 py-1 transition-all rounded-lg hover:bg-slate-100"
+                  aria-label="Close"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Score and Compare Answers Table */}
+              {(() => {
+                let scoreText = '';
+                let rowsData: { question?: string; yourAns: string; correctAns: string; isCorrect: boolean }[] = [];
+                let hasQuestionCol = false;
+
+                if (selectedSubPart === 'part1' && data?.reading.question1[selectedItemIndex]) {
+                  const list = data.reading.question1[selectedItemIndex];
+                  let correctCount = 0;
+                  list.forEach((q: any, idx: number) => {
+                    const uAns = answers[`p1_${selectedItemIndex}_${idx}`] || '(Chưa chọn)';
+                    const cAns = q.correctAnswer;
+                    const isCorr = uAns === cAns;
+                    if (isCorr) correctCount++;
+                    rowsData.push({ yourAns: uAns, correctAns: cAns, isCorrect: isCorr });
+                  });
+                  scoreText = `Your Score: ${correctCount * 2} / ${list.length * 2}`;
+                  hasQuestionCol = false;
+                } else if (selectedSubPart === 'part2' && data?.reading.question2.questionSets[selectedItemIndex]) {
+                  const orig = data.reading.question2.questionSets[selectedItemIndex] || [];
+                  let correctCount = 0;
+                  orig.forEach((origSentence: string, idx: number) => {
+                    const uSentence = part2UserOrder[idx] || '(Chưa sắp xếp)';
+                    const cSentence = origSentence;
+                    const isCorr = uSentence === cSentence;
+                    if (isCorr) correctCount++;
+                    rowsData.push({ question: `Câu ${idx + 1}`, yourAns: uSentence, correctAns: cSentence, isCorrect: isCorr });
+                  });
+                  scoreText = `Your Score: ${correctCount} / 5`;
+                  hasQuestionCol = true;
+                } else if (selectedSubPart === 'part4' && data?.reading.question4.question4Content[selectedItemIndex]) {
+                  const list = data.reading.question4.question4Content[selectedItemIndex] || [];
+                  let correctCount = 0;
+                  list.forEach((q: any, idx: number) => {
+                    const uVal = answers[`p4_${selectedItemIndex}_${idx}`];
+                    const uAns = uVal ? `Speaker ${uVal}` : '(Chưa chọn)';
+                    const cAns = `Speaker ${q.answer}`;
+                    const isCorr = uVal === q.answer;
+                    if (isCorr) correctCount++;
+                    rowsData.push({ question: `Question ${idx + 1}`, yourAns: uAns, correctAns: cAns, isCorrect: isCorr });
+                  });
+                  scoreText = `Your Score: ${correctCount * 2} / ${list.length * 2}`;
+                  hasQuestionCol = true;
+                } else if (selectedSubPart === 'part5' && data?.reading.question5.paragraph_question5[selectedItemIndex]) {
+                  const list = data.reading.question5.paragraph_question5[selectedItemIndex];
+                  const optionsList = data.reading.question5.options[selectedItemIndex] || [];
+                  let correctCount = 0;
+                  list.forEach((_: any, idx: number) => {
+                    const uAns = answers[`p5_${selectedItemIndex}_${idx}`] || '(Chưa chọn)';
+                    const cAns = optionsList[idx] || '';
+                    const isCorr = uAns === cAns;
+                    if (isCorr) correctCount++;
+                    rowsData.push({ question: `${idx + 1}`, yourAns: uAns, correctAns: cAns, isCorrect: isCorr });
+                  });
+                  scoreText = `Your Score: ${correctCount * 2} / ${list.length * 2}`;
+                  hasQuestionCol = true;
+                }
+
+                return (
+                  <div className="space-y-4 text-center">
+                    {/* Your Score Header */}
+                    <div className="text-emerald-600 font-extrabold text-xl tracking-wide text-center">
+                      {scoreText}
+                    </div>
+
+                    {/* Comparison Table */}
+                    <div className="overflow-x-auto border border-slate-200 rounded-lg">
+                      <table className="w-full text-center border-collapse text-sm">
+                        <thead>
+                          <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 font-bold text-center">
+                            {hasQuestionCol && <th className="p-3 border-r border-slate-200 w-28 text-center">Question</th>}
+                            <th className="p-3 border-r border-slate-200 text-center">Your Answer</th>
+                            <th className="p-3 text-center">Correct Answer</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-200">
+                          {rowsData.map((row, idx) => (
+                            <tr key={idx}>
+                              {hasQuestionCol && (
+                                <td className="p-3 font-semibold text-slate-700 border-r border-slate-200 bg-slate-50 text-center">
+                                  {row.question}
+                                </td>
+                              )}
+                              <td className={`p-3 font-semibold border-r border-slate-200 text-center ${
+                                row.isCorrect ? 'text-emerald-700 bg-emerald-50' : 'text-red-700 bg-red-50'
+                              }`}>
+                                {row.yourAns}
+                              </td>
+                              <td className="p-3 font-semibold text-emerald-700 bg-emerald-50 text-center">
+                                {row.correctAns}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
