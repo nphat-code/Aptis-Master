@@ -187,12 +187,23 @@ export default function Home() {
 
   // Load state for currently selected item to practice
   const [selectedItemIndex, setSelectedItemIndex] = useState<number>(0);
-  const [selectedSubPart, setSelectedSubPart] = useState<string>('part1');
+  const [selectedSubPart, setSelectedSubPart] = useState<string | null>(null);
 
   // User interaction states
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [checked, setChecked] = useState(false);
   const [showExplanation, setShowExplanation] = useState<Record<string, boolean>>({});
+  const [showResultModal, setShowResultModal] = useState(false);
+
+  // Practice session countdown timer
+  const [timeLeft, setTimeLeft] = useState(2100); // 35 minutes
+  const [timerActive, setTimerActive] = useState(false);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   // Audio player global state
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -218,7 +229,31 @@ export default function Home() {
     setChecked(false);
     setShowExplanation({});
     setAudioUrl(null);
+    setShowResultModal(false);
   }, [activeTab, subView, selectedItemIndex, selectedSubPart]);
+
+  useEffect(() => {
+    let interval: any = null;
+    if (timerActive && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+    } else if (timeLeft === 0) {
+      setTimerActive(false);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [timerActive, timeLeft]);
+
+  useEffect(() => {
+    if (activeTab === 'reading' && subView === 'practice' && selectedSubPart !== null) {
+      setTimeLeft(2100); // 35:00
+      setTimerActive(true);
+    } else {
+      setTimerActive(false);
+    }
+  }, [activeTab, subView, selectedSubPart, selectedItemIndex]);
 
   useEffect(() => {
     if (audioRef.current && audioUrl) {
@@ -276,9 +311,9 @@ export default function Home() {
           {/* Trang chủ / Dashboard */}
           <button
             onClick={() => { setActiveTab('dashboard'); }}
-            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded text-xs font-semibold transition-all ${
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm md:text-base font-bold transition-all ${
               activeTab === 'dashboard'
-                ? 'bg-[#495057] text-white'
+                ? 'bg-[#495057] text-white shadow-sm'
                 : 'text-slate-300 hover:text-white hover:bg-[#495057]/60'
             }`}
           >
@@ -289,137 +324,137 @@ export default function Home() {
           <div>
             <button
               onClick={() => setSidebarOpen({ ...sidebarOpen, reading: !sidebarOpen.reading })}
-              className="w-full flex items-center justify-between px-4 py-2.5 rounded text-xs font-semibold text-slate-300 hover:text-white hover:bg-[#495057]/60"
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm md:text-base font-bold text-slate-300 hover:text-white hover:bg-[#495057]/60"
             >
               <div className="flex items-center gap-3">
                 <span className="text-sm">📖</span> Học reading
               </div>
-              <span className={`text-[10px] text-slate-400 transform transition-transform ${sidebarOpen.reading ? 'rotate-180' : ''}`}>▼</span>
+              <span className={`text-[10px] text-slate-400 transform transition-transform duration-300 ${sidebarOpen.reading ? 'rotate-180' : ''}`}>▼</span>
             </button>
-            {sidebarOpen.reading && (
+            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${sidebarOpen.reading ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
               <div className="pl-6 pr-2 py-1 space-y-1 bg-[#2b3035]/20 rounded-lg">
                 <button
-                  onClick={() => { setActiveTab('reading'); setSubView('practice'); setSelectedSubPart('part1'); setSelectedItemIndex(0); }}
-                  className={`w-full text-left px-3 py-2 rounded text-2xs transition-all ${activeTab === 'reading' && subView === 'practice' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
+                  onClick={() => { setActiveTab('reading'); setSubView('practice'); setSelectedSubPart(null); setSelectedItemIndex(0); }}
+                  className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'reading' && subView === 'practice' && selectedSubPart === null ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
                 >
                   • Học theo câu hỏi
                 </button>
                 <button
                   onClick={() => { setActiveTab('reading'); setSubView('tests'); setSelectedItemIndex(0); }}
-                  className={`w-full text-left px-3 py-2 rounded text-2xs transition-all ${activeTab === 'reading' && subView === 'tests' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
+                  className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'reading' && subView === 'tests' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
                 >
                   • Học theo bộ đề
                 </button>
                 <button
                   onClick={() => { setActiveTab('reading'); setSubView('tips'); setSelectedItemIndex(0); }}
-                  className={`w-full text-left px-3 py-2 rounded text-2xs transition-all ${activeTab === 'reading' && subView === 'tips' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
+                  className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'reading' && subView === 'tips' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
                 >
                   • Mẹo học nhanh
                 </button>
               </div>
-            )}
+            </div>
           </div>
 
           {/* Học Listening */}
           <div>
             <button
               onClick={() => setSidebarOpen({ ...sidebarOpen, listening: !sidebarOpen.listening })}
-              className="w-full flex items-center justify-between px-4 py-2.5 rounded text-xs font-semibold text-slate-300 hover:text-white hover:bg-[#495057]/60"
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm md:text-base font-bold text-slate-300 hover:text-white hover:bg-[#495057]/60"
             >
               <div className="flex items-center gap-3">
                 <span className="text-sm">🎧</span> Học Listening
                 <span className="px-1.5 py-0.2 rounded bg-slate-700 text-[9px] font-bold text-slate-300">3</span>
               </div>
-              <span className={`text-[10px] text-slate-400 transform transition-transform ${sidebarOpen.listening ? 'rotate-180' : ''}`}>▼</span>
+              <span className={`text-[10px] text-slate-400 transform transition-transform duration-300 ${sidebarOpen.listening ? 'rotate-180' : ''}`}>▼</span>
             </button>
-            {sidebarOpen.listening && (
+            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${sidebarOpen.listening ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
               <div className="pl-6 pr-2 py-1 space-y-1 bg-[#2b3035]/20 rounded-lg">
                 <button
-                  onClick={() => { setActiveTab('listening'); setSubView('practice'); setSelectedSubPart('part1'); setSelectedItemIndex(0); }}
-                  className={`w-full text-left px-3 py-2 rounded text-2xs transition-all ${activeTab === 'listening' && subView === 'practice' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
+                  onClick={() => { setActiveTab('listening'); setSubView('practice'); setSelectedSubPart(null); setSelectedItemIndex(0); }}
+                  className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'listening' && subView === 'practice' && selectedSubPart === null ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
                 >
                   • Học theo câu hỏi
                 </button>
                 <button
                   onClick={() => { setActiveTab('listening'); setSubView('tests'); setSelectedItemIndex(0); }}
-                  className={`w-full text-left px-3 py-2 rounded text-2xs transition-all ${activeTab === 'listening' && subView === 'tests' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
+                  className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'listening' && subView === 'tests' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
                 >
                   • Học theo bộ đề
                 </button>
                 <button
                   onClick={() => { setActiveTab('listening'); setSubView('tips'); setSelectedItemIndex(0); }}
-                  className={`w-full text-left px-3 py-2 rounded text-2xs transition-all ${activeTab === 'listening' && subView === 'tips' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
+                  className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'listening' && subView === 'tips' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
                 >
                   • Mẹo nhớ
                 </button>
               </div>
-            )}
+            </div>
           </div>
 
           {/* Học Writing */}
           <div>
             <button
               onClick={() => setSidebarOpen({ ...sidebarOpen, writing: !sidebarOpen.writing })}
-              className="w-full flex items-center justify-between px-4 py-2.5 rounded text-xs font-semibold text-slate-300 hover:text-white hover:bg-[#495057]/60"
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm md:text-base font-bold text-slate-300 hover:text-white hover:bg-[#495057]/60"
             >
               <div className="flex items-center gap-3">
                 <span className="text-sm">✍️</span> Học Writing
               </div>
-              <span className={`text-[10px] text-slate-400 transform transition-transform ${sidebarOpen.writing ? 'rotate-180' : ''}`}>▼</span>
+              <span className={`text-[10px] text-slate-400 transform transition-transform duration-300 ${sidebarOpen.writing ? 'rotate-180' : ''}`}>▼</span>
             </button>
-            {sidebarOpen.writing && (
+            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${sidebarOpen.writing ? 'max-h-32 opacity-100' : 'max-h-0 opacity-0'}`}>
               <div className="pl-6 pr-2 py-1 space-y-1 bg-[#2b3035]/20 rounded-lg">
                 <button
                   onClick={() => { setActiveTab('writing'); setSubView('practice'); setSelectedItemIndex(0); }}
-                  className={`w-full text-left px-3 py-2 rounded text-2xs transition-all ${activeTab === 'writing' && subView === 'practice' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
+                  className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'writing' && subView === 'practice' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
                 >
                   • Học câu lạc bộ
                 </button>
                 <button
                   onClick={() => { setActiveTab('writing'); setSubView('tips'); setSelectedItemIndex(0); }}
-                  className={`w-full text-left px-3 py-2 rounded text-2xs transition-all ${activeTab === 'writing' && subView === 'tips' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
+                  className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'writing' && subView === 'tips' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
                 >
                   • Mẹo viết thư
                 </button>
               </div>
-            )}
+            </div>
           </div>
 
           {/* Học Speaking */}
           <div>
             <button
               onClick={() => setSidebarOpen({ ...sidebarOpen, speaking: !sidebarOpen.speaking })}
-              className="w-full flex items-center justify-between px-4 py-2.5 rounded text-xs font-semibold text-slate-300 hover:text-white hover:bg-[#495057]/60"
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm md:text-base font-bold text-slate-300 hover:text-white hover:bg-[#495057]/60"
             >
               <div className="flex items-center gap-3">
                 <span className="text-sm">🗣️</span> Học speaking
               </div>
-              <span className={`text-[10px] text-slate-400 transform transition-transform ${sidebarOpen.speaking ? 'rotate-180' : ''}`}>▼</span>
+              <span className={`text-[10px] text-slate-400 transform transition-transform duration-300 ${sidebarOpen.speaking ? 'rotate-180' : ''}`}>▼</span>
             </button>
-            {sidebarOpen.speaking && (
+            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${sidebarOpen.speaking ? 'max-h-32 opacity-100' : 'max-h-0 opacity-0'}`}>
               <div className="pl-6 pr-2 py-1 space-y-1 bg-[#2b3035]/20 rounded-lg">
                 <button
-                  onClick={() => { setActiveTab('speaking'); setSubView('practice'); setSelectedItemIndex(0); }}
-                  className={`w-full text-left px-3 py-2 rounded text-2xs transition-all ${activeTab === 'speaking' && subView === 'practice' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
+                  onClick={() => { setActiveTab('speaking'); setSubView('practice'); setSelectedSubPart(null); setSelectedItemIndex(0); }}
+                  className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'speaking' && subView === 'practice' && selectedSubPart === null ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
                 >
                   • Học theo câu hỏi
                 </button>
                 <button
                   onClick={() => { setActiveTab('speaking'); setSubView('tips'); setSelectedItemIndex(0); }}
-                  className={`w-full text-left px-3 py-2 rounded text-2xs transition-all ${activeTab === 'speaking' && subView === 'tips' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
+                  className={`w-full text-left px-3 py-2 rounded text-xs md:text-sm font-semibold transition-all ${activeTab === 'speaking' && subView === 'tips' ? 'text-indigo-400 font-bold bg-[#495057]/40' : 'text-slate-400 hover:text-white hover:bg-[#495057]/20'}`}
                 >
                   • Mẹo học nhanh
                 </button>
               </div>
-            )}
+            </div>
           </div>
 
           {/* Học Grammar */}
           <button
             onClick={() => { setActiveTab('grammar'); setSubView('practice'); setSelectedItemIndex(0); }}
-            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded text-xs font-semibold transition-all ${
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm md:text-base font-bold transition-all ${
               activeTab === 'grammar'
-                ? 'bg-[#495057] text-white'
+                ? 'bg-[#495057] text-white shadow-sm'
                 : 'text-slate-300 hover:text-white hover:bg-[#495057]/60'
             }`}
           >
@@ -474,48 +509,28 @@ export default function Home() {
 
         {/* Tab view handler */}
         {activeTab === 'dashboard' && (
-          <div className="flex-1 overflow-y-auto p-8 max-w-6xl mx-auto w-full space-y-8 bg-[#f3f4f6]">
-            {/* Green Banner */}
-            <div className="bg-[#0B4C35] text-white p-8 rounded-2xl shadow-sm relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-              <div className="space-y-3 z-10">
-                <h2 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
-                  🌲 Aptis Keys (Green Aptis)
-                </h2>
-                <p className="text-sm text-slate-200 max-w-2xl font-light">
-                  Khóa học Aptis online cùng giáo viên đồng hành, lộ trình rõ ràng theo mục tiêu B1/B2. Nhấn để xem chi tiết khóa học!
-                </p>
-              </div>
-              <a
-                href="https://aptiskey.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="z-10 bg-white text-[#0B4C35] px-6 py-3 rounded-xl font-semibold hover:bg-slate-100 transition-all flex items-center gap-2 text-sm shadow-sm"
-              >
-                Xem khóa học <span>↗</span>
-              </a>
-            </div>
-
+          <div className="flex-1 overflow-y-auto p-8 max-w-none w-full space-y-8 bg-[#f3f4f6]">
             {/* Grid of categories matching reference image */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               {/* Column 1: Reading */}
               <div className="space-y-4">
                 <h3 className="font-bold text-base text-slate-700 text-center border-b border-slate-200 pb-2">Reading</h3>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <button
-                    onClick={() => { setActiveTab('reading'); setSubView('practice'); setSelectedSubPart('part1'); setSelectedItemIndex(0); }}
-                    className="w-full bg-[#198754] text-white hover:bg-[#157347] font-semibold py-3 px-4 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-xs"
+                    onClick={() => { setActiveTab('reading'); setSubView('practice'); setSelectedSubPart(null); setSelectedItemIndex(0); }}
+                    className="w-full bg-[#198754] text-white hover:bg-[#157347] font-bold py-5 px-6 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-base"
                   >
                     ❓ Học theo câu hỏi
                   </button>
                   <button
                     onClick={() => { setActiveTab('reading'); setSubView('tests'); setSelectedItemIndex(0); }}
-                    className="w-full bg-[#0d6efd] text-white hover:bg-[#0b5ed7] font-semibold py-3 px-4 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-xs"
+                    className="w-full bg-[#0d6efd] text-white hover:bg-[#0b5ed7] font-bold py-5 px-6 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-base"
                   >
                     📖 Học theo bộ đề
                   </button>
                   <button
                     onClick={() => { setActiveTab('reading'); setSubView('tips'); setSelectedItemIndex(0); }}
-                    className="w-full bg-[#ffc107] text-slate-900 hover:bg-[#ffca2c] font-semibold py-3 px-4 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-xs"
+                    className="w-full bg-[#ffc107] text-slate-900 hover:bg-[#ffca2c] font-bold py-5 px-6 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-base"
                   >
                     💡 Mẹo nhớ
                   </button>
@@ -525,22 +540,22 @@ export default function Home() {
               {/* Column 2: Listening */}
               <div className="space-y-4">
                 <h3 className="font-bold text-base text-slate-700 text-center border-b border-slate-200 pb-2">Listening</h3>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <button
-                    onClick={() => { setActiveTab('listening'); setSubView('practice'); setSelectedSubPart('part1'); setSelectedItemIndex(0); }}
-                    className="w-full bg-[#dc3545] text-white hover:bg-[#bb2d3b] font-semibold py-3 px-4 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-xs"
+                    onClick={() => { setActiveTab('listening'); setSubView('practice'); setSelectedSubPart(null); setSelectedItemIndex(0); }}
+                    className="w-full bg-[#dc3545] text-white hover:bg-[#bb2d3b] font-bold py-5 px-6 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-base"
                   >
                     ❓ Học theo câu hỏi
                   </button>
                   <button
                     onClick={() => { setActiveTab('listening'); setSubView('tests'); setSelectedItemIndex(0); }}
-                    className="w-full bg-[#0dcaf0] text-slate-900 hover:bg-[#31d2f2] font-semibold py-3 px-4 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-xs"
+                    className="w-full bg-[#0dcaf0] text-slate-900 hover:bg-[#31d2f2] font-bold py-5 px-6 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-base"
                   >
                     📖 Học theo bộ đề
                   </button>
                   <button
                     onClick={() => { setActiveTab('listening'); setSubView('tips'); setSelectedItemIndex(0); }}
-                    className="w-full bg-[#6c757d] text-white hover:bg-[#5c636a] font-semibold py-3 px-4 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-xs"
+                    className="w-full bg-[#6c757d] text-white hover:bg-[#5c636a] font-bold py-5 px-6 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-base"
                   >
                     💡 Mẹo nhớ
                   </button>
@@ -550,16 +565,16 @@ export default function Home() {
               {/* Column 3: Speaking */}
               <div className="space-y-4">
                 <h3 className="font-bold text-base text-slate-700 text-center border-b border-slate-200 pb-2">Speaking</h3>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <button
-                    onClick={() => { setActiveTab('speaking'); setSubView('practice'); setSelectedItemIndex(0); }}
-                    className="w-full bg-[#0d6efd] text-white hover:bg-[#0b5ed7] font-semibold py-3 px-4 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-xs"
+                    onClick={() => { setActiveTab('speaking'); setSubView('practice'); setSelectedSubPart(null); setSelectedItemIndex(0); }}
+                    className="w-full bg-[#0d6efd] text-white hover:bg-[#0b5ed7] font-bold py-5 px-6 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-base"
                   >
                     🎧 Học theo câu hỏi
                   </button>
                   <button
                     onClick={() => { setActiveTab('speaking'); setSubView('tips'); setSelectedItemIndex(0); }}
-                    className="w-full bg-[#ffc107] text-slate-900 hover:bg-[#ffca2c] font-semibold py-3 px-4 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-xs"
+                    className="w-full bg-[#ffc107] text-slate-900 hover:bg-[#ffca2c] font-bold py-5 px-6 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-base"
                   >
                     💡 Mẹo nhớ
                   </button>
@@ -569,16 +584,16 @@ export default function Home() {
               {/* Column 4: Writing */}
               <div className="space-y-4">
                 <h3 className="font-bold text-base text-slate-700 text-center border-b border-slate-200 pb-2">Writing</h3>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <button
                     onClick={() => { setActiveTab('writing'); setSubView('practice'); setSelectedItemIndex(0); }}
-                    className="w-full bg-[#0d6efd] text-white hover:bg-[#0b5ed7] font-semibold py-3 px-4 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-xs"
+                    className="w-full bg-[#0d6efd] text-white hover:bg-[#0b5ed7] font-bold py-5 px-6 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-base"
                   >
                     📝 Học câu lạc bộ
                   </button>
                   <button
                     onClick={() => { setActiveTab('writing'); setSubView('tips'); setSelectedItemIndex(0); }}
-                    className="w-full bg-[#198754] text-white hover:bg-[#157347] font-semibold py-3 px-4 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-xs"
+                    className="w-full bg-[#198754] text-white hover:bg-[#157347] font-bold py-5 px-6 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-base"
                   >
                     ❓ Mẹo viết thư
                   </button>
@@ -591,16 +606,16 @@ export default function Home() {
               {/* Column 1: Grammar */}
               <div className="space-y-4">
                 <h3 className="font-bold text-base text-slate-700 text-center border-b border-slate-200 pb-2">Học ngữ pháp (Grammar)</h3>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <button
                     onClick={() => { setActiveTab('grammar'); setSubView('practice'); setSelectedItemIndex(0); }}
-                    className="w-full bg-[#dc3545] text-white hover:bg-[#bb2d3b] font-semibold py-3 px-4 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-xs"
+                    className="w-full bg-[#dc3545] text-white hover:bg-[#bb2d3b] font-bold py-5 px-6 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-base"
                   >
                     📕 Học theo bộ đề
                   </button>
                   <button
                     onClick={() => { setActiveTab('grammar'); setSubView('practice'); setSelectedItemIndex(0); }}
-                    className="w-full bg-[#198754] text-white hover:bg-[#157347] font-semibold py-3 px-4 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-xs"
+                    className="w-full bg-[#198754] text-white hover:bg-[#157347] font-bold py-5 px-6 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-base"
                   >
                     💡 Lưu ý về ngữ pháp
                   </button>
@@ -610,12 +625,12 @@ export default function Home() {
               {/* Column 2: Nhóm và trang */}
               <div className="space-y-4">
                 <h3 className="font-bold text-base text-slate-700 text-center border-b border-slate-200 pb-2">Nhóm và trang</h3>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <a
                     href="https://facebook.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full bg-[#0d6efd] text-white hover:bg-[#0b5ed7] font-semibold py-3 px-4 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-xs text-center"
+                    className="w-full bg-[#0d6efd] text-white hover:bg-[#0b5ed7] font-bold py-5 px-6 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-base text-center"
                   >
                     👥 Nhóm học Facebook
                   </a>
@@ -623,7 +638,7 @@ export default function Home() {
                     href="https://aptiskey.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full bg-[#198754] text-white hover:bg-[#157347] font-semibold py-3 px-4 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-xs text-center"
+                    className="w-full bg-[#198754] text-white hover:bg-[#157347] font-bold py-5 px-6 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-base text-center"
                   >
                     📝 Trang thi mẫu Aptis
                   </a>
@@ -633,16 +648,16 @@ export default function Home() {
               {/* Column 3: Khác */}
               <div className="space-y-4">
                 <h3 className="font-bold text-base text-slate-700 text-center border-b border-slate-200 pb-2">Khác</h3>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <button
                     onClick={() => alert('Cảm ơn bạn! Học tập cá nhân không cần donate.')}
-                    className="w-full bg-[#dc3545] text-white hover:bg-[#bb2d3b] font-semibold py-3 px-4 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-xs"
+                    className="w-full bg-[#dc3545] text-white hover:bg-[#bb2d3b] font-bold py-5 px-6 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-base"
                   >
                     ❤️ Donate cho web
                   </button>
                   <button
                     onClick={() => alert('Hướng dẫn học: Làm lần lượt các bài tập theo chủ đề ở menu bên trái!')}
-                    className="w-full bg-[#0d6efd] text-white hover:bg-[#0b5ed7] font-semibold py-3 px-4 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-xs"
+                    className="w-full bg-[#0d6efd] text-white hover:bg-[#0b5ed7] font-bold py-5 px-6 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-base"
                   >
                     📖 Hướng dẫn học
                   </button>
@@ -652,18 +667,18 @@ export default function Home() {
               {/* Column 4: Theo dõi tin cập nhật */}
               <div className="space-y-4">
                 <h3 className="font-bold text-base text-slate-700 text-center border-b border-slate-200 pb-2">Theo dõi tin cập nhật aptis</h3>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <a
                     href="https://facebook.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full bg-[#0d6efd] text-white hover:bg-[#0b5ed7] font-semibold py-3 px-4 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-xs text-center"
+                    className="w-full bg-[#0d6efd] text-white hover:bg-[#0b5ed7] font-bold py-5 px-6 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-base text-center"
                   >
                     👥 Theo dõi fanpage
                   </a>
                   <button
                     onClick={() => alert('Cách tính điểm: Mỗi kỹ năng tính điểm thang 50, điểm quy đổi theo chuẩn Aptis ESOL.')}
-                    className="w-full bg-[#ffc107] text-slate-900 hover:bg-[#ffca2c] font-semibold py-3 px-4 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-xs"
+                    className="w-full bg-[#ffc107] text-slate-900 hover:bg-[#ffca2c] font-bold py-5 px-6 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-base"
                   >
                     🧮 Cách tính điểm Aptis
                   </button>
@@ -676,10 +691,10 @@ export default function Home() {
               {/* Column 1: Review đề thi */}
               <div className="space-y-4">
                 <h3 className="font-bold text-base text-slate-700 text-center border-b border-slate-200 pb-2">Review đề thi</h3>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <button
                     onClick={() => alert('Review đề thi được cập nhật thường xuyên trên trang chủ!')}
-                    className="w-full bg-[#dc3545] text-white hover:bg-[#bb2d3b] font-semibold py-3 px-4 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-xs"
+                    className="w-full bg-[#dc3545] text-white hover:bg-[#bb2d3b] font-bold py-5 px-6 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-base"
                   >
                     📕 Review đề thi mỗi ngày
                   </button>
@@ -691,739 +706,383 @@ export default function Home() {
 
         {/* READING PRACTICE / MOCK / TIPS */}
         {activeTab === 'reading' && (
-          <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Tab controls */}
-            <div className="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between shrink-0">
-              <div className="flex gap-4">
-                {(['practice', 'tests', 'tips'] as const).map((view) => (
-                  <button
-                    key={view}
-                    onClick={() => { setSubView(view); setSelectedItemIndex(0); }}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                      subView === view
-                        ? 'bg-indigo-600 text-white'
-                        : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    {view === 'practice' && 'Luyện tập câu hỏi'}
-                    {view === 'tests' && 'Bộ đề đọc (14 bộ)'}
-                    {view === 'tips' && 'Mẹo nhớ nhanh Q5'}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex-1 flex overflow-hidden">
-              {/* Practice mode sidebar selector */}
-              {subView === 'practice' && (
-                <div className="w-64 border-r border-slate-900 bg-slate-900/30 flex flex-col overflow-y-auto shrink-0">
-                  <div className="p-4 space-y-1 border-b border-slate-900">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Chọn phần học</span>
-                    {['part1', 'part2', 'part4', 'part5'].map((p) => (
-                      <button
-                        key={p}
-                        onClick={() => { setSelectedSubPart(p); setSelectedItemIndex(0); }}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold capitalize ${
-                          selectedSubPart === p ? 'bg-indigo-600/10 text-indigo-400' : 'text-slate-400 hover:bg-slate-900/60'
-                        }`}
-                      >
-                        {p === 'part1' && 'Part 1: Điền khuyết'}
-                        {p === 'part2' && 'Part 2: Đọc hiểu ý kiến'}
-                        {p === 'part4' && 'Part 4: Sắp xếp đoạn'}
-                        {p === 'part5' && 'Part 5: Điền từ nâng cao'}
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="p-4 space-y-1">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Danh sách bài tập</span>
-                    {selectedSubPart === 'part1' && data.reading.question1.map((item, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setSelectedItemIndex(idx)}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-all ${
-                          selectedItemIndex === idx ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-900/40'
-                        }`}
-                      >
-                        Bài tập {idx + 1}
-                      </button>
-                    ))}
-
-                    {selectedSubPart === 'part2' && data.reading.question2.questionSets.map((_, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setSelectedItemIndex(idx)}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-all ${
-                          selectedItemIndex === idx ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-900/40'
-                        }`}
-                      >
-                        Bài tập {idx + 1}
-                      </button>
-                    ))}
-
-                    {selectedSubPart === 'part4' && data.reading.question4.question4Content.map((_, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setSelectedItemIndex(idx)}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-all ${
-                          selectedItemIndex === idx ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-900/40'
-                        }`}
-                      >
-                        Bài tập {idx + 1}
-                      </button>
-                    ))}
-
-                    {selectedSubPart === 'part5' && data.reading.question5.options.map((_, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setSelectedItemIndex(idx)}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-all ${
-                          selectedItemIndex === idx ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-900/40'
-                        }`}
-                      >
-                        {data.reading.question5.topic_name[idx] || `Bài tập ${idx + 1}`}
-                      </button>
-                    ))}
-                  </div>
+          <div className="flex-1 flex flex-col overflow-hidden bg-[#f8f9fa]">
+            {/* If practicing a specific part, show Welcome Topbar Header */}
+            {subView === 'practice' && selectedSubPart !== null && (
+              <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm shrink-0 z-10">
+                <button
+                  onClick={() => setSelectedSubPart(null)}
+                  className="flex items-center gap-2 font-bold text-slate-800 text-sm hover:text-slate-600 transition-all"
+                >
+                  🏠 <span className="text-base font-bold text-indigo-600 font-sans">Aptis Keys</span>
+                </button>
+                <div className="text-center font-bold text-slate-700 text-sm tracking-wide font-sans">
+                  Time remaining: <span className="text-[#dc3545] font-mono text-base font-extrabold">{formatTime(timeLeft)}</span>
                 </div>
-              )}
-
-              {/* Mock Test mode sidebar selector */}
-              {subView === 'tests' && (
-                <div className="w-64 border-r border-slate-900 bg-slate-900/30 flex flex-col overflow-y-auto shrink-0 p-4 space-y-1">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Chọn bộ đề đọc</span>
-                  {Object.keys(data.reading_tests).map((testKey, idx) => (
-                    <button
-                      key={testKey}
-                      onClick={() => setSelectedItemIndex(idx)}
-                      className={`w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold transition-all ${
-                        selectedItemIndex === idx ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-900/40'
-                      }`}
-                    >
-                      {data.reading_tests[testKey].label || `Bộ đề Đọc #${idx + 1}`}
-                    </button>
-                  ))}
+                <div className="text-right font-bold text-slate-650 text-xs md:text-sm tracking-wide uppercase font-sans font-sans">
+                  Reading Question {selectedSubPart === 'part1' ? '1' : selectedSubPart === 'part2' ? '2 & 3' : selectedSubPart === 'part4' ? '4' : '5'}
                 </div>
-              )}
+              </header>
+            )}
 
-              {/* Reading Tips list selector */}
-              {subView === 'tips' && (
-                <div className="w-64 border-r border-slate-900 bg-slate-900/30 flex flex-col overflow-y-auto shrink-0 p-4 space-y-1">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Chọn mẹo nhớ nhanh</span>
-                  {data.reading_tips.map((tip, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setSelectedItemIndex(idx)}
-                      className={`w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold transition-all ${
-                        selectedItemIndex === idx ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-900/40'
-                      }`}
-                    >
-                      Chủ đề {tip.id}
-                    </button>
-                  ))}
+            <div className="flex-1 flex overflow-hidden relative">
+              {/* Practice mode sidebar selector - only show if subView is NOT practice or if selectedSubPart === null */}
+              {subView !== 'practice' && (
+                <div className="w-64 border-r border-slate-200 bg-white flex flex-col overflow-y-auto shrink-0 font-sans">
+                  {subView === 'tips' && (
+                    <div className="p-4 space-y-1">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Chọn mẹo nhớ nhanh</span>
+                      {data?.reading_tips.map((tip, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setSelectedItemIndex(idx)}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
+                            selectedItemIndex === idx ? 'bg-indigo-50 text-indigo-600 font-bold' : 'text-slate-600 hover:bg-slate-50'
+                          }`}
+                        >
+                          Chủ đề {tip.id}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {subView === 'tests' && (
+                    <div className="p-4 space-y-1">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Danh sách bộ đề</span>
+                      {data && Object.keys(data.reading_tests).map((testKey, idx) => (
+                        <button
+                          key={testKey}
+                          onClick={() => setSelectedItemIndex(idx)}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
+                            selectedItemIndex === idx ? 'bg-indigo-50 text-indigo-600 font-bold' : 'text-slate-600 hover:bg-slate-50'
+                          }`}
+                        >
+                          Bài thi mẫu {idx + 1}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
               {/* Main Content Workspace for Reading */}
-              <div className="flex-1 overflow-y-auto p-6 md:p-8">
-                {subView === 'practice' && selectedSubPart === 'part1' && (
-                  <div className="max-w-4xl mx-auto space-y-6">
-                    <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl space-y-4">
-                      <h3 className="text-xl font-bold text-slate-200">
-                        Part 1: Điền khuyết câu ngắn - Bài {selectedItemIndex + 1}
-                      </h3>
-                      <p className="text-xs text-indigo-400 font-medium">Nhiệm vụ: Chọn từ thích hợp nhất điền vào chỗ trống để hoàn thành mỗi câu dưới đây.</p>
-                      
-                      <div className="space-y-4 bg-slate-950 p-5 rounded-xl border border-slate-900">
-                        {(data.reading.question1[selectedItemIndex] as any[]).map((q, qIdx) => {
-                          const qKey = `p1_${selectedItemIndex}_${qIdx}`;
-                          const isCorrect = answers[qKey] === q.correctAnswer;
-                          return (
-                            <div key={qIdx} className="flex flex-col md:flex-row md:items-center gap-3 py-3 border-b border-slate-900 last:border-0">
-                              <span className="text-xs font-bold text-slate-500 min-w-[24px]">{qIdx + 1}.</span>
-                              <div className="flex-1 text-sm text-slate-300 leading-relaxed flex flex-wrap items-center gap-1.5">
-                                <span>{q.questionStart}</span>
-                                <select
-                                  value={answers[qKey] || ''}
-                                  disabled={checked}
-                                  onChange={(e) => setAnswers({ ...answers, [qKey]: e.target.value })}
-                                  className={`px-2 py-1 rounded bg-slate-900 border text-xs font-semibold transition-all ${
-                                    checked
-                                      ? (isCorrect
-                                        ? 'border-emerald-500/80 bg-emerald-500/10 text-emerald-400 font-bold'
-                                        : 'border-red-500/80 bg-red-500/10 text-red-400 font-bold')
-                                      : 'border-slate-800 text-indigo-300 focus:border-indigo-500'
-                                  }`}
-                                >
-                                  <option value="">Chọn từ...</option>
-                                  {(q.answerOptions as string[]).map((opt, oIdx) => (
-                                    <option key={oIdx} value={opt}>{opt}</option>
-                                  ))}
-                                </select>
-                                <span>{q.questionEnd}</span>
-                              </div>
-                              {checked && !isCorrect && (
-                                <span className="text-3xs text-slate-500 md:ml-auto">
-                                  Đáp án đúng: <span className="text-emerald-400 font-bold">{q.correctAnswer}</span>
-                                </span>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
+              <div className="flex-1 overflow-y-auto p-6 md:p-8 flex flex-col justify-between">
+                {subView === 'practice' && selectedSubPart === null ? (
+                  /* 1. Landing Grid Selection */
+                  <div className="max-w-6xl mx-auto w-full py-10 space-y-10 font-sans">
+                    <h3 className="text-center font-bold text-slate-500 text-2xl tracking-wide uppercase tracking-widest">
+                      Reading Practice - by question
+                    </h3>
 
-                      <div className="flex gap-3 pt-4">
-                        <button
-                          onClick={() => setChecked(true)}
-                          className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold transition-all"
-                        >
-                          Kiểm tra kết quả
-                        </button>
-                        <button
-                          onClick={() => { setAnswers({}); setChecked(false); }}
-                          className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold transition-all text-slate-300"
-                        >
-                          Làm lại
-                        </button>
-                      </div>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pt-8">
+                      {/* Part 1 */}
+                      <button
+                        onClick={() => { setSelectedSubPart('part1'); setSelectedItemIndex(0); setAnswers({}); setChecked(false); }}
+                        className="bg-[#0d6efd] text-white hover:bg-[#0b5ed7] py-5 px-6 rounded-xl shadow-md transition-all flex flex-col items-center justify-center gap-2 text-base font-bold hover:scale-105"
+                      >
+                        <span className="text-2xl">📖</span> Part 1
+                      </button>
+
+                      {/* Part 2 & 3 */}
+                      <button
+                        onClick={() => { setSelectedSubPart('part2'); setSelectedItemIndex(0); setAnswers({}); setChecked(false); }}
+                        className="bg-[#0dcaf0] text-slate-900 hover:bg-[#31d2f2] py-5 px-6 rounded-xl shadow-md transition-all flex flex-col items-center justify-center gap-2 text-base font-bold hover:scale-105"
+                      >
+                        <span className="text-2xl">🧩</span> Part 2 & 3
+                      </button>
+
+                      {/* Part 4 */}
+                      <button
+                        onClick={() => { setSelectedSubPart('part4'); setSelectedItemIndex(0); setAnswers({}); setChecked(false); }}
+                        className="bg-[#ffc107] text-slate-900 hover:bg-[#ffca2c] py-5 px-6 rounded-xl shadow-md transition-all flex flex-col items-center justify-center gap-2 text-base font-bold hover:scale-105"
+                      >
+                        <span className="text-2xl">📋</span> Part 4
+                      </button>
+
+                      {/* Part 5 */}
+                      <button
+                        onClick={() => { setSelectedSubPart('part5'); setSelectedItemIndex(0); setAnswers({}); setChecked(false); }}
+                        className="bg-[#198754] text-white hover:bg-[#157347] py-5 px-6 rounded-xl shadow-md transition-all flex flex-col items-center justify-center gap-2 text-base font-bold hover:scale-105"
+                      >
+                        <span className="text-2xl">💡</span> Part 5
+                      </button>
                     </div>
                   </div>
-                )}
+                ) : (
+                  /* Render Practice Exercises workspaces or Mock test or Tips */
+                  <div className="flex-1 flex flex-col justify-between min-h-[450px]">
+                    <div className="max-w-4xl mx-auto w-full space-y-6 pb-24 font-sans">
+                      {subView === 'practice' && (
+                        <>
+                          {/* Heading structure */}
+                          <div className="text-center space-y-3 py-6">
+                            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-850">
+                              Reading Question <span className="border-b-2 border-slate-800 pb-1 px-3 underline decoration-slate-800 underline-offset-8 font-extrabold">{selectedItemIndex + 1}</span> of {
+                                selectedSubPart === 'part1' ? data?.reading.question1.length
+                                : selectedSubPart === 'part2' ? data?.reading.question2.questionSets.length
+                                : selectedSubPart === 'part4' ? data?.reading.question4.question4Content.length
+                                : data?.reading.question5.paragraph_question5.length
+                              }
+                            </h2>
+                            <p className="text-sm font-semibold text-slate-500">
+                              {selectedSubPart === 'part1' && 'Choose the word that fits in the gap. The first one is done for you.'}
+                              {selectedSubPart === 'part2' && 'Read the text and assign speaker statements to Speaker A, B, C or D.'}
+                              {selectedSubPart === 'part4' && 'Arrange the sentences below to form a logically coherent paragraph.'}
+                              {selectedSubPart === 'part5' && 'Read the text and fill in the missing words from the selections.'}
+                            </p>
+                          </div>
 
-                {subView === 'practice' && selectedSubPart === 'part2' && (
-                  <div className="max-w-4xl mx-auto space-y-6">
-                    <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl space-y-4">
-                      <h3 className="text-xl font-bold text-slate-200">Part 2: Đọc hiểu ý kiến</h3>
-                      <p className="text-xs text-indigo-400 font-medium">Nhiệm vụ: Đọc đoạn văn và chọn đúng người đại diện cho từng quan điểm.</p>
-                      
-                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                        {/* Passage block */}
-                        <div 
-                          className="lg:col-span-6 bg-slate-950 p-5 rounded-xl border border-slate-900 text-xs leading-relaxed text-slate-300 max-h-[450px] overflow-y-auto"
-                          dangerouslySetInnerHTML={{ __html: data.reading.question2.questionSets[selectedItemIndex].paragraph }}
-                        />
+                          {/* Exercise workspace container styling */}
+                          <div className="bg-white border border-slate-200 p-8 rounded-2xl shadow-sm space-y-6">
+                            {/* Part 1 Content */}
+                            {selectedSubPart === 'part1' && data && (
+                              <div className="space-y-4">
+                                {(data.reading.question1[selectedItemIndex] as any[]).map((q, qIdx) => {
+                                  const qKey = `p1_${selectedItemIndex}_${qIdx}`;
+                                  const isCorrect = answers[qKey] === q.correctAnswer;
+                                  return (
+                                    <div key={qIdx} className="flex flex-col md:flex-row md:items-center gap-3 py-4 border-b border-slate-100 last:border-0">
+                                      <span className="text-sm font-bold text-slate-400 min-w-[24px]">{qIdx + 1}.</span>
+                                      <div className="flex-1 text-base text-slate-800 leading-relaxed flex flex-wrap items-center gap-2">
+                                        <span>{q.questionStart}</span>
+                                        <select
+                                          value={answers[qKey] || ''}
+                                          disabled={checked}
+                                          onChange={(e) => setAnswers({ ...answers, [qKey]: e.target.value })}
+                                          className={`px-3 py-1.5 rounded-lg border text-sm font-bold transition-all bg-white text-slate-805 focus:outline-none ${
+                                            checked
+                                              ? (isCorrect
+                                                ? 'border-emerald-500 bg-emerald-50 text-emerald-700 font-bold'
+                                                : 'border-red-500 bg-red-50 text-red-700 font-bold')
+                                              : 'border-slate-300 text-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500'
+                                          }`}
+                                        >
+                                          <option value=""></option>
+                                          {(q.answerOptions as string[]).map((opt, oIdx) => (
+                                            <option key={oIdx} value={opt}>{opt}</option>
+                                          ))}
+                                        </select>
+                                        <span>{q.questionEnd}</span>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
 
-                        {/* Questions list */}
-                        <div className="lg:col-span-6 space-y-4">
-                          {data.reading.question2.questionSets[selectedItemIndex].questions.map((q, idx) => {
-                            const qKey = `p2_${selectedItemIndex}_${idx}`;
-                            const isCorrect = answers[qKey] === q.answer;
-                            return (
-                              <div key={idx} className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 space-y-2">
-                                <p className="text-xs font-bold text-slate-300">{idx + 1}. {q.questionText}</p>
-                                <div className="flex gap-2">
-                                  {['A', 'B', 'C', 'D'].map((person) => (
-                                    <button
-                                      key={person}
-                                      disabled={checked}
-                                      onClick={() => setAnswers({ ...answers, [qKey]: person })}
-                                      className={`flex-1 py-1.5 rounded text-2xs font-bold border transition-all ${
-                                        answers[qKey] === person
-                                          ? (checked
-                                            ? (isCorrect ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500' : 'bg-red-500/20 text-red-400 border-red-500')
-                                            : 'bg-indigo-600 text-white border-indigo-500')
-                                          : 'bg-slate-950 text-slate-400 border-slate-850 hover:text-slate-200'
-                                      }`}
-                                    >
-                                      Speaker {person}
-                                    </button>
-                                  ))}
+                            {/* Part 2 Content */}
+                            {selectedSubPart === 'part2' && data && (
+                              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                                <div 
+                                  className="lg:col-span-6 bg-slate-50 p-6 rounded-xl border border-slate-200 text-sm leading-relaxed text-slate-800 max-h-[500px] overflow-y-auto"
+                                  dangerouslySetInnerHTML={{ __html: data.reading.question2.questionSets[selectedItemIndex].paragraph }}
+                                />
+                                <div className="lg:col-span-6 space-y-4">
+                                  {data.reading.question2.questionSets[selectedItemIndex].questions.map((q, idx) => {
+                                    const qKey = `p2_${selectedItemIndex}_${idx}`;
+                                    const isCorrect = answers[qKey] === q.answer;
+                                    return (
+                                      <div key={idx} className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                                        <p className="text-sm font-bold text-slate-800">{idx + 1}. {q.questionText}</p>
+                                        <div className="flex gap-2">
+                                          {['A', 'B', 'C', 'D'].map((person) => (
+                                            <button
+                                              key={person}
+                                              disabled={checked}
+                                              onClick={() => setAnswers({ ...answers, [qKey]: person })}
+                                              className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all ${
+                                                answers[qKey] === person
+                                                  ? (checked
+                                                    ? (isCorrect ? 'bg-emerald-100 text-emerald-700 border-emerald-500' : 'bg-red-100 text-red-700 border-red-500')
+                                                    : 'bg-indigo-600 text-white border-indigo-500 shadow-sm')
+                                                  : 'bg-white text-slate-650 border-slate-300 hover:text-slate-800 hover:bg-slate-50'
+                                              }`}
+                                            >
+                                              Speaker {person}
+                                            </button>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
                                 </div>
-                                {checked && (
-                                  <div className="text-3xs flex justify-between pt-1 border-t border-slate-850 mt-1">
-                                    <span className="text-slate-400">Đáp án chuẩn: <span className="text-emerald-400 font-bold">{q.answer}</span></span>
+                              </div>
+                            )}
+
+                            {/* Part 4 Content */}
+                            {selectedSubPart === 'part4' && data && (
+                              <div className="space-y-4">
+                                {data.reading.question4.question4Content[selectedItemIndex].map((sentence, idx) => {
+                                  const qKey = `p4_${selectedItemIndex}_${idx}`;
+                                  const isCorrect = parseInt(answers[qKey]) === idx;
+                                  return (
+                                    <div key={idx} className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-start gap-4">
+                                      <select
+                                        value={answers[qKey] || ''}
+                                        disabled={checked}
+                                        onChange={(e) => setAnswers({ ...answers, [qKey]: e.target.value })}
+                                        className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all bg-white text-slate-800 focus:outline-none ${
+                                          checked
+                                            ? (isCorrect ? 'border-emerald-500 text-emerald-700 bg-emerald-50' : 'border-red-500 text-red-700 bg-red-50')
+                                            : 'border-slate-300 text-slate-700'
+                                        }`}
+                                      >
+                                        <option value=""></option>
+                                        {data.reading.question4.question4Content[selectedItemIndex].map((_, oIdx) => (
+                                          <option key={oIdx} value={oIdx}>Câu {oIdx + 1}</option>
+                                        ))}
+                                      </select>
+                                      <div className="flex-1">
+                                        <p className="text-sm text-slate-800 leading-relaxed">{sentence}</p>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+
+                            {/* Part 5 Content */}
+                            {selectedSubPart === 'part5' && data && (
+                              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                                <div className="lg:col-span-4 bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3">
+                                  <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider block mb-1">Từ khóa lựa chọn</span>
+                                  <div className="flex flex-wrap gap-2">
+                                    {data.reading.question5.options[selectedItemIndex].map((opt, oIdx) => (
+                                      <span key={oIdx} className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-slate-750 shadow-sm">
+                                        {opt}
+                                      </span>
+                                    ))}
                                   </div>
-                                )}
+                                </div>
+                                <div className="lg:col-span-8 space-y-4 bg-slate-50 p-6 rounded-xl border border-slate-200 text-sm leading-relaxed text-slate-800">
+                                  {data.reading.question5.paragraph_question5[selectedItemIndex].map((block, bIdx) => {
+                                    const qKey = `p5_${selectedItemIndex}_${bIdx}`;
+                                    const optionsList = data.reading.question5.options[selectedItemIndex];
+                                    const correctWord = optionsList[bIdx];
+                                    const isCorrect = answers[qKey] === correctWord;
+                                    return (
+                                      <div key={bIdx} className="mb-5 space-y-2 border-b border-slate-200 pb-4 last:border-0 last:pb-0">
+                                        <p className="text-[#343a40] leading-relaxed">{block}</p>
+                                        <div className="flex items-center gap-3">
+                                          <span className="text-xs font-bold text-slate-400">Ô trống {bIdx + 1}:</span>
+                                          <select
+                                            value={answers[qKey] || ''}
+                                            disabled={checked}
+                                            onChange={(e) => setAnswers({ ...answers, [qKey]: e.target.value })}
+                                            className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all bg-white text-slate-850 focus:outline-none ${
+                                              checked
+                                                ? (isCorrect ? 'border-emerald-500 text-emerald-700 bg-emerald-50' : 'border-red-500 text-red-700 bg-red-50')
+                                                : 'border-slate-300 text-slate-700'
+                                            }`}
+                                          >
+                                            <option value=""></option>
+                                            {optionsList.map((opt, oIdx) => (
+                                              <option key={oIdx} value={opt}>{opt}</option>
+                                            ))}
+                                          </select>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
                               </div>
-                            );
-                          })}
-                        </div>
-                      </div>
+                            )}
+                          </div>
+                        </>
+                      )}
 
-                      {/* Display correct keys check */}
-                      <div className="flex gap-3 pt-4">
-                        <button
-                          onClick={() => setChecked(true)}
-                          className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold transition-all"
-                        >
-                          Kiểm tra kết quả
-                        </button>
-                        <button
-                          onClick={() => { setAnswers({}); setChecked(false); }}
-                          className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold transition-all text-slate-300"
-                        >
-                          Làm lại
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {subView === 'practice' && selectedSubPart === 'part4' && (
-                  <div className="max-w-4xl mx-auto space-y-6">
-                    <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl space-y-4">
-                      <h3 className="text-xl font-bold text-slate-200">Part 4: Sắp xếp đoạn văn</h3>
-                      <p className="text-xs text-indigo-400 font-medium">Nhiệm vụ: Chọn số thứ tự đúng cho từng câu để tạo thành đoạn văn logic hoàn chỉnh.</p>
-
-                      <div className="space-y-3">
-                        {data.reading.question4.question4Content[selectedItemIndex].map((sentence, idx) => {
-                          const qKey = `p4_${selectedItemIndex}_${idx}`;
-                          const isCorrect = parseInt(answers[qKey]) === idx;
-                          return (
-                            <div key={idx} className="bg-slate-950 p-4 rounded-xl border border-slate-900 flex items-start gap-4">
-                              <select
-                                value={answers[qKey] || ''}
-                                disabled={checked}
-                                onChange={(e) => setAnswers({ ...answers, [qKey]: e.target.value })}
-                                className={`px-3 py-1.5 rounded bg-slate-900 border text-xs font-bold transition-all ${
-                                  checked
-                                    ? (isCorrect ? 'border-emerald-500/80 text-emerald-400 bg-emerald-500/10' : 'border-red-500/80 text-red-400 bg-red-500/10')
-                                    : 'border-slate-800 text-indigo-300'
-                                }`}
-                              >
-                                <option value="">Chọn...</option>
-                                {data.reading.question4.question4Content[selectedItemIndex].map((_, oIdx) => (
-                                  <option key={oIdx} value={oIdx}>Câu {oIdx + 1}</option>
-                                ))}
-                              </select>
-                              <div className="flex-1">
-                                <p className="text-xs text-slate-200 leading-relaxed">{sentence}</p>
-                              </div>
+                      {/* Mock Reading tests */}
+                      {subView === 'tests' && data && (
+                        <div className="bg-white border border-slate-200 p-8 rounded-2xl shadow-sm space-y-6">
+                          <h3 className="text-2xl font-bold text-slate-800">
+                            {data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]]?.label}
+                          </h3>
+                          <div className="bg-indigo-50 border border-indigo-100 p-6 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div>
+                              <span className="text-xs text-indigo-500 uppercase tracking-widest font-bold">Simulator Mock Exam</span>
+                              <h4 className="text-lg font-bold text-slate-850 mt-1">Trình mô phỏng bài thi đọc thực tế</h4>
                             </div>
-                          );
-                        })}
-                      </div>
-
-                      {/* Display correct keys check */}
-                      <div className="flex gap-3 pt-4">
-                        <button
-                          onClick={() => setChecked(true)}
-                          className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold transition-all"
-                        >
-                          Kiểm tra kết quả
-                        </button>
-                        <button
-                          onClick={() => { setAnswers({}); setChecked(false); }}
-                          className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold transition-all text-slate-300"
-                        >
-                          Làm lại
-                        </button>
-                      </div>
-
-                      {checked && (
-                        <div className="bg-slate-900/60 border border-slate-800 p-5 rounded-xl mt-4 space-y-2">
-                          <h4 className="font-bold text-xs text-emerald-400">Thứ tự đúng của đoạn văn:</h4>
-                          <div className="space-y-2">
-                            {data.reading.question4.question4Content[selectedItemIndex].map((sentence, idx) => (
-                              <p key={idx} className="text-xs text-slate-300 leading-relaxed">
-                                <span className="font-bold text-indigo-400">Câu {idx + 1}:</span> {sentence}
-                              </p>
-                            ))}
+                            <button
+                              onClick={() => alert('Bản học tập cá nhân hỗ trợ luyện thi theo bộ câu hỏi chi tiết. Hãy sử dụng Học theo câu hỏi để luyện từng phần.')}
+                              className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold transition-all text-sm shadow"
+                            >
+                              Bắt đầu thi thử
+                            </button>
                           </div>
                         </div>
                       )}
-                    </div>
-                  </div>
-                )}
 
-                {subView === 'practice' && selectedSubPart === 'part5' && (
-                  <div className="max-w-4xl mx-auto space-y-6">
-                    <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl space-y-4">
-                      <h3 className="text-xl font-bold text-slate-200">
-                        Part 5: {data.reading.question5.topic_name[selectedItemIndex] || 'Điền từ nâng cao'}
-                      </h3>
-                      <p className="text-xs text-indigo-400 font-medium">Nhiệm vụ: Đọc đoạn văn và điền từ thích hợp vào các ô trống.</p>
-
-                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                        {/* Options choices bank */}
-                        <div className="lg:col-span-4 bg-slate-950 p-4 rounded-xl border border-slate-900 space-y-2">
-                          <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block mb-2">Từ khóa lựa chọn</span>
-                          <div className="flex flex-wrap gap-1.5">
-                            {data.reading.question5.options[selectedItemIndex].map((opt, oIdx) => (
-                              <span key={oIdx} className="px-2 py-1 rounded bg-slate-900 border border-slate-850 text-2xs font-semibold text-slate-300">
-                                {opt}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Passage with inputs */}
-                        <div className="lg:col-span-8 space-y-4 bg-slate-950 p-5 rounded-xl border border-slate-900 text-xs leading-relaxed text-slate-300">
-                          {data.reading.question5.paragraph_question5[selectedItemIndex].map((block, bIdx) => {
-                            const qKey = `p5_${selectedItemIndex}_${bIdx}`;
-                            const optionsList = data.reading.question5.options[selectedItemIndex];
-                            const correctWord = optionsList[bIdx];
-                            const isCorrect = answers[qKey] === correctWord;
-                            return (
-                              <div key={bIdx} className="mb-4 space-y-2 border-b border-slate-900 pb-3 last:border-0 last:pb-0">
-                                <p className="text-slate-300">{block}</p>
-                                <div className="flex items-center gap-3">
-                                  <span className="text-[10px] font-bold text-slate-500">Ô trống {bIdx + 1}:</span>
-                                  <select
-                                    value={answers[qKey] || ''}
-                                    disabled={checked}
-                                    onChange={(e) => setAnswers({ ...answers, [qKey]: e.target.value })}
-                                    className={`px-3 py-1.5 rounded bg-slate-900 border text-2xs font-bold transition-all ${
-                                      checked
-                                        ? (isCorrect ? 'border-emerald-500/80 text-emerald-400 bg-emerald-500/10' : 'border-red-500/80 text-red-400 bg-red-500/10')
-                                        : 'border-slate-800 text-indigo-300'
-                                    }`}
-                                  >
-                                    <option value="">Chọn từ...</option>
-                                    {optionsList.map((opt, oIdx) => (
-                                      <option key={oIdx} value={opt}>{opt}</option>
-                                    ))}
-                                  </select>
-                                  {checked && (
-                                    <span className="text-[10px] text-slate-550">Đáp án đúng: <span className="text-emerald-400 font-bold">{correctWord}</span></span>
-                                  )}
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Display correct keys check */}
-                      <div className="flex gap-3 pt-4">
-                        <button
-                          onClick={() => setChecked(true)}
-                          className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold transition-all"
-                        >
-                          Kiểm tra kết quả
-                        </button>
-                        <button
-                          onClick={() => { setAnswers({}); setChecked(false); }}
-                          className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold transition-all text-slate-300"
-                        >
-                          Làm lại
-                        </button>
-                      </div>
-
-                      {checked && data.reading.question5.meohoc[selectedItemIndex] && (
-                        <div className="bg-amber-600/10 border border-amber-500/30 p-5 rounded-xl mt-4 space-y-2">
-                          <h4 className="font-bold text-xs text-amber-400 flex items-center gap-1.5">
-                            💡 Mẹo nhớ nhanh (AptisKey):
-                          </h4>
-                          <p 
-                            className="text-xs text-amber-300 leading-relaxed"
-                            dangerouslySetInnerHTML={{ __html: data.reading.question5.meohoc[selectedItemIndex] }}
+                      {/* Reading Tips */}
+                      {subView === 'tips' && data && (
+                        <div className="bg-white border border-slate-200 p-8 rounded-2xl shadow-sm space-y-4">
+                          <h3 className="text-2xl font-bold text-slate-850">
+                            Mẹo làm bài - Chủ đề {data.reading_tips[selectedItemIndex].id}
+                          </h3>
+                          <div 
+                            className="prose max-w-none text-slate-700 text-sm leading-relaxed"
+                            dangerouslySetInnerHTML={{ __html: data.reading_tips[selectedItemIndex].meo }}
                           />
                         </div>
                       )}
                     </div>
-                  </div>
-                )}
 
-                {/* Mock reading test render */}
-                {subView === 'tests' && (
-                  <div className="max-w-4xl mx-auto space-y-8">
-                    {/* Render Full Reading Exam Simulator */}
-                    <div className="bg-indigo-600/10 border border-indigo-500/30 p-6 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                      <div>
-                        <span className="text-2xs text-indigo-400 uppercase tracking-widest font-bold">Simulator Mock Exam</span>
-                        <h3 className="text-2xl font-bold text-slate-100 mt-1">
-                          {data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].label}
-                        </h3>
-                      </div>
-                      <div className="flex gap-2">
+                    {/* Fixed/Sticky bottom toolbar bar for Practice Mode */}
+                    {subView === 'practice' && selectedSubPart !== null && (
+                      <div className="fixed bottom-0 left-64 right-0 bg-[#e9ecef] border-t border-slate-300 py-4 px-8 flex items-center justify-between z-30">
                         <button
-                          onClick={() => setChecked(true)}
-                          className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold transition-all"
+                          disabled={selectedItemIndex === 0}
+                          onClick={() => { setSelectedItemIndex(prev => prev - 1); setAnswers({}); setChecked(false); }}
+                          className={`px-6 py-3 rounded-xl font-bold text-sm transition-all border ${
+                            selectedItemIndex === 0
+                              ? 'bg-slate-200 text-slate-400 border-slate-300 cursor-not-allowed'
+                              : 'bg-white text-slate-700 border-slate-450 hover:bg-slate-50 hover:text-slate-900 active:scale-95 shadow-sm'
+                          }`}
                         >
-                          Nộp bài & Chấm điểm
+                          Back
                         </button>
                         <button
-                          onClick={() => { setAnswers({}); setChecked(false); }}
-                          className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold transition-all text-slate-300"
+                          onClick={() => {
+                            setChecked(true);
+                            setShowResultModal(true);
+                          }}
+                          className="px-8 py-3 rounded-xl bg-[#0d6efd] hover:bg-[#0b5ed7] text-white font-bold text-sm transition-all active:scale-95 shadow-md"
                         >
-                          Làm lại
+                          Check result
+                        </button>
+                        <button
+                          disabled={
+                            selectedItemIndex === (
+                              selectedSubPart === 'part1' ? data?.reading.question1.length
+                              : selectedSubPart === 'part2' ? data?.reading.question2.questionSets.length
+                              : selectedSubPart === 'part4' ? data?.reading.question4.question4Content.length
+                              : data?.reading.question5.paragraph_question5.length
+                            ) - 1
+                          }
+                          onClick={() => { setSelectedItemIndex(prev => prev + 1); setAnswers({}); setChecked(false); }}
+                          className={`px-6 py-3 rounded-xl font-bold text-sm transition-all text-white ${
+                            selectedItemIndex === (
+                              selectedSubPart === 'part1' ? data?.reading.question1.length
+                              : selectedSubPart === 'part2' ? data?.reading.question2.questionSets.length
+                              : selectedSubPart === 'part4' ? data?.reading.question4.question4Content.length
+                              : data?.reading.question5.paragraph_question5.length
+                            ) - 1
+                              ? 'bg-emerald-300 cursor-not-allowed'
+                              : 'bg-[#198754] hover:bg-[#157347] active:scale-95 shadow-md'
+                          }`}
+                        >
+                          Next
                         </button>
                       </div>
-                    </div>
-
-                    {/* Part 1 */}
-                    <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl space-y-4">
-                      <h4 className="font-bold text-sm text-indigo-400">Part 1: Điền khuyết đoạn văn</h4>
-                      <div className="text-xs text-slate-305 leading-relaxed bg-slate-950 p-4 rounded-xl border border-slate-900">
-                        {data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].questions1?.map((item: any, qIdx: number) => {
-                          const qKey = `test_p1_${selectedItemIndex}_${qIdx}`;
-                          return (
-                            <div key={qIdx} className="mb-4 pb-3 border-b border-slate-900 last:border-0 last:pb-0">
-                              <p className="mb-2 font-semibold text-slate-200">{qIdx + 1}. {item.question}</p>
-                              <div className="flex flex-wrap gap-2">
-                                {item.options.map((opt: string, oIdx: number) => {
-                                  const isSelected = answers[qKey] === opt;
-                                  const isCorrect = opt === item.correctAnswer;
-                                  return (
-                                    <button
-                                      key={oIdx}
-                                      disabled={checked}
-                                      onClick={() => setAnswers({ ...answers, [qKey]: opt })}
-                                      className={`px-3 py-1.5 rounded text-2xs font-semibold border transition-all ${
-                                        isSelected
-                                          ? (checked
-                                            ? (isCorrect ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-red-500/20 border-red-500 text-red-400')
-                                            : 'bg-indigo-600 border-indigo-500 text-white')
-                                          : (checked && isCorrect
-                                            ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400'
-                                            : 'bg-slate-900 border-slate-850 text-slate-400 hover:text-slate-205')
-                                      }`}
-                                    >
-                                      {opt}
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    {/* Part 2 */}
-                    {data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].question2Content && (
-                      <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl space-y-4">
-                        <h4 className="font-bold text-sm text-indigo-400">
-                          Part 2: {data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].question2Topic || 'Đọc hiểu ý kiến'}
-                        </h4>
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                          <div className="lg:col-span-6 bg-slate-950 p-4 rounded-xl border border-slate-900 text-2xs leading-relaxed text-slate-350 max-h-[350px] overflow-y-auto">
-                            {data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].question2Content.paragraph && (
-                              <div dangerouslySetInnerHTML={{ __html: data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].question2Content.paragraph }} />
-                            )}
-                          </div>
-                          <div className="lg:col-span-6 space-y-3">
-                            {data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].question2Content.questions?.map((q: any, qIdx: number) => {
-                              const qKey = `test_p2_${selectedItemIndex}_${qIdx}`;
-                              const isCorrect = answers[qKey] === q.answer;
-                              return (
-                                <div key={qIdx} className="bg-slate-950 p-3 rounded-lg border border-slate-900 space-y-1.5">
-                                  <p className="text-2xs font-semibold text-slate-200">{qIdx + 1}. {q.questionText}</p>
-                                  <div className="flex gap-1.5">
-                                    {['A', 'B', 'C', 'D'].map((person) => (
-                                      <button
-                                        key={person}
-                                        disabled={checked}
-                                        onClick={() => setAnswers({ ...answers, [qKey]: person })}
-                                        className={`flex-1 py-1 rounded text-3xs font-bold border transition-all ${
-                                          answers[qKey] === person
-                                            ? (checked
-                                              ? (isCorrect ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500' : 'bg-red-500/20 text-red-400 border-red-500')
-                                              : 'bg-indigo-600 text-white border-indigo-500')
-                                            : 'bg-slate-900 text-slate-400 border-slate-850 hover:text-slate-205'
-                                        }`}
-                                      >
-                                        {person}
-                                      </button>
-                                    ))}
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </div>
                     )}
-
-                    {/* Part 3 */}
-                    {data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].question3Content && (
-                      <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl space-y-4">
-                        <h4 className="font-bold text-sm text-indigo-400">
-                          Part 3: {data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].question3Topic || 'Đọc hiểu ý kiến - Tập 2'}
-                        </h4>
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                          <div className="lg:col-span-6 bg-slate-950 p-4 rounded-xl border border-slate-900 text-2xs leading-relaxed text-slate-355 max-h-[350px] overflow-y-auto">
-                            {data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].question3Content.paragraph && (
-                              <div dangerouslySetInnerHTML={{ __html: data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].question3Content.paragraph }} />
-                            )}
-                          </div>
-                          <div className="lg:col-span-6 space-y-3">
-                            {data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].question3Content.questions?.map((q: any, qIdx: number) => {
-                              const qKey = `test_p3_${selectedItemIndex}_${qIdx}`;
-                              const isCorrect = answers[qKey] === q.answer;
-                              return (
-                                <div key={qIdx} className="bg-slate-950 p-3 rounded-lg border border-slate-900 space-y-1.5">
-                                  <p className="text-2xs font-semibold text-slate-200">{qIdx + 1}. {q.questionText}</p>
-                                  <div className="flex gap-1.5">
-                                    {['A', 'B', 'C', 'D'].map((person) => (
-                                      <button
-                                        key={person}
-                                        disabled={checked}
-                                        onClick={() => setAnswers({ ...answers, [qKey]: person })}
-                                        className={`flex-1 py-1 rounded text-3xs font-bold border transition-all ${
-                                          answers[qKey] === person
-                                            ? (checked
-                                              ? (isCorrect ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500' : 'bg-red-500/20 text-red-400 border-red-500')
-                                              : 'bg-indigo-600 text-white border-indigo-500')
-                                            : 'bg-slate-900 text-slate-400 border-slate-850 hover:text-slate-205'
-                                        }`}
-                                      >
-                                        {person}
-                                      </button>
-                                    ))}
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Part 4 */}
-                    {data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].question4Content && (
-                      <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl space-y-4">
-                        <h4 className="font-bold text-sm text-indigo-400">
-                          Part 4: {data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].question4Topic || 'Sắp xếp đoạn văn'}
-                        </h4>
-                        <div className="space-y-3">
-                          {data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].question4Content.map((sentence: string, sIdx: number) => {
-                            const qKey = `test_p4_${selectedItemIndex}_${sIdx}`;
-                            const correctOrder = data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].correctAnswersQuestion4[0][sIdx];
-                            const isCorrect = answers[qKey] === correctOrder;
-                            return (
-                              <div key={sIdx} className="bg-slate-950 p-3 rounded-lg border border-slate-900 flex gap-3 items-center">
-                                <select
-                                  value={answers[qKey] || ''}
-                                  disabled={checked}
-                                  onChange={(e) => setAnswers({ ...answers, [qKey]: e.target.value })}
-                                  className={`px-2 py-1 rounded bg-slate-900 border text-2xs font-semibold ${
-                                    checked
-                                      ? (isCorrect ? 'border-emerald-500 text-emerald-400' : 'border-red-500 text-red-400')
-                                      : 'border-slate-800 text-indigo-455'
-                                  }`}
-                                >
-                                  <option value="">Chọn...</option>
-                                  {data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].question4Content.map((_: any, oIdx: number) => (
-                                    <option key={oIdx} value={`Câu ${oIdx + 1}`}>Câu {oIdx + 1}</option>
-                                  ))}
-                                </select>
-                                <span className="text-2xs text-slate-300">{sentence}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Part 5 */}
-                    {data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].paragraph_question5 && (
-                      <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl space-y-4">
-                        <h4 className="font-bold text-sm text-indigo-400">
-                          Part 5: {data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].question5Topic || 'Điền từ nâng cao'}
-                        </h4>
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                          <div className="lg:col-span-4 bg-slate-950 p-4 rounded-xl border border-slate-900 flex flex-wrap gap-1.5 h-fit">
-                            {data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].options.map((opt: string, oIdx: number) => (
-                              <span key={oIdx} className="px-2 py-1 rounded bg-slate-900 border border-slate-850 text-3xs font-semibold text-slate-400">
-                                {opt}
-                              </span>
-                            ))}
-                          </div>
-                          <div className="lg:col-span-8 bg-slate-950 p-4 rounded-xl border border-slate-900 text-2xs leading-relaxed text-slate-350 space-y-4">
-                            {data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].paragraph_question5.map((block: string, bIdx: number) => {
-                              const qKey = `test_p5_${selectedItemIndex}_${bIdx}`;
-                              const correctWord = data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].options[bIdx];
-                              const isCorrect = answers[qKey] === correctWord;
-                              return (
-                                <div key={bIdx} className="border-b border-slate-900 pb-3 last:border-0 last:pb-0 space-y-2">
-                                  <p>{block}</p>
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-3xs text-slate-500 font-bold">Đáp án ô {bIdx + 1}:</span>
-                                    <select
-                                      value={answers[qKey] || ''}
-                                      disabled={checked}
-                                      onChange={(e) => setAnswers({ ...answers, [qKey]: e.target.value })}
-                                      className={`px-2 py-1 rounded bg-slate-900 border text-3xs font-bold ${
-                                        checked
-                                          ? (isCorrect ? 'border-emerald-500 text-emerald-400' : 'border-red-500 text-red-400')
-                                          : 'border-slate-800 text-indigo-400'
-                                      }`}
-                                    >
-                                      <option value="">Chọn từ...</option>
-                                      {data.reading_tests[Object.keys(data.reading_tests)[selectedItemIndex]].options.map((opt: string, oIdx: number) => (
-                                        <option key={oIdx} value={opt}>{opt}</option>
-                                      ))}
-                                    </select>
-                                    {checked && (
-                                      <span className="text-3xs text-slate-550">Đúng: <span className="text-emerald-400 font-bold">{correctWord}</span></span>
-                                    )}
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Reading Tips rendering */}
-                {subView === 'tips' && (
-                  <div className="max-w-4xl mx-auto space-y-6">
-                    <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl space-y-4">
-                      <h3 className="text-xl font-bold text-slate-200">
-                        Mẹo sắp xếp Q5: Bộ {data.reading_tips[selectedItemIndex].id}
-                      </h3>
-                      <div className="p-4 bg-slate-950 rounded-xl border border-slate-900 space-y-3">
-                        <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block">Các từ khóa thứ tự chuẩn:</span>
-                        <div className="flex flex-wrap gap-2">
-                          {data.reading_tips[selectedItemIndex].options.map((opt, oIdx) => (
-                            <span key={oIdx} className="px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-xs font-semibold text-indigo-300">
-                              {oIdx + 1}. {opt}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="p-5 bg-amber-600/10 border border-amber-500/20 rounded-xl space-y-3">
-                        <span className="text-xs font-bold text-amber-400 block">💡 Keyword gợi nhớ nhanh:</span>
-                        <p 
-                          className="text-xs text-amber-300 leading-relaxed" 
-                          dangerouslySetInnerHTML={{ __html: data.reading_tips[selectedItemIndex].keyword }}
-                        />
-                      </div>
-
-                      <div className="p-5 bg-indigo-600/10 border border-indigo-500/20 rounded-xl space-y-3">
-                        <span className="text-xs font-bold text-indigo-400 block">📖 Nhớ cốt truyện theo đoạn văn:</span>
-                        <p 
-                          className="text-xs text-slate-300 leading-relaxed" 
-                          dangerouslySetInnerHTML={{ __html: data.reading_tips[selectedItemIndex].meo }}
-                        />
-                      </div>
-                    </div>
                   </div>
                 )}
               </div>
             </div>
           </div>
-          )}
-
+        )}
         {/* LISTENING PRACTICE / MOCK / TIPS */}
         {activeTab === 'listening' && (
           <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Tab controls */}
-            <div className="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between shrink-0">
-              <div className="flex gap-4">
-                {(['practice', 'tests', 'tips'] as const).map((view) => (
-                  <button
-                    key={view}
-                    onClick={() => { setSubView(view); setSelectedItemIndex(0); }}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                      subView === view
-                        ? 'bg-indigo-600 text-white'
-                        : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    {view === 'practice' && 'Luyện tập câu hỏi'}
-                    {view === 'tests' && 'Bộ đề nghe (15 bộ)'}
-                    {view === 'tips' && 'Mẹo nhớ nhanh Q15'}
-                  </button>
-                ))}
-              </div>
-            </div>
 
             <div className="flex-1 flex overflow-hidden">
               {/* Practice mode sidebar selector */}
@@ -1543,6 +1202,49 @@ export default function Home() {
 
               {/* Main Content Workspace for Listening */}
               <div className="flex-1 overflow-y-auto p-6 md:p-8">
+                {subView === 'practice' && selectedSubPart === null && (
+                  /* 1. Landing Grid Selection for Listening */
+                  <div className="max-w-6xl mx-auto w-full py-10 space-y-10 font-sans">
+                    <h3 className="text-center font-bold text-slate-500 text-2xl tracking-wide uppercase tracking-widest">
+                      Listening Practice - by question
+                    </h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pt-8">
+                      {/* Part 1 */}
+                      <button
+                        onClick={() => { setSelectedSubPart('part1'); setSelectedItemIndex(0); setAnswers({}); setChecked(false); }}
+                        className="bg-[#0d6efd] text-white hover:bg-[#0b5ed7] py-5 px-6 rounded-xl shadow-md transition-all flex flex-col items-center justify-center gap-2 text-base font-bold hover:scale-105"
+                      >
+                        <span className="text-2xl">🎧</span> Part 1
+                      </button>
+
+                      {/* Part 2 */}
+                      <button
+                        onClick={() => { setSelectedSubPart('part2'); setSelectedItemIndex(0); setAnswers({}); setChecked(false); }}
+                        className="bg-[#0dcaf0] text-slate-900 hover:bg-[#31d2f2] py-5 px-6 rounded-xl shadow-md transition-all flex flex-col items-center justify-center gap-2 text-base font-bold hover:scale-105"
+                      >
+                        <span className="text-2xl">🧩</span> Part 2
+                      </button>
+
+                      {/* Part 3 */}
+                      <button
+                        onClick={() => { setSelectedSubPart('part3'); setSelectedItemIndex(0); setAnswers({}); setChecked(false); }}
+                        className="bg-[#ffc107] text-slate-900 hover:bg-[#ffca2c] py-5 px-6 rounded-xl shadow-md transition-all flex flex-col items-center justify-center gap-2 text-base font-bold hover:scale-105"
+                      >
+                        <span className="text-2xl">🗣️</span> Part 3
+                      </button>
+
+                      {/* Part 4 */}
+                      <button
+                        onClick={() => { setSelectedSubPart('part4'); setSelectedItemIndex(0); setAnswers({}); setChecked(false); }}
+                        className="bg-[#198754] text-white hover:bg-[#157347] py-5 px-6 rounded-xl shadow-md transition-all flex flex-col items-center justify-center gap-2 text-base font-bold hover:scale-105"
+                      >
+                        <span className="text-2xl">💡</span> Part 4
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 {subView === 'practice' && selectedSubPart === 'part1' && (
                   <div className="max-w-3xl mx-auto space-y-6">
                     {(() => {
@@ -1993,25 +1695,6 @@ export default function Home() {
         {/* SPEAKING PRACTICE & TIPS */}
         {activeTab === 'speaking' && (
           <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Tab controls */}
-            <div className="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between shrink-0">
-              <div className="flex gap-4">
-                {(['practice', 'tips'] as const).map((view) => (
-                  <button
-                    key={view}
-                    onClick={() => { setSubView(view); setSelectedItemIndex(0); }}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                      subView === view
-                        ? 'bg-indigo-600 text-white'
-                        : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    {view === 'practice' && 'Luyện tập Speaking'}
-                    {view === 'tips' && 'Mẹo & Công thức chuẩn Q2'}
-                  </button>
-                ))}
-              </div>
-            </div>
 
             <div className="flex-1 flex overflow-hidden">
               {/* Practice mode sidebar selector */}
@@ -2108,7 +1791,50 @@ export default function Home() {
 
               {/* Main Content Workspace for Speaking */}
               <div className="flex-1 overflow-y-auto p-6 md:p-8">
-                {subView === 'practice' && (
+                {subView === 'practice' && selectedSubPart === null && (
+                  /* 1. Landing Grid Selection for Speaking */
+                  <div className="max-w-6xl mx-auto w-full py-10 space-y-10 font-sans">
+                    <h3 className="text-center font-bold text-slate-500 text-2xl tracking-wide uppercase tracking-widest">
+                      Speaking Practice - by question
+                    </h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pt-8">
+                      {/* Part 1 */}
+                      <button
+                        onClick={() => { setSelectedSubPart('part1'); setSelectedItemIndex(0); setAnswers({}); setChecked(false); }}
+                        className="bg-[#0d6efd] text-white hover:bg-[#0b5ed7] py-5 px-6 rounded-xl shadow-md transition-all flex flex-col items-center justify-center gap-2 text-base font-bold hover:scale-105"
+                      >
+                        <span className="text-2xl">🗣️</span> Part 1
+                      </button>
+
+                      {/* Part 2 */}
+                      <button
+                        onClick={() => { setSelectedSubPart('part2'); setSelectedItemIndex(0); setAnswers({}); setChecked(false); }}
+                        className="bg-[#0dcaf0] text-slate-900 hover:bg-[#31d2f2] py-5 px-6 rounded-xl shadow-md transition-all flex flex-col items-center justify-center gap-2 text-base font-bold hover:scale-105"
+                      >
+                        <span className="text-2xl">🖼️</span> Part 2
+                      </button>
+
+                      {/* Part 3 */}
+                      <button
+                        onClick={() => { setSelectedSubPart('part3'); setSelectedItemIndex(0); setAnswers({}); setChecked(false); }}
+                        className="bg-[#ffc107] text-slate-900 hover:bg-[#ffca2c] py-5 px-6 rounded-xl shadow-md transition-all flex flex-col items-center justify-center gap-2 text-base font-bold hover:scale-105"
+                      >
+                        <span className="text-2xl">⚖️</span> Part 3
+                      </button>
+
+                      {/* Part 4 */}
+                      <button
+                        onClick={() => { setSelectedSubPart('part4'); setSelectedItemIndex(0); setAnswers({}); setChecked(false); }}
+                        className="bg-[#198754] text-white hover:bg-[#157347] py-5 px-6 rounded-xl shadow-md transition-all flex flex-col items-center justify-center gap-2 text-base font-bold hover:scale-105"
+                      >
+                        <span className="text-2xl">💡</span> Part 4
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {subView === 'practice' && selectedSubPart !== null && (
                   <div className="max-w-3xl mx-auto space-y-6">
                     <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl space-y-6">
                       <h3 className="text-xl font-bold text-slate-200 capitalize">
