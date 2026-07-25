@@ -252,32 +252,50 @@ export default function Navbar({ activeTab, setActiveTab, setSelectedSubPart }: 
             </nav>
           </div>
 
-          {/* Right Container: Theme Icon + Auth Buttons (Pushed to the Far Right) */}
-          <div className="hidden lg:flex items-center gap-3.5 flex-shrink-0">
+          {/* Right Container: Theme Icon + Auth Buttons / Logged In User Profile */}
+          <div className="hidden lg:flex items-center gap-3 flex-shrink-0">
             {/* Light/Dark Theme Switcher Icon */}
             <button
-              className="w-9 h-9 rounded-full flex items-center justify-center text-[#2D1510] hover:bg-slate-100/80 transition-colors"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-[#2D1510] hover:bg-slate-100 transition-colors"
               title="Chế độ giao diện"
             >
-              <svg className="w-5 h-5 text-[#2D1510]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="w-5 h-5 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
             </button>
 
-            {/* Outlined Đăng nhập Button */}
-            <button
-              className="border-2 border-[#FF3300] text-[#FF3300] hover:bg-red-50 hover:-translate-y-0.5 hover:shadow-md hover:shadow-red-500/15 active:translate-y-0 font-bold text-sm px-4 py-1 rounded-full transition-all duration-200 flex items-center gap-1.5"
-            >
-              <span>→]</span>
-              <span>Đăng nhập</span>
+            {/* Premium Badge */}
+            <div className="bg-gradient-to-r from-[#FF2E00] to-[#FF6600] text-white px-3 py-1 rounded-full text-xs font-extrabold shadow-2xs flex items-center gap-1 cursor-pointer">
+              <span>👑</span>
+              <span>Premium</span>
+            </div>
+
+            {/* Notification Bell */}
+            <button className="relative w-8 h-8 rounded-full flex items-center justify-center text-slate-700 hover:bg-slate-100 transition-colors">
+              <svg className="w-5 h-5 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              <span className="absolute -top-0.5 -right-0.5 bg-[#FF2E00] text-white rounded-full text-[10px] font-black w-4 h-4 flex items-center justify-center border-2 border-white">
+                6
+              </span>
             </button>
 
-            {/* Solid Đăng ký Button */}
-            <button
-              className="bg-gradient-to-r from-[#FF2E00] via-[#FF5500] to-[#FF7700] hover:brightness-110 hover:-translate-y-0.5 hover:scale-[1.02] active:translate-y-0 text-white font-bold text-sm px-5 py-1.5 rounded-full shadow-md shadow-orange-500/35 hover:shadow-lg hover:shadow-orange-500/50 transition-all duration-200"
+            {/* Dashboard Navigation */}
+            <button 
+              onClick={() => handleSkillSelect('dashboard')}
+              className="text-slate-800 hover:text-[#CC1C01] font-bold text-xs px-2.5 py-1 flex items-center gap-1.5 transition-colors"
             >
-              Đăng ký
+              <span>🔥</span>
+              <span>Dashboard</span>
             </button>
+
+            {/* User Avatar Circle P (Phát) */}
+            <div 
+              title="nguyenphat13112006@gmail.com"
+              className="w-8 h-8 rounded-full bg-[#E0523C] text-white font-black text-xs flex items-center justify-center cursor-pointer shadow-2xs hover:brightness-110 transition-all border border-white"
+            >
+              P
+            </div>
           </div>
 
           {/* Mobile Menu Toggle Button */}
