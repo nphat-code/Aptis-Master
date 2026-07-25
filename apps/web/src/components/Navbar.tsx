@@ -18,6 +18,14 @@ export default function Navbar({ activeTab, setActiveTab, setSelectedSubPart }: 
     if (setSelectedSubPart) setSelectedSubPart(null);
     setDropdownOpen(false);
     setMobileMenuOpen(false);
+
+    // Perform actual Next.js route navigation
+    if (typeof window !== 'undefined') {
+      const targetPath = skillId === 'dashboard' ? '/' : skillId === 'mock-test' ? '/thi-thu' : `/${skillId}`;
+      if (window.location.pathname !== targetPath) {
+        window.location.href = targetPath;
+      }
+    }
   };
 
   return (

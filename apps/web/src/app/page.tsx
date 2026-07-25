@@ -9,6 +9,7 @@ import FeaturesGridSection from '@/components/FeaturesGridSection';
 import ExamStructureSection from '@/components/ExamStructureSection';
 import StrengthsGridSection from '@/components/StrengthsGridSection';
 import ScrollReveal from '@/components/ScrollReveal';
+import ReadingView from '@/components/ReadingView';
 import Footer from '@/components/Footer';
 
 export default function AptisPage() {
@@ -20,6 +21,16 @@ export default function AptisPage() {
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
 
   useEffect(() => {
+    // Detect URL path on mount
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname.replace('/', '');
+      if (path === 'reading' || path === 'listening' || path === 'writing' || path === 'speaking' || path === 'grammar') {
+        setActiveTab(path);
+      } else if (path === 'thi-thu') {
+        setActiveTab('mock-test');
+      }
+    }
+
     fetch('/scraped_data.json')
       .then((res) => res.json())
       .then((d) => {
@@ -37,6 +48,17 @@ export default function AptisPage() {
       <div className="min-h-screen bg-white flex flex-col items-center justify-center font-sans">
         <div className="w-12 h-12 border-4 border-[#FF2E00] border-t-transparent rounded-full animate-spin mb-4"></div>
         <p className="text-[#FF2E00] font-bold text-sm">Đang nạp dữ liệu Aptis Kỳ Tích...</p>
+      </div>
+    );
+  }
+
+  // Render Reading View when reading tab is active
+  if (activeTab === 'reading') {
+    return (
+      <div className="min-h-screen bg-white text-slate-900 font-sans flex flex-col">
+        <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
+        <ReadingView onBackToHome={() => setActiveTab('dashboard')} data={data} />
+        <Footer />
       </div>
     );
   }
