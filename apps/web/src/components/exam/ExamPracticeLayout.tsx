@@ -524,14 +524,16 @@ export default function ExamPracticeLayout({
               </svg>
             </button>
 
-            {/* Previous Button (Visible if in questions step and currentQuestionIndex > 0, or on instructions step) */}
-            {(examStep === 'instructions' || (examStep === 'questions' && currentQuestionIndex > 0)) && (
+            {/* Previous Button: Visible in questions step even at question 1 (currentQuestionIndex >= 0), HIDDEN in instructions step to prevent exiting */}
+            {examStep === 'questions' && (
               <button
                 onClick={() => {
-                  if (examStep === 'instructions') {
-                    setExamStep('start');
-                  } else if (examStep === 'questions' && currentQuestionIndex > 0) {
+                  if (currentQuestionIndex > 0) {
                     setCurrentQuestionIndex((prev) => prev - 1);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  } else {
+                    // Going back from Question 1 (index 0) returns to the Instructions screen
+                    setExamStep('instructions');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }
                 }}

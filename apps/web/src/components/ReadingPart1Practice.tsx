@@ -40,7 +40,7 @@ export default function ReadingPart1Practice({
       maxScore={allQuestionsList.length * 2} // 2 points per correct sub-question
       customTotalSubQuestions={isAllPractice ? 48 : singleTestQuestions.length}
       isAnswerCorrect={(idx, val) => val === allQuestionsList[idx]?.correctAnswer}
-      initialStep={isAllPractice ? 'questions' : 'start'}
+      initialStep={isAllPractice ? 'questions' : 'instructions'}
       unlimitedTime={isAllPractice}
       onExit={onExit}
       renderQuestions={({ currentQuestionIndex, userAnswers, onAnswer, isReviewMode, showExplanation }) => {

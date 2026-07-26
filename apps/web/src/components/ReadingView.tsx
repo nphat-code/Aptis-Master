@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import ReadingPart1Practice from './ReadingPart1Practice';
+import ReadingPart23Practice from './ReadingPart23Practice';
 import { TestPracticeCard } from './exam/TestPracticeCard';
 import scrapedData from '../../../../scraped_data.json';
 
@@ -18,6 +19,8 @@ export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
   const [activePracticeTestIndex, setActivePracticeTestIndex] = useState<number | null>(null);
 
   const part1TotalCount = scrapedData?.reading?.question1?.length || 48;
+  const part23TotalSets = scrapedData?.reading?.question2?.questionSets?.length || 39;
+  const part23TotalCount = part23TotalSets;
 
   const partTabs = [
     { id: 'full', label: 'Full Part – Tất cả các Part' },
@@ -42,9 +45,9 @@ export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
     },
     part23: {
       title: 'Part 2 + 3 – Text cohesion',
-      subtitle: '30 bộ đề luyện tập',
+      subtitle: `${part23TotalCount} bộ đề luyện tập (Mỗi đề 1 Topic • 7 phút)`,
       badge: 'Part 2+3',
-      testCount: 30,
+      testCount: part23TotalCount,
     },
     part4: {
       title: 'Part 4 – Opinion matching',
@@ -62,10 +65,19 @@ export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
 
   const currentTabInfo = partTabContent[activePartTab] || partTabContent.full;
 
-  // Render Practice Exam Workspace ONLY when Part 1 is selected
+  // Render Practice Exam Workspace when Part 1 or Part 2+3 is selected
   if (activePracticeTestIndex !== null && activePartTab === 'part1') {
     return (
       <ReadingPart1Practice
+        testIndex={activePracticeTestIndex}
+        onExit={() => setActivePracticeTestIndex(null)}
+      />
+    );
+  }
+
+  if (activePracticeTestIndex !== null && activePartTab === 'part23') {
+    return (
+      <ReadingPart23Practice
         testIndex={activePracticeTestIndex}
         onExit={() => setActivePracticeTestIndex(null)}
       />
@@ -214,25 +226,48 @@ export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
             />
           )}
 
+          {/* Card 0: Luyện tất cả đề Part 2+3 (Marathon Card) */}
+          {activePartTab === 'part23' && (!searchTerm || 'luyện tất cả đề part 2+3'.includes(searchTerm.toLowerCase())) && (
+            <TestPracticeCard
+              key="all-part23-practice-card"
+              title="Luyện tất cả đề Part 2+3"
+              badge="Marathon"
+              isMarathon={true}
+              subtitle={`Làm liên tục ${part23TotalSets} bài đọc — không giới hạn giờ`}
+              actionText="Bắt đầu"
+              onClick={() => setActivePracticeTestIndex(-1)}
+            />
+          )}
+
           {Array.from({ length: currentTabInfo.testCount }, (_, index) => {
             const testNum = index + 1;
-            const testTitle = `Đề ${testNum < 10 ? '0' + testNum : testNum}`;
+            const rawHeaders: Record<string, string> = scrapedData?.reading?.question2?.questheader1 || {};
+            const topicTitle = activePartTab === 'part23' ? (rawHeaders[`question2Content_${testNum}`] || '') : '';
+            const testNumberStr = testNum < 10 ? '0' + testNum : `${testNum}`;
+            
+            const cardTitle = activePartTab === 'part23'
+              ? `Đề ${testNumberStr}${topicTitle ? ` - ${topicTitle}` : ''}`
+              : `Đề ${testNumberStr} - Reading ${currentTabInfo.badge}`;
 
             // Search filter
-            if (searchTerm && !testTitle.toLowerCase().includes(searchTerm.toLowerCase())) {
+            if (
+              searchTerm &&
+              !cardTitle.toLowerCase().includes(searchTerm.toLowerCase()) &&
+              !topicTitle.toLowerCase().includes(searchTerm.toLowerCase())
+            ) {
               return null;
             }
 
             return (
               <TestPracticeCard
                 key={testNum}
-                title={`${testTitle} - Reading ${currentTabInfo.badge}`}
+                title={cardTitle}
                 badge={currentTabInfo.badge}
                 isMarathon={false}
-                subtitle="📖 Đề luyện tập"
+                subtitle={activePartTab === 'part23' ? '📖 1 bài đọc (5 câu) • 7 phút' : '📖 Đề luyện tập'}
                 actionText={activePartTab === 'full' ? 'Bắt đầu luyện tập' : 'Luyện tập'}
                 onClick={() => {
-                  if (activePartTab === 'part1') {
+                  if (activePartTab === 'part1' || activePartTab === 'part23') {
                     setActivePracticeTestIndex(index);
                   } else {
                     setShowUpdatingModalPart(currentTabInfo.badge);
