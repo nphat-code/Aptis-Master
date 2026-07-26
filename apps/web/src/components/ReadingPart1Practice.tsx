@@ -211,157 +211,135 @@ export default function ReadingPart1Practice({
       )}
 
       {examStep === 'questions' && (
-        /* STEP 3: ACTUAL QUESTIONS EXAM WORKSPACE */
-        <main className="max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-1">
+        /* STEP 3: ACTUAL QUESTIONS EXAM WORKSPACE (Matching aptiskytich.vn 100% pixel-perfect) */
+        <main className="w-full px-6 sm:px-10 py-6 flex-1 relative">
           
-          {/* Top Sub-Header Row: Question Title & Timer */}
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200/80">
+          {/* Top Sub-Header Row: Question Title & Timer/Bookmark in top right below Exit button */}
+          <div className="flex items-start justify-between gap-4 mb-8">
             <div>
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Reading</span>
+              <span className="text-xs font-normal text-slate-500">Reading</span>
               <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-0.5">
                 Question 1 of 5
               </h1>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
               {/* Bookmark Button */}
               <button
                 onClick={() => setIsBookmarked(!isBookmarked)}
-                className={`px-3.5 py-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all shadow-2xs ${
+                className={`px-4 py-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all shadow-2xs ${
                   isBookmarked
                     ? 'bg-amber-50 border-amber-300 text-amber-700'
-                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                    : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'
                 }`}
               >
                 <span>{isBookmarked ? '🔖' : '📑'}</span>
-                <span>{isBookmarked ? 'Bookmarked' : 'Bookmark'}</span>
+                <span>Bookmark</span>
               </button>
 
-              {/* Timer Box */}
-              <div className="bg-white px-4 py-2 rounded-xl border border-slate-200/80 shadow-2xs text-center min-w-[120px]">
-                <div className="text-lg sm:text-xl font-black text-slate-900 tracking-wider">
+              {/* Timer Box (Far top-right directly under Exit button) */}
+              <div className="text-center min-w-[120px] relative">
+                <div className="text-2xl font-black text-slate-900 tracking-wider">
                   {formatTime(timeLeftSeconds)}
                 </div>
                 <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider -mt-0.5">
                   Time remaining
                 </div>
+                <div className="h-0.5 bg-[#24085A] rounded-full mt-1.5 w-full"></div>
               </div>
             </div>
           </div>
 
-          {/* Practice Questions Block Card */}
-          <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-6">
-            
-            {/* Question Instructions */}
-            <div className="bg-slate-50 border-l-4 border-[#CC1C01] p-4 rounded-r-xl">
-              <p className="text-sm font-extrabold text-slate-900">
-                Choose the word that fits in the gap. The first one is done for you.
-              </p>
-            </div>
+          {/* Question Instructions */}
+          <div className="mb-8">
+            <p className="text-base font-bold text-slate-900">
+              Choose the word that fits in the gap. The first one is done for you.
+            </p>
+          </div>
 
+          {/* Fill-in-the-blank Sentences Block (Clean Paragraph Layout) */}
+          <div className="space-y-5 text-base sm:text-lg font-normal text-slate-800 leading-loose">
+            
             {/* Example Item */}
-            <div className="p-4 rounded-xl bg-slate-100/70 border border-slate-200/60 text-sm sm:text-base font-medium text-slate-700 leading-relaxed">
-              I saw some shows in the{' '}
-              <span className="inline-block bg-slate-200 text-slate-800 font-bold px-3 py-1 rounded-md mx-1 border border-slate-300 text-sm">
+            <div className="flex flex-wrap items-center gap-2">
+              <span>I saw some shows in the</span>
+              <span className="bg-slate-200/80 text-slate-500 font-normal px-4 py-1 rounded-md border border-slate-300/60 min-w-[120px] text-center inline-block text-base">
                 window
-              </span>{' '}
-              of one store.
+              </span>
+              <span>of one store.</span>
             </div>
 
             {/* 5 Dynamic Sentences */}
-            <div className="space-y-4 pt-2">
-              {testQuestionsData.map((q, idx) => {
-                const selectedValue = userAnswers[idx] || '';
-                const isCorrect = selectedValue === q.correctAnswer;
+            {testQuestionsData.map((q, idx) => {
+              const selectedValue = userAnswers[idx] || '';
+              const isCorrect = selectedValue === q.correctAnswer;
 
-                return (
-                  <div
-                    key={idx}
-                    className={`p-4 sm:p-5 rounded-xl border transition-all ${
-                      isSubmitted
-                        ? isCorrect
-                          ? 'bg-emerald-50/60 border-emerald-300/80'
-                          : selectedValue
-                          ? 'bg-red-50/60 border-red-300/80'
-                          : 'bg-amber-50/40 border-amber-200'
-                        : 'bg-white border-slate-200/80 hover:border-slate-300'
-                    }`}
-                  >
-                    <div className="text-sm sm:text-base font-medium text-slate-800 leading-relaxed flex flex-wrap items-center gap-1.5">
-                      <span>{idx + 1}.</span>
-                      <span>{q.questionStart}</span>
+              return (
+                <div key={idx} className="space-y-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span>{q.questionStart}</span>
 
-                      {/* Inline Select Dropdown */}
-                      <select
-                        value={selectedValue}
-                        disabled={isSubmitted}
-                        onChange={(e) => handleSelectAnswer(idx, e.target.value)}
-                        className={`mx-1 px-3 py-1.5 bg-white border rounded-lg text-sm sm:text-base font-bold shadow-2xs transition-all cursor-pointer focus:outline-none focus:ring-2 ${
-                          isSubmitted
-                            ? isCorrect
-                              ? 'border-emerald-500 text-emerald-700 bg-emerald-100/50'
-                              : selectedValue
-                              ? 'border-red-500 text-red-700 bg-red-100/50'
-                              : 'border-amber-400 text-amber-700'
-                            : 'border-slate-300 text-slate-900 focus:border-[#CC1C01] focus:ring-[#CC1C01]/20 hover:border-slate-400'
-                        }`}
-                      >
-                        <option value="">—</option>
-                        {q.answerOptions.map((opt, oIdx) => (
-                          <option key={oIdx} value={opt}>
-                            {opt}
-                          </option>
-                        ))}
-                      </select>
+                    {/* Inline Select Dropdown */}
+                    <select
+                      value={selectedValue}
+                      disabled={isSubmitted}
+                      onChange={(e) => handleSelectAnswer(idx, e.target.value)}
+                      className={`mx-1 px-3 py-1 bg-white border rounded-md text-base font-normal appearance-auto cursor-pointer min-w-[130px] transition-all focus:outline-none focus:ring-2 ${
+                        isSubmitted
+                          ? isCorrect
+                            ? 'border-emerald-500 text-emerald-700 bg-emerald-50 font-bold'
+                            : selectedValue
+                            ? 'border-red-500 text-red-700 bg-red-50 font-bold'
+                            : 'border-amber-400 text-amber-700'
+                          : 'border-slate-300 text-slate-700 focus:border-[#24085A] focus:ring-[#24085A]/20 hover:border-slate-400'
+                      }`}
+                    >
+                      <option value="">—</option>
+                      {q.answerOptions.map((opt, oIdx) => (
+                        <option key={oIdx} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
 
-                      <span>{q.questionEnd}</span>
-                    </div>
-
-                    {/* Submission Status Indicator */}
-                    {isSubmitted && (
-                      <div className="mt-2.5 flex items-center gap-2 text-xs font-bold">
-                        {isCorrect ? (
-                          <span className="text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-md flex items-center gap-1">
-                            <span>✓</span>
-                            <span>Chính xác</span>
-                          </span>
-                        ) : (
-                          <span className="text-red-700 bg-red-100 px-2.5 py-0.5 rounded-md flex items-center gap-1">
-                            <span>✕</span>
-                            <span>Chưa đúng (Đáp án đúng: <strong className="underline">{q.correctAnswer}</strong>)</span>
-                          </span>
-                        )}
-                      </div>
-                    )}
+                    <span>{q.questionEnd}</span>
                   </div>
-                );
-              })}
-            </div>
 
-            {/* Action Row: Toggle Answers & Report Bug */}
-            <div className="pt-4 flex items-center justify-between border-t border-slate-100">
-              <button
-                onClick={() => setShowExplanation(!showExplanation)}
-                className="px-4 py-2 rounded-full border border-slate-300 bg-white text-slate-700 text-xs font-bold shadow-2xs hover:bg-slate-50 transition-all flex items-center gap-1.5 cursor-pointer"
-              >
-                <span>👁</span>
-                <span>{showExplanation ? 'Ẩn giải thích' : 'Hiện đáp án & giải thích'}</span>
-              </button>
+                  {/* Submission Status Indicator */}
+                  {isSubmitted && (
+                    <div className="mt-1 text-xs font-bold pl-2">
+                      {isCorrect ? (
+                        <span className="text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-md inline-flex items-center gap-1">
+                          <span>✓</span>
+                          <span>Chính xác</span>
+                        </span>
+                      ) : (
+                        <span className="text-red-700 bg-red-100 px-2.5 py-0.5 rounded-md inline-flex items-center gap-1">
+                          <span>✕</span>
+                          <span>Chưa đúng (Đáp án đúng: <strong className="underline">{q.correctAnswer}</strong>)</span>
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
 
-              <button
-                onClick={() => alert('Đã ghi nhận báo lỗi cho bộ đề này. Cảm ơn bạn!')}
-                className="px-4 py-2 rounded-full border border-slate-300 bg-white text-slate-700 text-xs font-bold shadow-2xs hover:bg-slate-50 transition-all flex items-center gap-1.5 cursor-pointer"
-              >
-                <span>🚩</span>
-                <span>Báo lỗi</span>
-              </button>
-            </div>
-
+          {/* Left Floating Buttons (Fixed to Bottom-Left Corner of Screen matching web) */}
+          <div className="fixed bottom-24 left-6 z-40 flex flex-col gap-2.5">
+            <button
+              onClick={() => setShowExplanation(!showExplanation)}
+              className="bg-white border border-slate-300/90 hover:bg-slate-50 text-slate-700 text-xs font-semibold px-4 py-2 rounded-full shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+            >
+              <span>👁</span>
+              <span>{showExplanation ? 'Ẩn đáp án' : 'Hiện đáp án'}</span>
+            </button>
           </div>
 
           {/* Explanation Section (Đáp án & Dịch nghĩa Drawer) */}
           {showExplanation && (
-            <div className="mt-8 bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-md space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+            <div className="mt-12 bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-md space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
               <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                 <h3 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
                   <span>💡</span>
@@ -435,46 +413,32 @@ export default function ReadingPart1Practice({
       {examStep !== 'start' && (
         <footer className="bg-white border-t border-slate-200 px-6 sm:px-12 py-3.5 sticky bottom-0 z-30 flex items-center justify-between shadow-lg">
           
-          {/* Left Side: Báo lỗi + 3 Helper Tool Icons (Spaced out on the left) */}
-          <div className="flex items-center gap-10 sm:gap-14">
-            {/* 1. Far Left: Báo lỗi button */}
-            <button
-              onClick={() => alert('Đã ghi nhận báo lỗi cho bài thi này. Cảm ơn bạn!')}
-              className="px-4 py-2 rounded-full border border-[#24085A]/30 text-[#24085A] hover:bg-[#24085A]/10 text-[14px] font-bold shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
-            >
-              <svg className="w-4 h-4 text-[#24085A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+          {/* Left Side: 3 Helper Tool Icons (List, Info, Accessibility) */}
+          <div className="flex items-center gap-3 pl-8">
+            {/* List Icon */}
+            <button className="w-10 h-10 rounded-full border border-slate-300/80 text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-all shadow-2xs cursor-pointer">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
               </svg>
-              <span>Báo lỗi</span>
             </button>
 
-            {/* 2. 3 Helper Tool Icons (List, Info, Accessibility) - Left side, spaced away */}
-            <div className="flex items-center gap-3">
-              {/* List Icon */}
-              <button className="w-10 h-10 rounded-full border border-[#24085A]/30 text-[#24085A] hover:bg-[#24085A]/10 flex items-center justify-center transition-all shadow-2xs cursor-pointer">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                </svg>
-              </button>
+            {/* Info Icon */}
+            <button className="w-10 h-10 rounded-full border border-slate-300/80 text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-all shadow-2xs cursor-pointer">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
 
-              {/* Info Icon */}
-              <button className="w-10 h-10 rounded-full border border-[#24085A]/30 text-[#24085A] hover:bg-[#24085A]/10 flex items-center justify-center transition-all shadow-2xs cursor-pointer">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </button>
-
-              {/* Accessibility Icon */}
-              <button className="w-10 h-10 rounded-full border border-[#24085A]/30 text-[#24085A] hover:bg-[#24085A]/10 flex items-center justify-center transition-all shadow-2xs cursor-pointer">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </button>
-            </div>
+            {/* Accessibility Icon */}
+            <button className="w-10 h-10 rounded-full border border-slate-300/80 text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-all shadow-2xs cursor-pointer">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </button>
           </div>
 
           {/* Right Side: Round [-> Button + Previous & Next Action Buttons */}
-          <div className="flex items-center gap-3.5 pr-12 lg:pr-[16vw]">
+          <div className="flex items-center gap-3.5">
             {/* Round Next Section / Review Icon Button [-> */}
             <button
               onClick={handleNextSectionIconClick}
@@ -496,34 +460,19 @@ export default function ReadingPart1Practice({
               ← Previous
             </button>
 
-            {examStep === 'instructions' ? (
-              <button
-                onClick={() => setExamStep('questions')}
-                className="px-8 py-2.5 rounded-xl bg-[#24085A] hover:bg-[#1a0642] text-white font-extrabold text-[14px] shadow-md transition-all active:scale-95 cursor-pointer flex items-center gap-2"
-              >
-                <span>Next</span>
-                <span className="text-base">→</span>
-              </button>
-            ) : !isSubmitted ? (
-              <button
-                onClick={() => {
-                  setIsSubmitted(true);
-                  setShowExplanation(true);
-                }}
-                className="px-8 py-2.5 rounded-xl bg-[#CC1C01] hover:bg-[#b01801] text-white font-extrabold text-[14px] shadow-md transition-all active:scale-95 cursor-pointer flex items-center gap-2"
-              >
-                <span>Nộp bài</span>
-                <span className="text-base">→</span>
-              </button>
-            ) : (
-              <button
-                onClick={onExit}
-                className="px-8 py-2.5 rounded-xl bg-[#24085A] hover:bg-[#1a0642] text-white font-extrabold text-[14px] shadow-md transition-all active:scale-95 cursor-pointer flex items-center gap-2"
-              >
-                <span>Hoàn thành & Về danh sách</span>
-                <span className="text-base">→</span>
-              </button>
-            )}
+            <button
+              onClick={() => {
+                if (examStep === 'instructions') {
+                  setExamStep('questions');
+                } else {
+                  setShowQuestionReviewModal(true);
+                }
+              }}
+              className="px-8 py-2.5 rounded-xl bg-[#24085A] hover:bg-[#1a0642] text-white font-extrabold text-[14px] shadow-md transition-all active:scale-95 cursor-pointer flex items-center gap-2"
+            >
+              <span>Next</span>
+              <span className="text-base">→</span>
+            </button>
           </div>
         </footer>
       )}
