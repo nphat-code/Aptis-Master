@@ -2,27 +2,29 @@
 
 import React, { useState, useMemo } from 'react';
 import scrapedData from '../../../../scraped_data.json';
-import ExamPracticeLayout from './exam/ExamPracticeLayout';
-
-interface ReadingPart23PracticeProps {
-  testIndex: number; // 0-based index for tests (-1 for all practice / marathon)
-  onExit: () => void;
-}
+import BasePracticeExam from './exam/BasePracticeExam';
+import QuestionInstructionHeader from './exam/QuestionInstructionHeader';
+import DetailedAnswersCard from './exam/DetailedAnswersCard';
 
 interface QuestionSetData {
   topicTitle: string;
   originalSentences: string[];
 }
 
-function shuffleArray<T>(array: T[], seed: number): T[] {
+interface ReadingPart23PracticeProps {
+  testIndex: number; // 0-based index for tests, or -1 for Marathon
+  onExit: () => void;
+}
+
+// Fisher-Yates Shuffle with deterministic seed to keep scrambled order consistent per question set
+function shuffleArray(array: string[], seed: number): string[] {
   const shuffled = [...array];
   let m = shuffled.length;
-  let t: T;
+  let t: string;
   let i: number;
 
-  let s = seed;
   const random = () => {
-    const x = Math.sin(s++) * 10000;
+    const x = Math.sin(seed++) * 10000;
     return x - Math.floor(x);
   };
 
@@ -79,11 +81,6 @@ export default function ReadingPart23Practice({
     ];
   }, [isAllPractice, testIndex, totalSets, rawQuestionSets, rawHeaders]);
 
-  const totalQuestions = isAllPractice ? totalSets : 1;
-  const totalSubQuestions = totalQuestions * 5;
-  const maxScore = isAllPractice ? totalSubQuestions : 5;
-  const timeAllowedSeconds = isAllPractice ? 999999 : 420;
-
   const scrambledSentencesPerQuestion = useMemo(() => {
     return testQuestionSets.map((q, qIdx) => {
       const seed = (testIndex + 1) * 100 + qIdx + 1;
@@ -99,12 +96,7 @@ export default function ReadingPart23Practice({
     return val === targetSet.originalSentences[posIdx];
   };
 
-  const testNumberStr = (testIndex + 1) < 10 ? `0${testIndex + 1}` : `${testIndex + 1}`;
   const singleTopicTitle = testQuestionSets[0]?.topicTitle || '';
-  const partTitle = 'Part 2 + 3 – Text Cohesion';
-  const testTitle = isAllPractice
-    ? `Tất cả ${totalSets} bài đọc Part 2+3`
-    : `Đề ${testNumberStr}${singleTopicTitle ? ` - ${singleTopicTitle}` : ''}`;
 
   // Drag state for HTML5 drag and drop
   const [draggedItem, setDraggedItem] = useState<{ text: string; sourceSlot?: number } | null>(null);
@@ -112,17 +104,16 @@ export default function ReadingPart23Practice({
   const [isOverRightArea, setIsOverRightArea] = useState(false);
 
   return (
-    <ExamPracticeLayout
+    <BasePracticeExam
       moduleName="Reading"
-      partTitle={partTitle}
-      testTitle={testTitle}
-      totalQuestions={totalQuestions}
-      timeAllowedSeconds={timeAllowedSeconds}
-      maxScore={maxScore}
-      customTotalSubQuestions={totalSubQuestions}
+      partTitle="Part 2 + 3 – Text Cohesion"
+      testIndex={testIndex}
+      totalSets={totalSets}
+      topicTitle={singleTopicTitle}
+      defaultTimeSeconds={420}
+      subQuestionsPerSet={5}
+      pointsPerSubQuestion={1}
       isAnswerCorrect={isAnswerCorrect}
-      initialStep={isAllPractice ? 'questions' : 'instructions'}
-      unlimitedTime={isAllPractice}
       onExit={onExit}
       renderQuestions={({ currentQuestionIndex, userAnswers, onAnswer, isReviewMode, showExplanation }) => {
         const qData = testQuestionSets[currentQuestionIndex];
@@ -170,11 +161,9 @@ export default function ReadingPart23Practice({
         return (
           <div className="space-y-5 text-left text-[14px]">
             {/* Instruction */}
-            <div>
-              <p className="text-[14px] font-bold text-slate-900 leading-snug">
-                The sentences below make a complete text. Put them in the correct order.
-              </p>
-            </div>
+            <QuestionInstructionHeader>
+              The sentences below make a complete text. Put them in the correct order.
+            </QuestionInstructionHeader>
 
             {/* 2-Column Minimalist Layout */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -316,76 +305,67 @@ export default function ReadingPart23Practice({
         );
       }}
       renderDetailedAnswers={({ userAnswers }) => (
-        /* Card 2: Chi tiết bài làm Card on Results Page */
-        <div className="bg-[#F0EFEE] rounded-3xl p-6 sm:p-8 text-left space-y-5 border border-slate-200/70 shadow-sm text-[14px]">
-          <div className="space-y-1">
-            <h3 className="text-xl font-bold text-slate-900">
-              Chi tiết bài làm
-            </h3>
-            <p className="text-xs italic text-slate-500 font-normal">
-              The sentences below make a complete text. Put them in the correct order.
-            </p>
-          </div>
+        <DetailedAnswersCard
+          title="Chi tiết bài làm"
+          subtitle="The sentences below make a complete text. Put them in the correct order."
+        >
+          {testQuestionSets.map((qData, qIdx) => {
+            const baseKey = qIdx * 5;
+            return (
+              <div key={qIdx} className="space-y-4 text-[14px]">
+                {/* 5 Slot Answer Check */}
+                <div className="space-y-2.5">
+                  {[0, 1, 2, 3, 4].map((posIdx) => {
+                    const answerKey = baseKey + posIdx;
+                    const userAns = userAnswers[answerKey] || '';
+                    const correctAns = qData.originalSentences[posIdx];
+                    const isCorr = userAns === correctAns;
 
-          <div className="space-y-5 pt-2">
-            {testQuestionSets.map((qData, qIdx) => {
-              const baseKey = qIdx * 5;
-              return (
-                <div key={qIdx} className="space-y-4">
-                  {/* 5 Slot Answer Check */}
-                  <div className="space-y-2.5">
-                    {[0, 1, 2, 3, 4].map((posIdx) => {
-                      const answerKey = baseKey + posIdx;
-                      const userAns = userAnswers[answerKey] || '';
-                      const correctAns = qData.originalSentences[posIdx];
-                      const isCorr = userAns === correctAns;
-
-                      return (
-                        <div key={posIdx} className="flex items-start gap-2">
-                          <span className="text-slate-500 font-bold min-w-[20px] pt-1">{posIdx + 1}.</span>
-                          
-                          <div className="flex-1 space-y-1.5">
-                            {isCorr ? (
+                    return (
+                      <div key={posIdx} className="flex items-start gap-2">
+                        <span className="text-slate-500 font-bold min-w-[20px] pt-1">{posIdx + 1}.</span>
+                        
+                        <div className="flex-1 space-y-1.5">
+                          {isCorr ? (
+                            <div className="flex items-start gap-2 text-emerald-800 bg-emerald-50 border border-emerald-300/80 p-2.5 rounded-lg font-normal">
+                              <span className="text-emerald-600 font-bold">✓</span>
+                              <span>{userAns}</span>
+                            </div>
+                          ) : (
+                            <div className="space-y-1.5">
+                              {/* Incorrect User Choice */}
+                              <div className="flex items-start gap-2 text-red-800 bg-red-50 border border-red-300/80 p-2.5 rounded-lg font-normal">
+                                <span className="text-red-600 font-bold">✕</span>
+                                <span className="line-through">{userAns || '(Chưa chọn)'}</span>
+                              </div>
+                              {/* Correct Choice */}
                               <div className="flex items-start gap-2 text-emerald-800 bg-emerald-50 border border-emerald-300/80 p-2.5 rounded-lg font-normal">
                                 <span className="text-emerald-600 font-bold">✓</span>
-                                <span>{userAns}</span>
+                                <span>{correctAns}</span>
                               </div>
-                            ) : (
-                              <div className="space-y-1.5">
-                                {/* Incorrect User Choice */}
-                                <div className="flex items-start gap-2 text-red-800 bg-red-50 border border-red-300/80 p-2.5 rounded-lg font-normal">
-                                  <span className="text-red-600 font-bold">✕</span>
-                                  <span className="line-through">{userAns || '(Chưa chọn)'}</span>
-                                </div>
-                                {/* Correct Choice */}
-                                <div className="flex items-start gap-2 text-emerald-800 bg-emerald-50 border border-emerald-300/80 p-2.5 rounded-lg font-normal">
-                                  <span className="text-emerald-600 font-bold">✓</span>
-                                  <span>{correctAns}</span>
-                                </div>
-                              </div>
-                            )}
-                          </div>
+                            </div>
+                          )}
                         </div>
-                      );
-                    })}
-                  </div>
+                      </div>
+                    );
+                  })}
+                </div>
 
-                  {/* Đoạn văn hoàn chỉnh */}
-                  <div className="pt-3 border-t border-slate-300/60 space-y-2">
-                    <h4 className="text-[15px] font-bold text-slate-900">
-                      Đoạn văn hoàn chỉnh:
-                    </h4>
-                    <div className="text-slate-800 space-y-1.5 text-[14px] leading-relaxed italic">
-                      {qData.originalSentences.map((s, idx) => (
-                        <p key={idx}>{idx + 1}. {s}</p>
-                      ))}
-                    </div>
+                {/* Đoạn văn hoàn chỉnh */}
+                <div className="pt-3 border-t border-slate-300/60 space-y-2">
+                  <h4 className="text-[15px] font-bold text-slate-900">
+                    Đoạn văn hoàn chỉnh:
+                  </h4>
+                  <div className="text-slate-800 space-y-1.5 text-[14px] leading-relaxed italic">
+                    {qData.originalSentences.map((s, idx) => (
+                      <p key={idx}>{idx + 1}. {s}</p>
+                    ))}
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
+              </div>
+            );
+          })}
+        </DetailedAnswersCard>
       )}
     />
   );

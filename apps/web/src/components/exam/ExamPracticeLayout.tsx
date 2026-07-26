@@ -216,7 +216,7 @@ export default function ExamPracticeLayout({
                 {moduleName} Practice Test
               </h1>
               <p className="text-slate-500 text-sm font-normal">
-                {testTitle} - {partTitle}
+                {testTitle}
               </p>
             </div>
 
@@ -395,13 +395,13 @@ export default function ExamPracticeLayout({
           <div className="space-y-6">
             
             {/* Card 1: Kết quả Reading Summary Card (Hover Lift-up buttons + Fade-in animation) */}
-            <div className="bg-[#F0EFEE] rounded-3xl p-8 text-center space-y-6 border border-slate-200/70 shadow-sm animate-result-appear">
+            <div className="bg-[#FAFAFA] rounded-3xl p-8 text-center space-y-6 border border-slate-200/70 shadow-sm animate-result-appear">
               <div className="space-y-1">
                 <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
                   Kết quả {moduleName}
                 </h2>
                 <p className="text-xs text-slate-500 font-medium">
-                  {testTitle} - {moduleName} {partTitle}
+                  {testTitle}
                 </p>
               </div>
 

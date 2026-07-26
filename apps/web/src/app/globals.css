@@ -12,3 +12,34 @@ body {
   background-color: #f8fafc;
   color: #0f172a;
 }
+
+/* Reusable Staggered Fade-Up Appearance Animations across all skill parts */
+@keyframes cardAppear {
+  0% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-card-appear {
+  animation: cardAppear 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes headerFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-header-fade {
+  animation: headerFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}

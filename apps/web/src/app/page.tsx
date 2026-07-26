@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
 import StatsAndFeaturesSection from '@/components/StatsAndFeaturesSection';
@@ -10,21 +10,22 @@ import ExamStructureSection from '@/components/ExamStructureSection';
 import StrengthsGridSection from '@/components/StrengthsGridSection';
 import ScrollReveal from '@/components/ScrollReveal';
 import ReadingView from '@/components/ReadingView';
+import ListeningView from '@/components/ListeningView';
+import SpeakingView from '@/components/SpeakingView';
+import WritingView from '@/components/WritingView';
+import GrammarView from '@/components/GrammarView';
 import Footer from '@/components/Footer';
 
 export default function AptisPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [subView, setSubView] = useState('practice');
-  const [selectedSubPart, setSelectedSubPart] = useState<string | null>(null);
-  const [selectedItemIndex, setSelectedItemIndex] = useState(0);
 
   useEffect(() => {
     // Detect URL path on mount
     if (typeof window !== 'undefined') {
       const path = window.location.pathname.replace('/', '');
-      if (path === 'reading' || path === 'listening' || path === 'writing' || path === 'speaking' || path === 'grammar') {
+      if (['reading', 'listening', 'writing', 'speaking', 'grammar'].includes(path)) {
         setActiveTab(path);
       } else if (path === 'thi-thu') {
         setActiveTab('mock-test');
@@ -52,12 +53,52 @@ export default function AptisPage() {
     );
   }
 
-  // Render Reading View when reading tab is active
+  // Render Skill Views for Reading, Listening, Speaking, Writing, Grammar
   if (activeTab === 'reading') {
     return (
       <div className="min-h-screen bg-white text-slate-900 font-sans flex flex-col">
         <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
         <ReadingView onBackToHome={() => setActiveTab('dashboard')} data={data} />
+        <Footer />
+      </div>
+    );
+  }
+
+  if (activeTab === 'listening') {
+    return (
+      <div className="min-h-screen bg-white text-slate-900 font-sans flex flex-col">
+        <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
+        <ListeningView onBackToHome={() => setActiveTab('dashboard')} />
+        <Footer />
+      </div>
+    );
+  }
+
+  if (activeTab === 'speaking') {
+    return (
+      <div className="min-h-screen bg-white text-slate-900 font-sans flex flex-col">
+        <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
+        <SpeakingView onBackToHome={() => setActiveTab('dashboard')} />
+        <Footer />
+      </div>
+    );
+  }
+
+  if (activeTab === 'writing') {
+    return (
+      <div className="min-h-screen bg-white text-slate-900 font-sans flex flex-col">
+        <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
+        <WritingView onBackToHome={() => setActiveTab('dashboard')} />
+        <Footer />
+      </div>
+    );
+  }
+
+  if (activeTab === 'grammar') {
+    return (
+      <div className="min-h-screen bg-white text-slate-900 font-sans flex flex-col">
+        <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
+        <GrammarView onBackToHome={() => setActiveTab('dashboard')} />
         <Footer />
       </div>
     );
