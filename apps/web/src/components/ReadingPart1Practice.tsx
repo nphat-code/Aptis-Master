@@ -21,114 +21,131 @@ export default function ReadingPart1Practice({
   testIndex = 0,
   onExit,
 }: ReadingPart1PracticeProps) {
-  // Load questions for specified testIndex
+  const isAllPractice = testIndex === -1;
   const rawQuestionsList = scrapedData?.reading?.question1 || [];
-  const testQuestionsData: Question[] =
-    rawQuestionsList[testIndex % rawQuestionsList.length] || rawQuestionsList[0] || [];
-
-  const testTitle = `Đề ${testIndex + 1 < 10 ? '0' + (testIndex + 1) : testIndex + 1}`;
+  const singleTestQuestions: Question[] = rawQuestionsList[testIndex % rawQuestionsList.length] || rawQuestionsList[0] || [];
+  const allQuestionsList: Question[] = isAllPractice
+    ? (rawQuestionsList.flat() as Question[])
+    : singleTestQuestions;
+  
+  const partTitle = 'Part 1 – Gap Fill';
 
   return (
     <ExamPracticeLayout
       moduleName="Reading"
-      partTitle="Part 1 – Gap Fill"
-      testTitle={testTitle}
-      totalQuestions={5}
-      timeAllowedSeconds={360} // 6 minutes
-      maxScore={10} // 2 points per correct question
+      partTitle={partTitle}
+      testTitle={isAllPractice ? `Tất cả ${rawQuestionsList.length} đề Part 1` : `Đề ${testIndex + 1 < 10 ? '0' + (testIndex + 1) : testIndex + 1}`}
+      totalQuestions={isAllPractice ? rawQuestionsList.length : 1}
+      timeAllowedSeconds={isAllPractice ? 999999 : 360} // Unlimited for all practice, 6 mins for single test
+      maxScore={allQuestionsList.length * 2} // 2 points per correct sub-question
+      customTotalSubQuestions={isAllPractice ? 48 : singleTestQuestions.length}
+      isAnswerCorrect={(idx, val) => val === allQuestionsList[idx]?.correctAnswer}
+      initialStep={isAllPractice ? 'questions' : 'start'}
+      unlimitedTime={isAllPractice}
       onExit={onExit}
-      renderQuestions={({ userAnswers, onAnswer, isReviewMode, showExplanation }) => (
-        <>
-          {/* Question Instructions */}
-          <div>
-            <p className="text-[16px] font-bold text-slate-900 leading-snug">
-              Choose the word that fits in the gap. The first one is done for you.
-            </p>
-          </div>
+      renderQuestions={({ currentQuestionIndex, userAnswers, onAnswer, isReviewMode, showExplanation }) => {
+        const activeIdx = isAllPractice ? currentQuestionIndex : (testIndex % rawQuestionsList.length);
+        const testQuestionsData: Question[] = rawQuestionsList[activeIdx] || rawQuestionsList[0] || [];
 
-          {/* Fill-in-the-blank Sentences Block (Clean Paragraph Layout, 16px font size) */}
-          <div className="space-y-4 text-[16px] font-normal text-slate-800 leading-relaxed">
-            {/* Example Item */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span>I saw some shows in the</span>
-              <span className="bg-slate-200/80 text-slate-600 font-medium px-3.5 py-1 rounded-md border border-slate-300/60 min-w-[120px] text-center inline-block text-[16px]">
-                window
-              </span>
-              <span>of one store.</span>
+        return (
+          <>
+            {/* Question Instructions */}
+            <div>
+              <p className="text-[16px] font-bold text-slate-900 leading-snug">
+                Choose the word that fits in the gap.
+              </p>
             </div>
 
-            {/* 5 Dynamic Sentences */}
-            {testQuestionsData.map((q, idx) => {
-              const selectedValue = userAnswers[idx] || '';
+            {/* Fill-in-the-blank Sentences Block (Clean Paragraph Layout, 16px font size) */}
+            <div className="space-y-4 text-[16px] font-normal text-slate-800 leading-relaxed">
+              {/* 5 Dynamic Sentences for current test */}
+              {testQuestionsData.map((q, idx) => {
+                const answerKey = isAllPractice ? (currentQuestionIndex * 5 + idx) : idx;
+                const selectedValue = userAnswers[answerKey] || '';
+                const isAnswerChecked = isReviewMode || showExplanation;
+                const isUserCorr = selectedValue === q.correctAnswer;
 
-              return (
-                <div key={idx} className="space-y-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span>{q.questionStart}</span>
+                return (
+                  <div key={idx} className="space-y-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span>{q.questionStart}</span>
 
-                    {/* Inline Select Dropdown */}
-                    <select
-                      disabled={isReviewMode}
-                      value={selectedValue}
-                      onChange={(e) => onAnswer(idx, e.target.value)}
-                      className={`mx-1 px-3 py-1 text-[16px] appearance-auto min-w-[130px] rounded-md transition-all ${
-                        isReviewMode
-                          ? selectedValue === q.correctAnswer
-                            ? 'border border-emerald-500 bg-emerald-50 text-emerald-700 font-bold cursor-not-allowed'
-                            : selectedValue
-                            ? 'border border-red-500 bg-red-50 text-red-700 font-bold cursor-not-allowed'
-                            : 'border border-slate-300 bg-slate-100 text-slate-500 cursor-not-allowed'
-                          : 'bg-white border border-slate-300 font-normal cursor-pointer text-slate-700 focus:outline-none focus:ring-2 focus:border-[#24085A] focus:ring-[#24085A]/20 hover:border-slate-400'
-                      }`}
-                    >
-                      <option value={selectedValue}>{selectedValue || ''}</option>
-                      {!isReviewMode &&
-                        q.answerOptions.map((opt, oIdx) => (
+                      {/* Inline Select Dropdown */}
+                      <select
+                        disabled={isReviewMode}
+                        value={selectedValue}
+                        onChange={(e) => onAnswer(answerKey, e.target.value)}
+                        className={`mx-1 px-3 py-1 text-[16px] appearance-auto min-w-[130px] rounded-md transition-all font-normal ${
+                          isAnswerChecked
+                            ? isUserCorr
+                              ? 'border-2 border-emerald-500 bg-emerald-50 text-emerald-800 cursor-pointer'
+                              : selectedValue
+                              ? 'border-2 border-red-400 bg-red-50 text-red-700 cursor-pointer'
+                              : 'border border-slate-300 bg-slate-50 text-slate-600 cursor-pointer'
+                            : 'bg-white border border-slate-300 cursor-pointer text-slate-800 focus:outline-none focus:ring-2 focus:border-[#24085A] focus:ring-[#24085A]/20 hover:border-slate-400'
+                        }`}
+                      >
+                        <option value=""></option>
+                        {q.answerOptions.map((opt, oIdx) => (
                           <option key={oIdx} value={opt}>
                             {opt}
                           </option>
                         ))}
-                    </select>
+                      </select>
 
-                    <span>{q.questionEnd}</span>
+                      <span>{q.questionEnd}</span>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
 
-          {/* "Hiện đáp án" Drawer Container (Shown when clicking floating button, matching aptiskytich.vn, no translation) */}
+          {/* Minimalist "Đáp án" Section */}
           {showExplanation && (
-            <div className="mt-8 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-5 animate-in fade-in duration-300">
-              <h3 className="text-xl font-bold text-slate-900 border-b border-slate-100 pb-3">
+            <div className="mt-8 pt-6 border-t border-slate-200/80 space-y-4 animate-in fade-in duration-300 text-left">
+              <h3 className="text-lg font-bold text-slate-900">
                 Đáp án
               </h3>
 
-              <div className="space-y-4">
-                {testQuestionsData.map((q, idx) => (
-                  <div key={idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200/70 space-y-2 text-sm">
-                    <div className="text-base font-bold text-slate-900 flex items-start gap-2">
-                      <span className="text-slate-400">{idx + 1}.</span>
-                      <p className="italic font-medium">
-                        {q.questionStart}
-                        <u className="text-emerald-700 font-extrabold not-italic px-1">{q.correctAnswer}</u>
-                        {q.questionEnd}
-                      </p>
-                    </div>
+              <div className="space-y-3">
+                {testQuestionsData.map((q, idx) => {
+                  const answerKey = isAllPractice ? (currentQuestionIndex * 5 + idx) : idx;
+                  const userAns = userAnswers[answerKey] || '';
+                  const isCorr = userAns === q.correctAnswer;
 
-                    <div className="pt-1">
-                      <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold px-3 py-1 rounded-md text-xs">
-                        <span>✓ Đáp án đúng:</span>
-                        <span>{q.correctAnswer}</span>
-                      </span>
+                  return (
+                    <div key={idx} className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-2xs space-y-2.5 text-left">
+                      <div className="text-base font-normal text-slate-900 flex items-start gap-2">
+                        <span className="text-slate-500 font-normal">{idx + 1}.</span>
+                        <p className="italic font-normal text-slate-800 leading-relaxed">
+                          {q.questionStart}
+                          <span className="font-medium not-italic text-slate-900 underline underline-offset-4 decoration-emerald-500 px-1">{q.correctAnswer}</span>
+                          {q.questionEnd}
+                        </p>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2.5 pl-6 pt-1">
+                        {!isCorr && (
+                          <span className="bg-red-50 text-red-600 border border-red-300/80 px-3.5 py-1 rounded-lg text-[14px] font-normal inline-flex items-center gap-1.5 shadow-2xs">
+                            <span className="w-4 h-4 rounded-full border border-red-300 bg-red-100 text-red-600 flex items-center justify-center text-[10px] font-bold">⊗</span>
+                            <span className="line-through">{userAns || '—'}</span>
+                          </span>
+                        )}
+
+                        <span className="bg-emerald-50 text-emerald-700 border border-emerald-300/80 px-3.5 py-1 rounded-lg text-[14px] font-normal inline-flex items-center gap-1.5 shadow-2xs">
+                          <span className="w-4 h-4 rounded-full border border-emerald-300 bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px] font-bold">✓</span>
+                          <span>{q.correctAnswer}</span>
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
         </>
-      )}
+      );
+    }}
       renderDetailedAnswers={({ userAnswers }) => (
         /* Card 2: Chi tiết bài làm Card (Static) */
         <div className="bg-[#F0EFEE] rounded-3xl p-6 sm:p-8 text-left space-y-5 border border-slate-200/70 shadow-sm">
@@ -137,23 +154,14 @@ export default function ReadingPart1Practice({
               Chi tiết bài làm
             </h3>
             <p className="text-xs italic text-slate-500 font-normal">
-              Choose the word that fits in the gap. The first one is done for you.
+              Choose the word that fits in the gap.
             </p>
           </div>
 
           {/* Sentences List with Inline Colored Badges */}
           <div className="space-y-4 text-base font-normal text-slate-800 leading-relaxed pt-2">
-            {/* Example Item */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span>I saw some shows in the</span>
-              <span className="bg-slate-200 text-slate-600 font-normal px-3 py-1 rounded-md text-sm border border-slate-300/60">
-                window <span className="text-xs text-slate-400 font-normal">(cho sẵn)</span>
-              </span>
-              <span>of one store.</span>
-            </div>
-
-            {/* 5 Dynamic Question Sentences */}
-            {testQuestionsData.map((q, idx) => {
+            {/* Dynamic Question Sentences */}
+            {allQuestionsList.map((q, idx) => {
               const userAns = userAnswers[idx] || '';
               const isCorr = userAns === q.correctAnswer;
 

@@ -10,10 +10,16 @@ export interface ExamPracticeLayoutProps {
   timeAllowedSeconds: number; // e.g. 360 (6 mins)
   maxScore?: number; // e.g. 10 (default totalQuestions * 2)
   instructionsText?: React.ReactNode;
+  initialStep?: 'start' | 'instructions' | 'questions';
+  unlimitedTime?: boolean;
+  customScore?: number;
+  customTotalSubQuestions?: number;
+  isAnswerCorrect?: (questionIndex: number, answerValue: any) => boolean;
   onExit: () => void;
 
   // Custom question render prop
   renderQuestions: (props: {
+    currentQuestionIndex: number;
     userAnswers: Record<number, any>;
     onAnswer: (questionIndex: number, value: any) => void;
     isReviewMode: boolean;
@@ -34,23 +40,30 @@ export default function ExamPracticeLayout({
   timeAllowedSeconds = 360,
   maxScore = 10,
   instructionsText,
+  initialStep = 'start',
+  unlimitedTime = false,
+  customScore,
+  customTotalSubQuestions,
+  isAnswerCorrect,
   onExit,
   renderQuestions,
   renderDetailedAnswers,
 }: ExamPracticeLayoutProps) {
   // Steps: 'start' (Start Assessment) -> 'instructions' (Instructions) -> 'questions' (Actual Exam) -> 'results' (Results Screen)
-  const [examStep, setExamStep] = useState<'start' | 'instructions' | 'questions' | 'results'>('start');
+  const [examStep, setExamStep] = useState<'start' | 'instructions' | 'questions' | 'results'>(initialStep);
 
   // States
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<number, any>>({});
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [showProceedModal, setShowProceedModal] = useState(false);
   const [showQuestionReviewModal, setShowQuestionReviewModal] = useState(false);
+  const [showMarathonTocDrawer, setShowMarathonTocDrawer] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [reviewMode, setReviewMode] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
-  const [hasExamStarted, setHasExamStarted] = useState(false);
+  const [hasExamStarted, setHasExamStarted] = useState(initialStep === 'questions');
   const [timeLeftSeconds, setTimeLeftSeconds] = useState(timeAllowedSeconds);
 
   // Set hasExamStarted to true when entering 'questions' step for the first time
@@ -125,9 +138,19 @@ export default function ExamPracticeLayout({
     (k) => userAnswers[Number(k)] !== undefined && userAnswers[Number(k)] !== ''
   ).length;
 
-  // Compute calculated score if provided (can be overridden by child)
-  const scorePerQuestion = maxScore / totalQuestions;
-  const calculatedScore = Math.round(answeredCount * scorePerQuestion);
+  const displayTotalSubCount = customTotalSubQuestions !== undefined ? customTotalSubQuestions : totalQuestions;
+  const pointsPerSubQuestion = maxScore / displayTotalSubCount;
+
+  // Calculate correct answers count if isAnswerCorrect callback is provided
+  const correctSubQuestionsCount = isAnswerCorrect
+    ? Object.keys(userAnswers).filter((k) => {
+        const idx = Number(k);
+        const val = userAnswers[idx];
+        return val !== undefined && val !== '' && isAnswerCorrect(idx, val);
+      }).length
+    : answeredCount;
+
+  const calculatedScore = customScore !== undefined ? customScore : Math.round(correctSubQuestionsCount * pointsPerSubQuestion);
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-[#F4F4F6] text-slate-900 font-sans flex flex-col justify-between selection:bg-[#CC1C01] selection:text-white">
@@ -162,7 +185,7 @@ export default function ExamPracticeLayout({
       </header>
 
       {/* Top Right Timer Box (Visibly active across all screens once test has started) */}
-      {hasExamStarted && examStep !== 'results' && (
+      {!unlimitedTime && hasExamStarted && examStep !== 'results' && (
         <div className="absolute right-6 sm:right-10 top-20 text-center min-w-[120px] z-20 animate-in fade-in duration-300">
           <div className="text-2xl font-black text-slate-900 tracking-wider">
             {formatTime(timeLeftSeconds)}
@@ -281,17 +304,17 @@ export default function ExamPracticeLayout({
               <div className="text-left">
                 <span className="text-xs font-normal text-slate-500 block">{moduleName}</span>
                 <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-0.5">
-                  Question 1 of {totalQuestions}
+                  Question {currentQuestionIndex + 1} of {totalQuestions}
                 </h1>
               </div>
 
               {/* Bookmark Button */}
               <button
                 onClick={() => setIsBookmarked(!isBookmarked)}
-                className={`px-4 py-2 rounded-lg border text-sm font-normal flex items-center gap-2 transition-all cursor-pointer ${
+                className={`px-4 py-2 rounded-lg border text-[#24085A] text-sm font-semibold flex items-center gap-2 transition-all cursor-pointer ${
                   isBookmarked
                     ? 'bg-amber-50 border-amber-300 text-amber-800'
-                    : 'bg-slate-100/70 border-slate-300/80 text-slate-700 hover:border-slate-400 hover:bg-slate-200/60'
+                    : 'bg-white border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-slate-50'
                 }`}
               >
                 <svg
@@ -309,6 +332,7 @@ export default function ExamPracticeLayout({
 
             {/* Custom Question Content Injected Here */}
             {renderQuestions({
+              currentQuestionIndex,
               userAnswers,
               onAnswer: handleAnswer,
               isReviewMode: reviewMode,
@@ -329,6 +353,21 @@ export default function ExamPracticeLayout({
               <span>{showExplanation ? 'Ẩn đáp án' : 'Hiện đáp án'}</span>
             </button>
           </div>
+
+          {/* Right Floating "Mục lục" Button for Marathon Mode */}
+          {unlimitedTime && (
+            <div className="fixed bottom-24 right-6 z-40">
+              <button
+                onClick={() => setShowMarathonTocDrawer(true)}
+                className="bg-[#24085A] hover:bg-[#1a0642] text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 border border-white/20"
+              >
+                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                </svg>
+                <span>Mục lục</span>
+              </button>
+            </div>
+          )}
 
         </main>
       )}
@@ -390,7 +429,7 @@ export default function ExamPracticeLayout({
                       {answeredCount}
                     </span>
                     <span className="text-xl sm:text-2xl font-bold text-slate-400 ml-0.5">
-                      /{totalQuestions}
+                      /{displayTotalSubCount}
                     </span>
                   </div>
                   <div className="text-xs font-semibold text-slate-500 mt-1">
@@ -485,10 +524,17 @@ export default function ExamPracticeLayout({
               </svg>
             </button>
 
-            {/* Previous Button (Hidden on Instructions screen) */}
-            {examStep === 'questions' && (
+            {/* Previous Button (Visible if in questions step and currentQuestionIndex > 0, or on instructions step) */}
+            {(examStep === 'instructions' || (examStep === 'questions' && currentQuestionIndex > 0)) && (
               <button
-                onClick={() => setExamStep('instructions')}
+                onClick={() => {
+                  if (examStep === 'instructions') {
+                    setExamStep('start');
+                  } else if (examStep === 'questions' && currentQuestionIndex > 0) {
+                    setCurrentQuestionIndex((prev) => prev - 1);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
+                }}
                 className="px-6 py-2.5 rounded-xl border border-slate-300/90 bg-white text-slate-800 font-bold text-[14px] hover:bg-slate-50 transition-all shadow-2xs active:scale-95 cursor-pointer"
               >
                 ← Previous
@@ -501,8 +547,13 @@ export default function ExamPracticeLayout({
                   setExamStep('instructions');
                 } else if (examStep === 'instructions') {
                   setExamStep('questions');
-                } else {
-                  setShowQuestionReviewModal(true);
+                } else if (examStep === 'questions') {
+                  if (currentQuestionIndex < totalQuestions - 1) {
+                    setCurrentQuestionIndex((prev) => prev + 1);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  } else {
+                    handleSubmitExam();
+                  }
                 }
               }}
               className="px-8 py-2.5 rounded-xl bg-[#24085A] hover:bg-[#1a0642] text-white font-extrabold text-[14px] shadow-md transition-all active:scale-95 cursor-pointer flex items-center gap-2"
@@ -616,7 +667,7 @@ export default function ExamPracticeLayout({
               <div className="flex items-center justify-between pb-2 border-b border-slate-200/70">
                 <div>
                   <div className="font-bold text-sm text-slate-900">{partTitle}</div>
-                  <div className="text-xs text-slate-400 font-medium">{totalQuestions} Questions</div>
+                  <div className="text-xs text-slate-400 font-medium">{displayTotalSubCount} Questions</div>
                 </div>
                 <div className="w-6 h-6 rounded-md bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-xs">
                   -
@@ -625,12 +676,21 @@ export default function ExamPracticeLayout({
 
               {/* Questions Status List */}
               <div className="space-y-2 pt-1">
-                {Array.from({ length: totalQuestions }).map((_, qIdx) => {
-                  const hasAns = userAnswers[qIdx] !== undefined && userAnswers[qIdx] !== '';
+                {Array.from({ length: displayTotalSubCount }).map((_, qIdx) => {
+                  const hasAns = totalQuestions > 1
+                    ? [0, 1, 2, 3, 4].some((g) => userAnswers[qIdx * 5 + g] !== undefined && userAnswers[qIdx * 5 + g] !== '')
+                    : userAnswers[qIdx] !== undefined && userAnswers[qIdx] !== '';
+
                   return (
                     <div
                       key={qIdx}
-                      className="bg-white p-3 rounded-xl border border-slate-200/70 flex items-center justify-between shadow-2xs"
+                      onClick={() => {
+                        if (totalQuestions > 1) {
+                          setCurrentQuestionIndex(qIdx);
+                        }
+                        setShowQuestionReviewModal(false);
+                      }}
+                      className="bg-white p-3 rounded-xl border border-slate-200/70 flex items-center justify-between shadow-2xs hover:border-slate-400 hover:bg-slate-50 cursor-pointer transition-all active:scale-[0.99]"
                     >
                       <div>
                         <div className="font-bold text-sm text-slate-900">
@@ -669,6 +729,113 @@ export default function ExamPracticeLayout({
               </button>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* 7. MODAL D: Marathon Table of Contents Drawer */}
+      {showMarathonTocDrawer && (
+        <div
+          onClick={() => setShowMarathonTocDrawer(false)}
+          className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex justify-end animate-in fade-in duration-200 cursor-pointer"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-[#F8F9FA] w-full max-w-[300px] sm:max-w-[340px] h-full shadow-2xl border-l border-slate-200/80 p-5 flex flex-col justify-between cursor-default animate-in slide-in-from-right duration-300 text-left"
+          >
+            {/* Top Header */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
+                <h3 className="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight">
+                  Mục lục marathon
+                </h3>
+                <button
+                  onClick={() => setShowMarathonTocDrawer(false)}
+                  className="w-7 h-7 rounded-full bg-slate-200/60 hover:bg-slate-300 text-slate-600 text-xs flex items-center justify-center font-bold transition-all cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Progress Line */}
+              <div className="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                <span>
+                  Đã làm{' '}
+                  {
+                    Array.from({ length: totalQuestions }).filter((_, qIdx) => {
+                      return [0, 1, 2, 3, 4].every(
+                        (g) => userAnswers[qIdx * 5 + g] !== undefined && userAnswers[qIdx * 5 + g] !== ''
+                      );
+                    }).length
+                  }
+                  /{totalQuestions}
+                </span>
+                <span className="text-slate-300">•</span>
+                <span className="text-[#24085A] font-bold">
+                  Đề {currentQuestionIndex + 1}/{totalQuestions}
+                </span>
+              </div>
+
+              {/* Legend Row */}
+              <div className="flex items-center gap-3 text-[11px] font-medium text-slate-500 pt-0.5">
+                <div className="flex items-center gap-1">
+                  <span className="w-2.5 h-2.5 rounded-xs bg-slate-300 border border-slate-400/60 inline-block"></span>
+                  <span>đã làm</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2.5 h-2.5 rounded-xs bg-white border-2 border-blue-600 ring-1 ring-[#24085A] inline-block"></span>
+                  <span>đang làm dở</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2.5 h-2.5 rounded-xs bg-slate-100 border border-slate-200 inline-block"></span>
+                  <span>chưa làm</span>
+                </div>
+              </div>
+
+              {/* Test Sets Grid (Chips 1 to totalQuestions - 7 cols) */}
+              <div className="grid grid-cols-6 sm:grid-cols-7 gap-1.5 max-h-[65vh] overflow-y-auto p-1 pt-2">
+                {Array.from({ length: totalQuestions }).map((_, qIdx) => {
+                  const isCurrent = qIdx === currentQuestionIndex;
+                  const answeredGapsCount = [0, 1, 2, 3, 4].filter(
+                    (g) => userAnswers[qIdx * 5 + g] !== undefined && userAnswers[qIdx * 5 + g] !== ''
+                  ).length;
+                  const isCompleted = answeredGapsCount === 5;
+                  const isInProgress = answeredGapsCount > 0 && answeredGapsCount < 5;
+
+                  return (
+                    <button
+                      key={qIdx}
+                      onClick={() => {
+                        setCurrentQuestionIndex(qIdx);
+                        setShowMarathonTocDrawer(false);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      className={`h-8 sm:h-8.5 rounded-md text-[11px] sm:text-xs font-bold transition-all cursor-pointer flex items-center justify-center ${
+                        isCurrent
+                          ? 'bg-white text-[#24085A] border-2 border-blue-600 ring-2 ring-[#24085A] ring-inset shadow-xs font-black'
+                          : isCompleted
+                          ? 'bg-slate-300 text-slate-800 border border-slate-400/60 hover:bg-slate-400/80'
+                          : isInProgress
+                          ? 'bg-blue-100 text-blue-900 border border-blue-400 hover:bg-blue-200'
+                          : 'bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200/80 hover:text-slate-900'
+                      }`}
+                    >
+                      {qIdx + 1}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Bottom Action Footer */}
+            <div className="pt-3 border-t border-slate-200/60">
+              <button
+                onClick={() => setShowMarathonTocDrawer(false)}
+                className="w-full py-2.5 rounded-xl bg-[#24085A] hover:bg-[#1a0642] text-white font-bold text-xs shadow-md transition-all active:scale-95 cursor-pointer"
+              >
+                Đóng mục lục
+              </button>
+            </div>
           </div>
         </div>
       )}

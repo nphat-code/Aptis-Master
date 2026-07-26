@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import ReadingPart1Practice from './ReadingPart1Practice';
+import { TestPracticeCard } from './exam/TestPracticeCard';
 import scrapedData from '../../../../scraped_data.json';
 
 interface ReadingViewProps {
@@ -200,12 +201,22 @@ export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
 
         {/* Dynamic Reading Test Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
+          {/* Card 0: Luyện tất cả đề Part 1 (Marathon Card - Matching aptiskytich.vn 100%) */}
+          {activePartTab === 'part1' && (!searchTerm || 'luyện tất cả đề part 1'.includes(searchTerm.toLowerCase())) && (
+            <TestPracticeCard
+              key="all-part1-practice-card"
+              title="Luyện tất cả đề Part 1"
+              badge="Marathon"
+              isMarathon={true}
+              subtitle={`Làm liên tục ${part1TotalCount} đề — không giới hạn giờ`}
+              actionText="Bắt đầu"
+              onClick={() => setActivePracticeTestIndex(-1)}
+            />
+          )}
+
           {Array.from({ length: currentTabInfo.testCount }, (_, index) => {
             const testNum = index + 1;
             const testTitle = `Đề ${testNum < 10 ? '0' + testNum : testNum}`;
-            const isFree = testNum <= 3;
-            const isCompleted = testNum === 1; // Demo completed test
-            const partsCount = activePartTab === 'full' ? (testNum > 23 ? 2 : testNum > 21 ? 3 : 4) : 1;
 
             // Search filter
             if (searchTerm && !testTitle.toLowerCase().includes(searchTerm.toLowerCase())) {
@@ -213,8 +224,13 @@ export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
             }
 
             return (
-              <div
+              <TestPracticeCard
                 key={testNum}
+                title={`${testTitle} - Reading ${currentTabInfo.badge}`}
+                badge={currentTabInfo.badge}
+                isMarathon={false}
+                subtitle="📖 Đề luyện tập"
+                actionText={activePartTab === 'full' ? 'Bắt đầu luyện tập' : 'Luyện tập'}
                 onClick={() => {
                   if (activePartTab === 'part1') {
                     setActivePracticeTestIndex(index);
@@ -222,36 +238,7 @@ export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
                     setShowUpdatingModalPart(currentTabInfo.badge);
                   }
                 }}
-                className="bg-[#F4F4F6] rounded-xl p-6 border border-slate-200/70 shadow-2xs hover:border-[#CC1C01] hover:shadow-md transition-all duration-200 flex flex-col justify-between min-h-[210px] relative group cursor-pointer"
-              >
-                {/* Header Row: Badge */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="bg-[#FEEBE8] text-[#E0523C] font-semibold text-xs px-2.5 py-0.5 rounded-md">
-                      {currentTabInfo.badge}
-                    </span>
-                  </div>
-
-                  {/* Title & Subtitle */}
-                  <div>
-                    <h3 className="font-black text-xl text-slate-900 tracking-tight">
-                      {testTitle} - Reading {currentTabInfo.badge}
-                    </h3>
-                    <p className="text-sm text-slate-500 font-medium mt-1">
-                      📖 Đề luyện tập
-                    </p>
-                  </div>
-                </div>
-
-                {/* Bottom Right Action Link (Dynamic text & hover pop elevation with light orange tint) */}
-                <div className="flex justify-end pt-4">
-                  <span className="text-[#CC1C01] font-bold text-sm flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl hover:bg-[#FFF2EE] border border-transparent hover:border-orange-200/80 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xs active:scale-95 cursor-pointer">
-                    <span>{activePartTab === 'full' ? 'Bắt đầu luyện tập' : 'Luyện tập'}</span>
-                    <span className="group-hover:translate-x-0.5 transition-transform">→</span>
-                  </span>
-                </div>
-
-              </div>
+              />
             );
           })}
         </div>
