@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="vi" className={`${montserrat.className} ${montserrat.variable}`}>
+    <html lang="vi" className={montserrat.variable}>
       <body className="font-sans antialiased">{children}</body>
     </html>
   );

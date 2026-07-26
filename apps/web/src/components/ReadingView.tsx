@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import ReadingPart1Practice from './ReadingPart1Practice';
+import scrapedData from '../../../../scraped_data.json';
 
 interface ReadingViewProps {
   onBackToHome?: () => void;
@@ -10,9 +11,12 @@ interface ReadingViewProps {
 
 export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
   const [showTipsModal, setShowTipsModal] = useState(false);
+  const [showUpdatingModalPart, setShowUpdatingModalPart] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [activePartTab, setActivePartTab] = useState('full');
+  const [activePartTab, setActivePartTab] = useState('part1');
   const [activePracticeTestIndex, setActivePracticeTestIndex] = useState<number | null>(null);
+
+  const part1TotalCount = scrapedData?.reading?.question1?.length || 48;
 
   const partTabs = [
     { id: 'full', label: 'Full Part – Tất cả các Part' },
@@ -31,9 +35,9 @@ export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
     },
     part1: {
       title: 'Part 1 – Sentence comprehension',
-      subtitle: '33 bộ đề luyện tập',
+      subtitle: `${part1TotalCount} bộ đề luyện tập`,
       badge: 'Part 1',
-      testCount: 33,
+      testCount: part1TotalCount,
     },
     part23: {
       title: 'Part 2 + 3 – Text cohesion',
@@ -57,8 +61,8 @@ export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
 
   const currentTabInfo = partTabContent[activePartTab] || partTabContent.full;
 
-  // Render Practice Exam Workspace when a test card is clicked
-  if (activePracticeTestIndex !== null) {
+  // Render Practice Exam Workspace ONLY when Part 1 is selected
+  if (activePracticeTestIndex !== null && activePartTab === 'part1') {
     return (
       <ReadingPart1Practice
         testIndex={activePracticeTestIndex}
@@ -211,57 +215,31 @@ export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
             return (
               <div
                 key={testNum}
-                onClick={() => setActivePracticeTestIndex(index)}
+                onClick={() => {
+                  if (activePartTab === 'part1') {
+                    setActivePracticeTestIndex(index);
+                  } else {
+                    setShowUpdatingModalPart(currentTabInfo.badge);
+                  }
+                }}
                 className="bg-[#F4F4F6] rounded-xl p-6 border border-slate-200/70 shadow-2xs hover:border-[#CC1C01] hover:shadow-md transition-all duration-200 flex flex-col justify-between min-h-[210px] relative group cursor-pointer"
               >
-                {/* Header Row: Badges */}
+                {/* Header Row: Badge */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="bg-[#FEEBE8] text-[#E0523C] font-semibold text-xs px-2.5 py-0.5 rounded-md">
-                        {currentTabInfo.badge}
-                      </span>
-                      {isFree ? (
-                        <span className="bg-[#E6F4EA] text-[#137333] font-semibold text-xs px-2.5 py-0.5 rounded-md">
-                          FREE
-                        </span>
-                      ) : (
-                        <span className="bg-[#FEF7E0] text-[#B06000] font-semibold text-xs px-2.5 py-0.5 rounded-md inline-flex items-center gap-1">
-                          <span>👑</span>
-                          <span>PRO</span>
-                        </span>
-                      )}
-                    </div>
-
-                    {isCompleted && (
-                      <span className="bg-[#FEF7E0] text-[#B06000] font-bold text-xs px-2.5 py-0.5 rounded-md flex items-center gap-1">
-                        🏆 A0
-                      </span>
-                    )}
+                    <span className="bg-[#FEEBE8] text-[#E0523C] font-semibold text-xs px-2.5 py-0.5 rounded-md">
+                      {currentTabInfo.badge}
+                    </span>
                   </div>
 
-                  {/* Title & Parts Count */}
+                  {/* Title & Subtitle */}
                   <div>
                     <h3 className="font-black text-xl text-slate-900 tracking-tight">
-                      {testTitle}
+                      {testTitle} - Reading {currentTabInfo.badge}
                     </h3>
                     <p className="text-sm text-slate-500 font-medium mt-1">
-                      Full Reading • {partsCount} Parts
+                      📖 Đề luyện tập
                     </p>
-                  </div>
-
-                  {/* Status Badge */}
-                  <div className="pt-1">
-                    {isCompleted ? (
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#E6F4EA] border border-emerald-200 text-xs font-semibold text-[#137333] shadow-2xs">
-                        <span>✓</span>
-                        <span>Đã hoàn thành tất cả 4 Part</span>
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/90 border border-slate-200 text-xs font-normal text-slate-500 shadow-2xs">
-                        Chưa bắt đầu
-                      </span>
-                    )}
                   </div>
                 </div>
 
@@ -429,12 +407,61 @@ export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
             <div className="pt-2 flex justify-end border-t border-slate-100">
               <button
                 onClick={() => setShowTipsModal(false)}
-                className="bg-[#CC1C01] text-white font-bold text-sm px-6 py-2.5 rounded-xl hover:bg-[#b51901] transition-colors shadow-xs"
+                className="bg-[#CC1C01] text-white font-bold text-sm px-6 py-2.5 rounded-xl hover:bg-[#b51901] transition-colors shadow-xs cursor-pointer"
               >
                 Đã hiểu, đóng cửa sổ
               </button>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* MODAL B: Part Updating Notice Modal */}
+      {showUpdatingModalPart && (
+        <div
+          onClick={() => setShowUpdatingModalPart(null)}
+          className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200 cursor-pointer"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-3xl p-7 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 text-left space-y-4 cursor-default"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl font-black">
+                💡
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">
+                  Bộ đề {showUpdatingModalPart} đang cập nhật
+                </h3>
+                <p className="text-xs text-slate-500 font-medium">
+                  Tính năng đang được hoàn thiện
+                </p>
+              </div>
+            </div>
+
+            <p className="text-sm text-slate-600 font-normal leading-relaxed">
+              Bộ đề làm bài dành riêng cho <strong>{showUpdatingModalPart}</strong> đang được hệ thống cập nhật nội dung. Vui lòng chọn tab <strong>Part 1 – Sentence comprehension</strong> để trải nghiệm bộ đề thi chuẩn nhé!
+            </p>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                onClick={() => {
+                  setShowUpdatingModalPart(null);
+                  setActivePartTab('part1');
+                }}
+                className="bg-[#24085A] hover:bg-[#1a0642] text-white font-bold text-sm px-5 py-2.5 rounded-xl transition-all shadow-md active:scale-95 cursor-pointer"
+              >
+                Chuyển sang Part 1
+              </button>
+              <button
+                onClick={() => setShowUpdatingModalPart(null)}
+                className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm px-4 py-2.5 rounded-xl transition-all cursor-pointer"
+              >
+                Đóng
+              </button>
+            </div>
           </div>
         </div>
       )}
