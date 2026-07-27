@@ -3,11 +3,17 @@
 import React from 'react';
 import SkillPracticeView, { PartTab, PartTabContent } from './SkillPracticeView';
 
+import scrapedData from '@/data/scraped_data.json';
+import ListeningPart1Practice from './listening/ListeningPart1Practice';
+
 interface ListeningViewProps {
   onBackToHome?: () => void;
 }
 
 export default function ListeningView({ onBackToHome }: ListeningViewProps) {
+  const rawListeningTests = (scrapedData as any).listening_tests || {};
+  const totalTestSets = Object.keys(rawListeningTests).length || 15;
+
   const partTabs: PartTab[] = [
     { id: 'full', label: 'Full Part – Tất cả các Part' },
     { id: 'part1', label: 'Part 1 – Information gathering' },
@@ -19,33 +25,33 @@ export default function ListeningView({ onBackToHome }: ListeningViewProps) {
   const partTabContent: Record<string, PartTabContent> = {
     full: {
       title: 'Luyện tập full part kỹ năng Listening',
-      subtitle: 'Hoàn thành tất cả 4 Part nghe liên tục trong 30 phút để đánh giá khả năng phản xạ nghe.',
+      subtitle: `Hoàn thành tất cả 4 Part nghe liên tục trong ${totalTestSets} bộ đề thi Listening hoàn chỉnh.`,
       badge: 'Full Part',
-      testCount: 25,
+      testCount: totalTestSets,
     },
     part1: {
       title: 'Part 1 – Information gathering',
-      subtitle: '25 bộ đề luyện tập (Thông báo ngắn & Tin nhắn thoại)',
+      subtitle: `${totalTestSets} bộ đề luyện tập (Thông báo ngắn & Tin nhắn thoại)`,
       badge: 'Part 1',
-      testCount: 25,
+      testCount: totalTestSets,
     },
     part2: {
       title: 'Part 2 – Monologue matching',
-      subtitle: '20 bộ đề luyện tập (Ghép thông tin người nói)',
+      subtitle: `${totalTestSets} bộ đề luyện tập (Ghép thông tin người nói)`,
       badge: 'Part 2',
-      testCount: 20,
+      testCount: totalTestSets,
     },
     part3: {
       title: 'Part 3 – Dialogue opinion',
-      subtitle: '18 bộ đề luyện tập (Hội thoại quan điểm & thái độ)',
+      subtitle: `${totalTestSets} bộ đề luyện tập (Hội thoại quan điểm & thái độ)`,
       badge: 'Part 3',
-      testCount: 18,
+      testCount: totalTestSets,
     },
     part4: {
       title: 'Part 4 – Academic lecture',
-      subtitle: '15 bộ đề luyện tập (Bài giảng ngắn & Bài nói chuyên đề)',
+      subtitle: `${totalTestSets} bộ đề luyện tập (Bài giảng ngắn & Bài nói chuyên đề)`,
       badge: 'Part 4',
-      testCount: 15,
+      testCount: totalTestSets,
     },
   };
 
@@ -89,8 +95,65 @@ export default function ListeningView({ onBackToHome }: ListeningViewProps) {
       partTabs={partTabs}
       partTabContent={partTabContent}
       defaultPartTab="part1"
+      supportedPartIds={['full', 'part1', 'part2', 'part3', 'part4']}
       tipsTitle="Mẹo thi Aptis Listening"
       tipsContent={tipsContent}
+      getMarathonCardProps={(partId) => {
+        if (partId === 'full') return null;
+        if (partId === 'part1') {
+          return {
+            title: 'Luyện tất cả đề Part 1',
+            subtitle: `Làm liên tục ${totalTestSets} bộ đề Part 1 — không giới hạn giờ`,
+            totalCount: totalTestSets,
+          };
+        }
+        return null;
+      }}
+      getCustomCardProps={(partId, testNum) => {
+        const testNumberStr = testNum < 10 ? '0' + testNum : `${testNum}`;
+        if (partId === 'full') {
+          return {
+            title: `Đề ${testNumberStr} - Listening Full Part`,
+            subtitle: '🎧 4 Parts (17 đoạn ghi âm) • 30 phút',
+            badge: 'Full Part',
+          };
+        }
+        if (partId === 'part1') {
+          return {
+            title: `Đề ${testNumberStr} - Listening Part 1`,
+            subtitle: '🎧 Thông tin ngắn (13 câu) • 13 phút',
+            badge: 'Part 1',
+          };
+        }
+        if (partId === 'part2') {
+          return {
+            title: `Đề ${testNumberStr} - Listening Part 2`,
+            subtitle: '🎧 Monologue matching (4 người nói) • 5 phút',
+            badge: 'Part 2',
+          };
+        }
+        if (partId === 'part3') {
+          return {
+            title: `Đề ${testNumberStr} - Listening Part 3`,
+            subtitle: '🎧 Dialogue opinion (Hội thoại Nam & Nữ) • 5 phút',
+            badge: 'Part 3',
+          };
+        }
+        if (partId === 'part4') {
+          return {
+            title: `Đề ${testNumberStr} - Listening Part 4`,
+            subtitle: '🎧 Academic lecture (2 bài giảng) • 7 phút',
+            badge: 'Part 4',
+          };
+        }
+        return null;
+      }}
+      renderPracticeExam={({ partId, testIndex, onExit }) => {
+        if (partId === 'part1') {
+          return <ListeningPart1Practice testIndex={testIndex} onExit={onExit} />;
+        }
+        return null;
+      }}
     />
   );
 }

@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import scrapedData from '../../../../scraped_data.json';
-import ExamPracticeLayout from './exam/ExamPracticeLayout';
-import DetailedAnswersCard from './exam/DetailedAnswersCard';
-import ReadingPart1View, { Question1Item } from './reading/ReadingPart1View';
-import ReadingPart23View from './reading/ReadingPart23View';
-import ReadingPart4View, { Question4Item } from './reading/ReadingPart4View';
-import ReadingPart5View from './reading/ReadingPart5View';
+import scrapedData from '@/data/scraped_data.json';
+import ExamPracticeLayout from '../exam/ExamPracticeLayout';
+import DetailedAnswersCard from '../exam/DetailedAnswersCard';
+import ReadingPart1View, { Question1Item } from './ReadingPart1View';
+import ReadingPart23View from './ReadingPart23View';
+import ReadingPart4View, { Question4Item } from './ReadingPart4View';
+import ReadingPart5View from './ReadingPart5View';
 
 // Deterministic array shuffle helper for Part 2 & Part 3
 function shuffleArray<T>(array: T[], seed: number): T[] {

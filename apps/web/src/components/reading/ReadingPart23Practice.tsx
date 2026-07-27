@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import scrapedData from '../../../../scraped_data.json';
-import BasePracticeExam from './exam/BasePracticeExam';
-import DetailedAnswersCard from './exam/DetailedAnswersCard';
-import ReadingPart23View from './reading/ReadingPart23View';
+import scrapedData from '@/data/scraped_data.json';
+import BasePracticeExam from '../exam/BasePracticeExam';
+import DetailedAnswersCard from '../exam/DetailedAnswersCard';
+import ReadingPart23View from './ReadingPart23View';
 
 interface QuestionSetData {
   topicTitle: string;
@@ -152,8 +152,8 @@ export default function ReadingPart23Practice({
 
                         <div className="flex-1 space-y-1.5">
                           {isCorr ? (
-                            <div className="flex items-start gap-2 text-emerald-800 bg-emerald-50 border border-emerald-300/80 p-2.5 rounded-lg font-normal">
-                              <span className="text-emerald-600 font-bold">✓</span>
+                            <div className="flex items-start gap-2 text-[#008080] bg-[#008080]/10 border border-[#008080]/30 p-2.5 rounded-lg font-normal">
+                              <span className="text-[#008080] font-bold">✓</span>
                               <span>{userAns}</span>
                             </div>
                           ) : (
@@ -164,8 +164,8 @@ export default function ReadingPart23Practice({
                                 <span className="line-through">{userAns || '(Chưa chọn)'}</span>
                               </div>
                               {/* Correct Choice */}
-                              <div className="flex items-start gap-2 text-emerald-800 bg-emerald-50 border border-emerald-300/80 p-2.5 rounded-lg font-normal">
-                                <span className="text-emerald-600 font-bold">✓</span>
+                              <div className="flex items-start gap-2 text-[#008080] bg-[#008080]/10 border border-[#008080]/30 p-2.5 rounded-lg font-normal">
+                                <span className="text-[#008080] font-bold">✓</span>
                                 <span>{correctAns}</span>
                               </div>
                             </div>

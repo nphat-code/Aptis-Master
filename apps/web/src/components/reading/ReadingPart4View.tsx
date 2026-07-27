@@ -41,7 +41,8 @@ export default function ReadingPart4View({
       <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/80 shadow-2xs space-y-6 text-left">
         {passages.slice(1, 5).map((text, pIdx) => {
           const personLetter = String.fromCharCode(65 + pIdx);
-          const cleanContent = text.replace(/^<strong>[A-D]:<\/strong>\s*/i, '');
+          const textStr = typeof text === 'string' ? text : (typeof text === 'object' && text !== null ? ((text as any).text || (text as any).question || '') : String(text || ''));
+          const cleanContent = textStr.replace(/^<strong>[A-D]:<\/strong>\s*/i, '');
 
           return (
             <div key={pIdx} className="space-y-1.5 border-b border-slate-100 last:border-none pb-5 last:pb-0">

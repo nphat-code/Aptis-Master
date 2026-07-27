@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import scrapedData from '../../../../scraped_data.json';
-import BasePracticeExam from './exam/BasePracticeExam';
-import DetailedAnswersCard, { AnswerDiffBadge } from './exam/DetailedAnswersCard';
-import ReadingPart5View from './reading/ReadingPart5View';
+import scrapedData from '@/data/scraped_data.json';
+import BasePracticeExam from '../exam/BasePracticeExam';
+import DetailedAnswersCard, { AnswerDiffBadge } from '../exam/DetailedAnswersCard';
+import ReadingPart5View from './ReadingPart5View';
 
 interface ReadingPart5PracticeProps {
   testIndex: number; // 0-based index for tests, or -1 for Marathon

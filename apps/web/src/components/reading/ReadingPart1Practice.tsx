@@ -1,13 +1,13 @@
 'use client';
 
-import React from 'react';
-import scrapedData from '../../../../scraped_data.json';
-import BasePracticeExam from './exam/BasePracticeExam';
-import DetailedAnswersCard, { AnswerDiffBadge } from './exam/DetailedAnswersCard';
-import ReadingPart1View, { Question1Item } from './reading/ReadingPart1View';
+import React, { useMemo } from 'react';
+import scrapedData from '@/data/scraped_data.json';
+import BasePracticeExam from '../exam/BasePracticeExam';
+import DetailedAnswersCard, { AnswerDiffBadge } from '../exam/DetailedAnswersCard';
+import ReadingPart1View, { Question1Item } from './ReadingPart1View';
 
-interface ReadingPart1PracticeProps {
-  testIndex: number; // 0-based index for tests, or -1 for Marathon
+export interface ReadingPart1PracticeProps {
+  testIndex?: number;
   onExit: () => void;
 }
 

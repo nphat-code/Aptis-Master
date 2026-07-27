@@ -2,12 +2,12 @@
 
 import React from 'react';
 import SkillPracticeView, { PartTab, PartTabContent } from './SkillPracticeView';
-import ReadingPart1Practice from './ReadingPart1Practice';
-import ReadingPart23Practice from './ReadingPart23Practice';
-import ReadingPart4Practice from './ReadingPart4Practice';
-import ReadingPart5Practice from './ReadingPart5Practice';
-import ReadingFullPractice from './ReadingFullPractice';
-import scrapedData from '../../../../scraped_data.json';
+import ReadingPart1Practice from './reading/ReadingPart1Practice';
+import ReadingPart23Practice from './reading/ReadingPart23Practice';
+import ReadingPart4Practice from './reading/ReadingPart4Practice';
+import ReadingPart5Practice from './reading/ReadingPart5Practice';
+import ReadingFullPractice from './reading/ReadingFullPractice';
+import scrapedData from '@/data/scraped_data.json';
 
 interface ReadingViewProps {
   onBackToHome?: () => void;
@@ -15,11 +15,11 @@ interface ReadingViewProps {
 }
 
 export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
-  const part1TotalCount = scrapedData?.reading?.question1?.length || 48;
-  const part23TotalSets = scrapedData?.reading?.question2?.questionSets?.length || 39;
+  const part1TotalCount = (scrapedData as any)?.reading?.question1?.length || 48;
+  const part23TotalSets = (scrapedData as any)?.reading?.question2?.questionSets?.length || 39;
   const part23TotalCount = part23TotalSets;
-  const part4TotalCount = scrapedData?.reading?.question4?.question4Text?.length || 14;
-  const part5TotalCount = Object.keys(scrapedData?.reading?.question5?.paragraph_question5 || {}).length || 11;
+  const part4TotalCount = (scrapedData as any)?.reading?.question4?.question4Content?.length || 14;
+  const part5TotalCount = (scrapedData as any)?.reading?.question5?.paragraph_question5?.length || 11;
   const fullTotalCount = Object.keys((scrapedData as any)?.reading_tests || {}).length || 14;
 
   const partTabs: PartTab[] = [
