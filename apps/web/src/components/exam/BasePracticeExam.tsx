@@ -12,6 +12,7 @@ export interface BasePracticeExamProps {
   defaultTimeSeconds?: number; // e.g. 360 (6 mins) or 420 (7 mins)
   subQuestionsPerSet?: number; // e.g. 5 for Part 1 & 2+3, 7 for Part 4
   pointsPerSubQuestion?: number; // default 2
+  instructionsText?: React.ReactNode;
   isAnswerCorrect: (subIndex: number, answerValue: any) => boolean;
   onExit: () => void;
   renderQuestions: ExamPracticeLayoutProps['renderQuestions'];
@@ -27,6 +28,7 @@ export default function BasePracticeExam({
   defaultTimeSeconds = 360,
   subQuestionsPerSet = 5,
   pointsPerSubQuestion = 2,
+  instructionsText,
   isAnswerCorrect,
   onExit,
   renderQuestions,
@@ -58,6 +60,7 @@ export default function BasePracticeExam({
       timeAllowedSeconds={timeAllowedSeconds}
       maxScore={maxScore}
       customTotalSubQuestions={totalSubQuestions}
+      instructionsText={instructionsText}
       isAnswerCorrect={isAnswerCorrect}
       initialStep={isAllPractice ? 'questions' : 'start'}
       unlimitedTime={isAllPractice}

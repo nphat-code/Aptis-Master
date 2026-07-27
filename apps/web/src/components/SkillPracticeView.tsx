@@ -171,18 +171,22 @@ export default function SkillPracticeView({
         </div>
 
         {/* Filter Tabs Bar */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 w-full pt-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-1.5 sm:gap-2 w-full pt-1">
           {partTabs.map((tab) => {
             const isActive = activePartTab === tab.id;
+            const isFullPart = tab.id === 'full';
+
+            const activeClass = isActive
+              ? isFullPart
+                ? 'bg-[#CC1C01] text-white shadow-sm'
+                : 'bg-[#FEAD5D] text-slate-900 shadow-sm font-extrabold'
+              : 'bg-[#F4F4F6] text-slate-600 hover:text-slate-900 hover:bg-slate-200/80 border border-slate-200/60';
+
             return (
               <button
                 key={tab.id}
                 onClick={() => setActivePartTab(tab.id)}
-                className={`w-full px-4 py-3.5 rounded-lg text-xs sm:text-sm font-bold text-center justify-center transition-all duration-150 flex items-center ${
-                  isActive
-                    ? 'bg-[#CC1C01] text-white shadow-sm'
-                    : 'bg-[#F4F4F6] text-slate-600 hover:text-slate-900 hover:bg-slate-200/80 border border-slate-200/60'
-                }`}
+                className={`w-full px-2.5 py-3 rounded-lg text-xs sm:text-sm font-bold text-center justify-center transition-all duration-150 flex items-center ${activeClass}`}
               >
                 <span className="w-full text-center leading-snug">{tab.label}</span>
               </button>
@@ -303,7 +307,7 @@ export default function SkillPracticeView({
                 onClick={() => setShowTipsModal(false)}
                 className="bg-[#CC1C01] text-white font-bold text-sm px-6 py-2.5 rounded-xl hover:bg-[#b51901] transition-colors shadow-xs cursor-pointer"
               >
-                Đã hiểu, đóng cửa sổ
+                Đã hiểu
               </button>
             </div>
 

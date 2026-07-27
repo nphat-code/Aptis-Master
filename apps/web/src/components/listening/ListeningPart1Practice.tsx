@@ -32,12 +32,31 @@ export default function ListeningPart1Practice({
   return (
     <BasePracticeExam
       moduleName="Listening"
-      partTitle="Part 1 – Information gathering"
+      partTitle="Part 1 – Word Recognition"
       testIndex={testIndex}
       totalSets={totalSets}
-      defaultTimeSeconds={780} // 13 mins
+      defaultTimeSeconds={480} // 8 mins
       subQuestionsPerSet={13}
       pointsPerSubQuestion={1}
+      instructionsText={
+        <>
+          <p className="text-sm font-medium text-slate-700 leading-relaxed">
+            Click on the PLAY button to listen to each recording.
+          </p>
+
+          <p className="text-sm font-medium text-slate-700 leading-relaxed">
+            You can listen to each recording TWO TIMES ONLY.
+          </p>
+
+          <p className="text-sm font-medium text-slate-700 leading-relaxed">
+            You have 8 minutes to complete this part.
+          </p>
+
+          <p className="text-sm font-medium text-slate-700 leading-relaxed pt-2">
+            When you click on the &apos;Next&apos; button, the test will begin.
+          </p>
+        </>
+      }
       isAnswerCorrect={(idx, val) => {
         const targetQ = isAllPractice ? allQuestionsFlat[idx] : singleTestQuestions[idx];
         return val === targetQ?.correctAnswer;
