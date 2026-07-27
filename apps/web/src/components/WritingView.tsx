@@ -5,9 +5,10 @@ import SkillPracticeView, { PartTab, PartTabContent } from './SkillPracticeView'
 
 interface WritingViewProps {
   onBackToHome?: () => void;
+  data?: any;
 }
 
-export default function WritingView({ onBackToHome }: WritingViewProps) {
+export default function WritingView({ onBackToHome, data }: WritingViewProps) {
   const partTabs: PartTab[] = [
     { id: 'full', label: 'Full Part – Tất cả các Part' },
     { id: 'part1', label: 'Part 1 – Word completion' },

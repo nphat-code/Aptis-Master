@@ -8,9 +8,10 @@ import ListeningPart1Practice from './listening/ListeningPart1Practice';
 
 interface ListeningViewProps {
   onBackToHome?: () => void;
+  data?: any;
 }
 
-export default function ListeningView({ onBackToHome }: ListeningViewProps) {
+export default function ListeningView({ onBackToHome, data }: ListeningViewProps) {
   const rawListeningTests = (scrapedData as any).listening_tests || {};
   const totalTestSets = Object.keys(rawListeningTests).length || 15;
 
