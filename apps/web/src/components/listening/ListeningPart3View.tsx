@@ -3,16 +3,17 @@
 import React from 'react';
 import AudioPlayer from './AudioPlayer';
 
-export interface ListeningPart2Data {
+export interface ListeningPart3Data {
   audioUrl: string;
   topic?: string;
-  options: string[];
-  correctAnswers?: string[];
+  description?: string;
+  questions: string[];
+  correctAnswer?: string[];
   transcript?: string;
 }
 
-export interface ListeningPart2ViewProps {
-  data: ListeningPart2Data;
+export interface ListeningPart3ViewProps {
+  data: ListeningPart3Data;
   userAnswers: Record<number, any>;
   baseAnswerKey: number;
   onAnswer: (subIdx: number, val: any) => void;
@@ -20,73 +21,88 @@ export interface ListeningPart2ViewProps {
   showExplanation?: boolean;
 }
 
-export function ListeningPart2View({
+export function ListeningPart3View({
   data,
   userAnswers,
   baseAnswerKey = 0,
   onAnswer,
   isReviewMode = false,
   showExplanation = false,
-}: ListeningPart2ViewProps) {
-  const speakers = [
-    { label: 'Speaker A ...', keyOffset: 0 },
-    { label: 'Speaker B ...', keyOffset: 1 },
-    { label: 'Speaker C ...', keyOffset: 2 },
-    { label: 'Speaker D ...', keyOffset: 3 },
-  ];
-
+}: ListeningPart3ViewProps) {
   const normalizedAudioUrl = data.audioUrl.startsWith('http') || data.audioUrl.startsWith('/')
     ? data.audioUrl
     : `/${data.audioUrl}`;
 
   const isChecked = isReviewMode || showExplanation;
-  const correctAnswersList = data.correctAnswers || data.options.slice(0, 4);
+  const correctAnswersList = data.correctAnswer || [];
+
+  const formattedTranscript = data.transcript
+    ? data.transcript
+        .replace(/^W:\s*/gm, 'Woman: ')
+        .replace(/^M:\s*/gm, 'Man: ')
+        .replace(/\n(?=Woman:|Man:|W:|M:)/g, '\n\n')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim()
+    : '';
+
+  const optionsList = ['Man', 'Woman', 'Both'];
+
+  const fullDesc = data.description || "Listen to the conversation. Read the statements and decide whose opinion matches the best: the man's, the woman's or both.";
+  const topText = fullDesc.replace(/Who expresses which opinion\?*/gi, '').trim();
+  const bottomText = "Who expresses which opinion?";
 
   return (
     <div className="space-y-4 text-left max-w-4xl mx-auto font-sans text-[14px]">
-      {/* Instruction Prompt */}
+      {/* Description Prompt Above Audio Player */}
       <p className="text-[14px] text-slate-700 font-normal leading-relaxed">
-        Listen to four people and match each person to the correct information.
+        {topText}
       </p>
 
-      {/* Audio Player Button (Identical to Part 1) */}
+      {/* Audio Player Button (Identical to Part 1 & Part 2) */}
       <div className="pt-1">
         <AudioPlayer src={normalizedAudioUrl} />
       </div>
 
-      {/* 4 Speakers List: Speaker A ... Option on the right */}
-      <div className="space-y-3 pt-1">
-        {speakers.map((spk, sIdx) => {
-          const answerKey = baseAnswerKey + spk.keyOffset;
+      {/* Sub-prompt Below Audio Player */}
+      <p className="text-[14px] font-normal text-slate-700 pt-1">
+        {bottomText}
+      </p>
+
+      {/* 4 Statements / Questions */}
+      <div className="space-y-3.5 pt-1">
+        {data.questions.map((qText, qIdx) => {
+          const answerKey = baseAnswerKey + qIdx;
           const selectedVal = userAnswers[answerKey] || '';
-          const correctVal = correctAnswersList[spk.keyOffset] || data.options[spk.keyOffset] || '';
+          const correctVal = correctAnswersList[qIdx] || '';
           const isCorr = selectedVal === correctVal;
+          const cleanQText = qText.replace(/^\d+\.\s*/, '');
 
           return (
-            <div key={sIdx} className="space-y-1.5">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2.5">
-                {/* Speaker Label */}
-                <span className="text-[14px] font-medium text-slate-800 w-28 shrink-0">
-                  {spk.label}
+            <div key={qIdx} className="space-y-1">
+              {/* Question Statement + Inline Option Select Box directly after text */}
+              <div className="flex flex-wrap items-center gap-2 text-[14px]">
+                <span className="font-normal text-[#24085A] text-[14px] shrink-0">{qIdx + 1}.</span>
+                <span className="text-[14px] font-normal text-slate-800 leading-normal">
+                  {cleanQText}
                 </span>
 
-                {/* Option Select Box on the Right */}
+                {/* Option Select Box on the left directly after question text */}
                 <select
                   disabled={isReviewMode}
                   value={selectedVal}
                   onChange={(e) => onAnswer(answerKey, e.target.value)}
-                  className={`w-full sm:flex-1 px-3 py-2 text-[14px] appearance-auto rounded-lg transition-all font-normal cursor-pointer bg-white border border-slate-300 text-slate-800 ${
+                  className={`px-2.5 py-1 text-[14px] appearance-auto rounded-lg transition-all font-normal cursor-pointer bg-white border text-slate-800 shrink-0 min-w-[95px] ${
                     isChecked
                       ? isCorr
                         ? 'border-[#a7f3d0] bg-[#ecfdf5] text-emerald-950'
                         : selectedVal
                         ? 'border-[#fecaca] bg-[#fef2f2] text-red-950'
                         : 'border-slate-300 bg-slate-50 text-slate-600'
-                      : 'focus:outline-none focus:border-slate-400 hover:border-slate-400'
+                      : 'border-slate-300 focus:outline-none focus:border-slate-400 hover:border-slate-400'
                   }`}
                 >
                   <option value=""></option>
-                  {data.options.map((opt, oIdx) => (
+                  {optionsList.map((opt, oIdx) => (
                     <option key={oIdx} value={opt}>
                       {opt}
                     </option>
@@ -96,7 +112,7 @@ export function ListeningPart2View({
 
               {/* Inline Answer Display for Review/Explanation */}
               {isChecked && (
-                <div className="sm:pl-[104px] pt-0.5 flex items-center gap-2 text-[14px]">
+                <div className="pl-3 pt-0.5 flex items-center gap-2 text-[14px]">
                   {isCorr ? (
                     <span className="text-emerald-700 text-[14px] font-normal">
                       ✓ {selectedVal}
@@ -120,13 +136,13 @@ export function ListeningPart2View({
       </div>
 
       {/* Script Box */}
-      {(showExplanation || isReviewMode) && data.transcript && (
+      {(showExplanation || isReviewMode) && formattedTranscript && (
         <div className="pt-4 border-t border-slate-200/80 space-y-2 mt-4">
           <div className="text-[14px] font-bold text-slate-900">
             Script
           </div>
           <div className="text-[14px] text-slate-700 font-normal leading-relaxed whitespace-pre-line bg-slate-50 p-4 rounded-xl border border-slate-200/70">
-            {data.transcript}
+            {formattedTranscript}
           </div>
         </div>
       )}
@@ -134,4 +150,4 @@ export function ListeningPart2View({
   );
 }
 
-export default ListeningPart2View;
+export default ListeningPart3View;
