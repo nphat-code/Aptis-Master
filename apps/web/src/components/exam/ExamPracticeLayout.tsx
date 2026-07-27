@@ -16,6 +16,7 @@ export interface ExamPracticeLayoutProps {
   customScore?: number;
   customTotalSubQuestions?: number;
   getSubQuestionWeight?: (subIndex: number) => number;
+  getCefrLevel?: (score: number, maxScore: number) => string;
   isAnswerCorrect?: (questionIndex: number, answerValue: any) => boolean;
   onExit: () => void;
 
@@ -48,6 +49,7 @@ export default function ExamPracticeLayout({
   customScore,
   customTotalSubQuestions,
   getSubQuestionWeight,
+  getCefrLevel,
   isAnswerCorrect,
   onExit,
   renderQuestions,
@@ -218,6 +220,21 @@ export default function ExamPracticeLayout({
 
     return Math.round(rawTotal);
   }, [customScore, isAnswerCorrect, userAnswers, getSubQuestionWeight, pointsPerSubQuestion, correctSubQuestionsCount]);
+
+  // Compute CEFR Level (Module specific, default Reading thresholds: 8->A1, 16->A2, 26->B1, 38->B2, 46->C1)
+  const cefrLevel = useMemo(() => {
+    if (getCefrLevel) return getCefrLevel(calculatedScore, maxScore);
+    if (moduleName === 'Reading') {
+      const scaled = maxScore === 50 ? calculatedScore : Math.round((calculatedScore * 50) / maxScore);
+      if (scaled >= 46) return 'C1';
+      if (scaled >= 38) return 'B2';
+      if (scaled >= 26) return 'B1';
+      if (scaled >= 16) return 'A2';
+      if (scaled >= 8) return 'A1';
+      return 'A0';
+    }
+    return null;
+  }, [getCefrLevel, calculatedScore, maxScore, moduleName]);
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-[#F4F4F6] text-slate-900 font-sans flex flex-col justify-between selection:bg-[#CC1C01] selection:text-white">
@@ -474,8 +491,8 @@ export default function ExamPracticeLayout({
                 </p>
               </div>
 
-              {/* Score Grid (2 columns: Points out of maxScore & Correct questions count) */}
-              <div className="flex items-center justify-center gap-12 sm:gap-20 py-2">
+              {/* Score Grid (3 columns: Total Score | CEFR Level | Correct Questions) */}
+              <div className="flex items-center justify-center gap-8 sm:gap-14 py-2">
                 {/* Total Score */}
                 <div>
                   <div className="flex items-baseline justify-center">
@@ -491,18 +508,32 @@ export default function ExamPracticeLayout({
                   </div>
                 </div>
 
+                {/* CEFR Level Column (Trình độ) */}
+                {cefrLevel && (
+                  <div>
+                    <div className="flex items-baseline justify-center">
+                      <span className="text-4xl sm:text-5xl font-black text-[#24085A]">
+                        {cefrLevel}
+                      </span>
+                    </div>
+                    <div className="text-xs font-semibold text-slate-500 mt-1">
+                      Trình độ
+                    </div>
+                  </div>
+                )}
+
                 {/* Correct Questions Count */}
                 <div>
                   <div className="flex items-baseline justify-center">
                     <span className="text-4xl sm:text-5xl font-black text-slate-900">
-                      {answeredCount}
+                      {correctSubQuestionsCount}
                     </span>
                     <span className="text-xl sm:text-2xl font-bold text-slate-400 ml-0.5">
                       /{displayTotalSubCount}
                     </span>
                   </div>
                   <div className="text-xs font-semibold text-slate-500 mt-1">
-                    Số câu đã làm
+                    Số câu đúng
                   </div>
                 </div>
               </div>
