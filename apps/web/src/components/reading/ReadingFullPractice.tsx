@@ -3,6 +3,7 @@
 import React, { useMemo } from 'react';
 import scrapedData from '@/data/scraped_data.json';
 import ExamPracticeLayout from '../exam/ExamPracticeLayout';
+import ExamInstructions from '../exam/ExamInstructions';
 import DetailedAnswersCard from '../exam/DetailedAnswersCard';
 import ReadingPart1View, { Question1Item } from './ReadingPart1View';
 import ReadingPart23View from './ReadingPart23View';
@@ -167,21 +168,7 @@ export default function ReadingFullPractice({
         if (subIdx <= 21) return 16 / 7; // Part 4: 16/7 pt/câu (7 câu = 16đ)
         return 2;                        // Part 5: 2 pt/câu (7 câu = 14đ)
       }}
-      instructionsText={
-        <>
-          <p className="text-sm font-medium text-slate-700 leading-relaxed">
-            The test has five parts.
-          </p>
-
-          <p className="text-sm font-medium text-slate-700 leading-relaxed pt-1">
-            You have 35 minutes to complete the test.
-          </p>
-
-          <p className="text-sm font-medium text-slate-700 leading-relaxed pt-2">
-            When you click on the &apos;Next&apos; button, the test will begin.
-          </p>
-        </>
-      }
+      instructionsText={<ExamInstructions skill="Reading" isFullExam={true} partsCount={5} timeMinutes={35} />}
       isAnswerCorrect={isAnswerCorrect}
       onExit={onExit}
       renderQuestions={({ currentQuestionIndex, userAnswers, onAnswer, isReviewMode, showExplanation }) => {

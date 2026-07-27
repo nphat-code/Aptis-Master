@@ -51,12 +51,12 @@ export default function ReadingPart5View({
                   disabled={isReviewMode}
                   value={selectedVal}
                   onChange={(e) => onAnswer(answerKey, e.target.value)}
-                  className={`px-3.5 py-1.5 text-[14px] appearance-auto max-w-full rounded-lg transition-all font-semibold cursor-pointer ${
+                  className={`px-3.5 py-1.5 text-[14px] appearance-auto max-w-full rounded-lg transition-all font-normal cursor-pointer ${
                     isChecked
                       ? isCorr
-                        ? 'border-2 border-emerald-500 bg-white text-emerald-700 font-normal'
+                        ? 'border border-[#a7f3d0] bg-[#ecfdf5] text-emerald-950 font-normal'
                         : selectedVal
-                        ? 'border-2 border-red-500 bg-white text-red-700 font-normal'
+                        ? 'border border-[#fecaca] bg-[#fef2f2] text-red-950 font-normal'
                         : 'border border-slate-300 bg-slate-50 text-slate-600'
                       : 'bg-white border border-slate-300 text-slate-800 focus:outline-none focus:ring-2 focus:border-[#24085A] focus:ring-[#24085A]/20 hover:border-slate-400'
                   }`}
@@ -74,18 +74,18 @@ export default function ReadingPart5View({
               {isChecked && (
                 <div className="sm:pl-7 pt-0.5 flex items-center gap-2 text-[14px]">
                   {isCorr ? (
-                    <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-md text-[13px] font-normal inline-flex items-center gap-1.5">
+                    <span className="bg-[#ecfdf5] text-emerald-800 border border-[#a7f3d0] px-3 py-1 rounded-md text-[13px] font-normal inline-flex items-center gap-1.5">
                       <span className="text-emerald-600 text-xs font-normal">✓</span>
                       <span>{selectedVal}</span>
                     </span>
                   ) : (
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="bg-red-50 text-red-700 border border-red-200 px-3 py-1 rounded-md text-[13px] font-normal inline-flex items-center gap-1.5">
+                      <span className="bg-[#fef2f2] text-red-800 border border-[#fecaca] px-3 py-1 rounded-md text-[13px] font-normal inline-flex items-center gap-1.5">
                         <span className="text-red-600 text-xs font-normal">✕</span>
                         <span className="line-through">{selectedVal || '(trống)'}</span>
                       </span>
                       <span className="text-slate-400 text-[13px] font-normal">→</span>
-                      <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-md text-[13px] font-normal inline-flex items-center gap-1.5">
+                      <span className="bg-[#ecfdf5] text-emerald-800 border border-[#a7f3d0] px-3 py-1 rounded-md text-[13px] font-normal inline-flex items-center gap-1.5">
                         <span>{correctVal}</span>
                       </span>
                     </div>

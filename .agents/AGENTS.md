@@ -22,3 +22,10 @@
 8. **CEFR Level Calculation & Display Rule**:
    - `ExamPracticeLayout` must never hardcode internal CEFR scoring formulas.
    - CEFR level (`Trình độ`) is calculated and displayed exclusively when a skill's Full Practice component explicitly provides its own `getCefrLevel={(score, maxScore) => ...}` prop. Single Part practice tests omit this prop to keep CEFR level hidden.
+9. **Answer Display Color Standard**:
+   - All correct/incorrect answer boxes, review cards, inline option feedbacks, and detailed answer cards across all skills must strictly use `bg-[#ecfdf5]` for correct (green) and `bg-[#fef2f2]` for incorrect (red).
+10. **Detailed Answers Subtitle & Layout Standard**:
+    - If a Part has an instruction prompt, it must be provided as the `subtitle` prop directly below `Chi tiết bài làm` inside `DetailedAnswersCard` (just like Reading parts).
+    - Detailed answer review cards must omit redundant topic titles and inner wrapper cards, placing the audio bar first (for listening), followed by speaker/question item boxes.
+
+

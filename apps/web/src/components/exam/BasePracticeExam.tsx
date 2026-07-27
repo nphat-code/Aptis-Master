@@ -3,6 +3,8 @@
 import React from 'react';
 import ExamPracticeLayout, { ExamPracticeLayoutProps } from './ExamPracticeLayout';
 
+import ExamInstructions from './ExamInstructions';
+
 export interface BasePracticeExamProps {
   moduleName: string; // e.g. "Reading", "Listening", "Speaking", "Writing", "Grammar"
   partTitle: string; // e.g. "Part 1 – Gap Fill"
@@ -57,6 +59,10 @@ export default function BasePracticeExam({
   const maxScore = (customTotalQuestions !== undefined && !isAllPractice ? customTotalQuestions : totalSubQuestions) * pointsPerSubQuestion;
   const timeAllowedSeconds = isAllPractice ? 999999 : defaultTimeSeconds;
 
+  const finalInstructions = instructionsText || (
+    <ExamInstructions skill={moduleName} timeSeconds={defaultTimeSeconds} />
+  );
+
   return (
     <ExamPracticeLayout
       moduleName={moduleName}
@@ -66,7 +72,7 @@ export default function BasePracticeExam({
       timeAllowedSeconds={timeAllowedSeconds}
       maxScore={maxScore}
       customTotalSubQuestions={customTotalQuestions !== undefined ? customTotalQuestions : totalSubQuestions}
-      instructionsText={instructionsText}
+      instructionsText={finalInstructions}
       isAnswerCorrect={isAnswerCorrect}
       initialStep={isAllPractice ? 'questions' : 'start'}
       unlimitedTime={isAllPractice}

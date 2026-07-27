@@ -5,6 +5,7 @@ import SkillPracticeView, { PartTab, PartTabContent } from './SkillPracticeView'
 
 import scrapedData from '@/data/scraped_data.json';
 import ListeningPart1Practice from './listening/ListeningPart1Practice';
+import ListeningPart2Practice from './listening/ListeningPart2Practice';
 
 interface ListeningViewProps {
   onBackToHome?: () => void;
@@ -155,9 +156,17 @@ export default function ListeningView({ onBackToHome, data }: ListeningViewProps
       getMarathonCardProps={(partId) => {
         if (partId === 'full') return null;
         if (partId === 'part1') {
+          const totalP1 = (scrapedData as any).listening?.listening_question1_13?.length || 210;
           return {
             title: 'Luyện tất cả đề Part 1',
-            subtitle: `Làm liên tục ${totalTestSets} bộ đề Part 1 — không giới hạn giờ`,
+            subtitle: `Làm liên tục ${totalP1} câu hỏi Part 1 — không giới hạn giờ`,
+            totalCount: totalP1,
+          };
+        }
+        if (partId === 'part2') {
+          return {
+            title: 'Luyện tất cả đề Part 2',
+            subtitle: `Làm liên tục ${totalTestSets} bộ đề Part 2 — không giới hạn giờ`,
             totalCount: totalTestSets,
           };
         }
@@ -180,9 +189,16 @@ export default function ListeningView({ onBackToHome, data }: ListeningViewProps
           };
         }
         if (partId === 'part2') {
+          const rawListeningTests = (scrapedData as any).listening_tests || {};
+          const testKey = `test${testNum}`;
+          const q14 = rawListeningTests[testKey]?.q14 || {};
+          const topicRaw = q14.topic || '';
+          const cleanTopic = topicRaw.replace(/^Topic:\s*/i, '').trim();
+          const titleText = cleanTopic ? `Đề ${testNumberStr} - ${cleanTopic}` : `Đề ${testNumberStr} - Listening Part 2`;
+
           return {
-            title: `Đề ${testNumberStr} - Listening Part 2`,
-            subtitle: '🎧 Matching information (4 người nói) • 5 phút',
+            title: titleText,
+            subtitle: '🎧 Matching information (4 người nói) • 10 phút',
             badge: 'P.2',
           };
         }
@@ -205,6 +221,9 @@ export default function ListeningView({ onBackToHome, data }: ListeningViewProps
       renderPracticeExam={({ partId, testIndex, onExit }) => {
         if (partId === 'part1') {
           return <ListeningPart1Practice testIndex={testIndex} onExit={onExit} />;
+        }
+        if (partId === 'part2') {
+          return <ListeningPart2Practice testIndex={testIndex} onExit={onExit} />;
         }
         return null;
       }}

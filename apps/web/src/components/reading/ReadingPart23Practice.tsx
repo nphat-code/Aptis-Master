@@ -152,20 +152,20 @@ export default function ReadingPart23Practice({
 
                         <div className="flex-1 space-y-1.5">
                           {isCorr ? (
-                            <div className="flex items-start gap-2 text-[#008080] bg-[#008080]/10 border border-[#008080]/30 p-2.5 rounded-lg font-normal">
-                              <span className="text-[#008080] font-bold">✓</span>
+                            <div className="flex items-start gap-2 text-emerald-950 bg-[#ecfdf5] border border-[#a7f3d0] p-2.5 rounded-lg font-normal">
+                              <span className="text-emerald-700 font-bold">✓</span>
                               <span>{userAns}</span>
                             </div>
                           ) : (
                             <div className="space-y-1.5">
                               {/* Incorrect User Choice */}
-                              <div className="flex items-start gap-2 text-red-800 bg-red-50 border border-red-300/80 p-2.5 rounded-lg font-normal">
+                              <div className="flex items-start gap-2 text-red-950 bg-[#fef2f2] border border-[#fecaca] p-2.5 rounded-lg font-normal">
                                 <span className="text-red-600 font-bold">✕</span>
                                 <span className="line-through">{userAns || '(Chưa chọn)'}</span>
                               </div>
                               {/* Correct Choice */}
-                              <div className="flex items-start gap-2 text-[#008080] bg-[#008080]/10 border border-[#008080]/30 p-2.5 rounded-lg font-normal">
-                                <span className="text-[#008080] font-bold">✓</span>
+                              <div className="flex items-start gap-2 text-emerald-950 bg-[#ecfdf5] border border-[#a7f3d0] p-2.5 rounded-lg font-normal">
+                                <span className="text-emerald-700 font-bold">✓</span>
                                 <span>{correctAns}</span>
                               </div>
                             </div>

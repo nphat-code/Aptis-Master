@@ -27,7 +27,13 @@ export default function ListeningPart1Practice({
   }, [rawListeningTests, testKeys]);
 
   const singleTestQuestions: Question13Item[] = rawQuestionsList[safeTestIndex] || [];
-  const allQuestionsFlat: Question13Item[] = useMemo(() => rawQuestionsList.flat(), [rawQuestionsList]);
+  const allQuestionsFlat: Question13Item[] = useMemo(() => {
+    const rawAll = (scrapedData as any).listening?.listening_question1_13;
+    if (Array.isArray(rawAll) && rawAll.length > 0) {
+      return rawAll;
+    }
+    return rawQuestionsList.flat();
+  }, [rawQuestionsList]);
 
   const totalQuestionsCount = isAllPractice ? allQuestionsFlat.length : singleTestQuestions.length;
 
@@ -41,25 +47,6 @@ export default function ListeningPart1Practice({
       subQuestionsPerSet={13}
       customTotalQuestions={totalQuestionsCount}
       pointsPerSubQuestion={2}
-      instructionsText={
-        <>
-          <p className="text-sm font-medium text-slate-700 leading-relaxed">
-            Click on the PLAY button to listen to each recording.
-          </p>
-
-          <p className="text-sm font-medium text-slate-700 leading-relaxed">
-            You can listen to each recording TWO TIMES ONLY.
-          </p>
-
-          <p className="text-sm font-medium text-slate-700 leading-relaxed">
-            You have 8 minutes to complete this part.
-          </p>
-
-          <p className="text-sm font-medium text-slate-700 leading-relaxed pt-2">
-            When you click on the &apos;Next&apos; button, the test will begin.
-          </p>
-        </>
-      }
       isAnswerCorrect={(idx, val) => {
         const targetQ = isAllPractice ? allQuestionsFlat[idx] : singleTestQuestions[idx];
         return val === targetQ?.correctAnswer;
@@ -98,8 +85,8 @@ export default function ListeningPart1Practice({
                     key={idx}
                     className={`rounded-2xl p-5 sm:p-6 border text-left space-y-3.5 transition-all ${
                       isCorr
-                        ? 'bg-[#f2fdf5] border-[#c6f6d5]'
-                        : 'bg-[#fff5f5] border-[#fed7d7]'
+                        ? 'bg-[#ecfdf5] border-[#a7f3d0]'
+                        : 'bg-[#fef2f2] border-[#fecaca]'
                     }`}
                   >
                     {/* Question Header Status: (✓) Câu 1 / (⊗) Câu 2 */}
@@ -143,9 +130,9 @@ export default function ListeningPart1Practice({
                         let optBoxStyle = 'bg-white/60 border-slate-200/80 text-slate-600 font-normal';
 
                         if (isCorrectOpt) {
-                          optBoxStyle = 'bg-[#e6f4ea] border-[#a8dab5] text-slate-900 font-semibold ring-1 ring-[#a8dab5]';
+                          optBoxStyle = 'bg-[#ecfdf5] border-[#a7f3d0] text-slate-900 font-semibold ring-1 ring-[#a7f3d0]';
                         } else if (isUserSelected && !isCorr) {
-                          optBoxStyle = 'bg-red-100/80 border-red-300 text-red-950 font-medium line-through';
+                          optBoxStyle = 'bg-[#fef2f2] border-[#fecaca] text-red-950 font-medium line-through';
                         }
 
                         return (

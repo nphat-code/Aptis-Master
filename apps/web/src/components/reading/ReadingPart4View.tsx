@@ -86,12 +86,12 @@ export default function ReadingPart4View({
                   disabled={isReviewMode}
                   value={selectedVal}
                   onChange={(e) => onAnswer(answerKey, e.target.value)}
-                  className={`px-3.5 py-1.5 text-[14px] appearance-auto min-w-[85px] rounded-lg transition-all font-semibold cursor-pointer ${
+                  className={`px-3.5 py-1.5 text-[14px] appearance-auto min-w-[85px] rounded-lg transition-all font-normal cursor-pointer ${
                     isChecked
                       ? isCorr
-                        ? 'border-2 border-emerald-500 bg-white text-emerald-700 font-normal'
+                        ? 'border border-[#a7f3d0] bg-[#ecfdf5] text-emerald-950 font-normal'
                         : selectedVal
-                        ? 'border-2 border-red-500 bg-white text-red-700 font-normal'
+                        ? 'border border-[#fecaca] bg-[#fef2f2] text-red-950 font-normal'
                         : 'border border-slate-300 bg-white text-slate-600'
                       : 'bg-white border border-slate-300 text-slate-800 focus:outline-none focus:ring-2 focus:border-[#24085A] focus:ring-[#24085A]/20 hover:border-slate-400'
                   }`}
