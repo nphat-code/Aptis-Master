@@ -43,3 +43,35 @@ body {
 .animate-header-fade {
   animation: headerFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+
+/* Fast Fade-In for Part Switching */
+@keyframes fastFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fast-fade {
+  animation: fastFadeIn 0.2s ease-out forwards;
+}
+
+/* Slow Right-to-Left Slide-In Animation for Sub-Question Switching */
+@keyframes slideInFromRight {
+  0% {
+    opacity: 0;
+    transform: translateX(36px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-question {
+  animation: slideInFromRight 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

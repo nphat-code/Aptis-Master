@@ -17,6 +17,7 @@ export interface ExamPracticeLayoutProps {
   customTotalSubQuestions?: number;
   getSubQuestionWeight?: (subIndex: number) => number;
   getCefrLevel?: (score: number, maxScore: number) => string;
+  isFullExam?: boolean;
   isAnswerCorrect?: (questionIndex: number, answerValue: any) => boolean;
   onExit: () => void;
 
@@ -50,6 +51,7 @@ export default function ExamPracticeLayout({
   customTotalSubQuestions,
   getSubQuestionWeight,
   getCefrLevel,
+  isFullExam = false,
   isAnswerCorrect,
   onExit,
   renderQuestions,
@@ -64,6 +66,7 @@ export default function ExamPracticeLayout({
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [showProceedModal, setShowProceedModal] = useState(false);
   const [showQuestionReviewModal, setShowQuestionReviewModal] = useState(false);
+  const [showSubmitConfirmModal, setShowSubmitConfirmModal] = useState(false);
   const [showMarathonTocDrawer, setShowMarathonTocDrawer] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [reviewMode, setReviewMode] = useState(false);
@@ -74,6 +77,7 @@ export default function ExamPracticeLayout({
 
   const activePartTitle = getPartTitle ? getPartTitle(currentQuestionIndex) : partTitle;
   const displayTotalSubCount = customTotalSubQuestions !== undefined ? customTotalSubQuestions : totalQuestions;
+  const subPerPart = totalQuestions > 0 ? Math.max(1, Math.round(displayTotalSubCount / totalQuestions)) : 1;
 
   const reviewGroups = useMemo(() => {
     if (customTotalSubQuestions === 29 && totalQuestions === 5) {
@@ -98,8 +102,7 @@ export default function ExamPracticeLayout({
       if (subIdx <= 21) return 3;
       return 4;
     }
-    if (totalQuestions > 1 && customTotalSubQuestions) {
-      const subPerPart = Math.ceil(customTotalSubQuestions / totalQuestions);
+    if (totalQuestions > 1) {
       return Math.min(totalQuestions - 1, Math.floor(subIdx / subPerPart));
     }
     return 0;
@@ -221,20 +224,11 @@ export default function ExamPracticeLayout({
     return Math.round(rawTotal);
   }, [customScore, isAnswerCorrect, userAnswers, getSubQuestionWeight, pointsPerSubQuestion, correctSubQuestionsCount]);
 
-  // Compute CEFR Level (Module specific, default Reading thresholds: 8->A1, 16->A2, 26->B1, 38->B2, 46->C1)
+  // Compute CEFR Level (ONLY rendered if getCefrLevel prop is explicitly provided by the skill component)
   const cefrLevel = useMemo(() => {
     if (getCefrLevel) return getCefrLevel(calculatedScore, maxScore);
-    if (moduleName === 'Reading') {
-      const scaled = maxScore === 50 ? calculatedScore : Math.round((calculatedScore * 50) / maxScore);
-      if (scaled >= 46) return 'C1';
-      if (scaled >= 38) return 'B2';
-      if (scaled >= 26) return 'B1';
-      if (scaled >= 16) return 'A2';
-      if (scaled >= 8) return 'A1';
-      return 'A0';
-    }
     return null;
-  }, [getCefrLevel, calculatedScore, maxScore, moduleName]);
+  }, [getCefrLevel, calculatedScore, maxScore]);
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-[#F4F4F6] text-slate-900 font-sans flex flex-col justify-between selection:bg-[#CC1C01] selection:text-white">
@@ -415,13 +409,15 @@ export default function ExamPracticeLayout({
             </div>
 
             {/* Custom Question Content Injected Here */}
-            {renderQuestions({
-              currentQuestionIndex,
-              userAnswers,
-              onAnswer: handleAnswer,
-              isReviewMode: reviewMode,
-              showExplanation,
-            })}
+            <div key={currentQuestionIndex} className="animate-slide-question">
+              {renderQuestions({
+                currentQuestionIndex,
+                userAnswers,
+                onAnswer: handleAnswer,
+                isReviewMode: reviewMode,
+                showExplanation,
+              })}
+            </div>
           </div>
 
           {/* Left Floating "Hiện đáp án" Button (Hidden during review mode) */}
@@ -789,7 +785,8 @@ export default function ExamPracticeLayout({
                         <div
                           key={subIdx}
                           onClick={() => {
-                            setCurrentQuestionIndex(group.targetPartIndex);
+                            const targetIndex = getPartIndexForSubQuestion(subIdx);
+                            setCurrentQuestionIndex(targetIndex);
                             setShowQuestionReviewModal(false);
                           }}
                           className="bg-white p-3 rounded-xl border border-slate-200/70 flex items-center justify-between shadow-2xs hover:border-slate-400 hover:bg-slate-50 cursor-pointer transition-all active:scale-[0.99]"
@@ -826,13 +823,56 @@ export default function ExamPracticeLayout({
               </button>
 
               <button
-                onClick={handleSubmitExam}
+                onClick={() => {
+                  setShowQuestionReviewModal(false);
+                  setShowSubmitConfirmModal(true);
+                }}
                 className="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 border border-slate-300/70 text-slate-800 font-bold text-sm transition-all cursor-pointer"
               >
                 Submit
               </button>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* 6b. MODAL: Submit Test Confirmation Modal */}
+      {showSubmitConfirmModal && (
+        <div
+          onClick={() => setShowSubmitConfirmModal(false)}
+          className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200 cursor-pointer"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-3xl p-7 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 text-left space-y-4 cursor-default"
+          >
+            <div className="space-y-2">
+              <h3 className="text-xl font-bold text-slate-900">
+                Submit Test?
+              </h3>
+              <p className="text-sm text-slate-500 font-normal leading-relaxed">
+                Once you submit your test you will no longer have access to the questions.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-4">
+              <button
+                onClick={() => setShowSubmitConfirmModal(false)}
+                className="bg-white hover:bg-slate-50 border border-slate-300/80 text-slate-700 font-semibold text-sm px-6 py-2 rounded-xl transition-all shadow-2xs cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setShowSubmitConfirmModal(false);
+                  handleSubmitExam();
+                }}
+                className="bg-[#24085A] hover:bg-[#1a0642] text-white font-semibold text-sm px-6 py-2 rounded-xl transition-all shadow-md active:scale-95 cursor-pointer"
+              >
+                Submit Test
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -867,8 +907,8 @@ export default function ExamPracticeLayout({
                   Đã làm{' '}
                   {
                     Array.from({ length: totalQuestions }).filter((_, qIdx) => {
-                      return [0, 1, 2, 3, 4].every(
-                        (g) => userAnswers[qIdx * 5 + g] !== undefined && userAnswers[qIdx * 5 + g] !== ''
+                      return Array.from({ length: subPerPart }).every(
+                        (_, g) => userAnswers[qIdx * subPerPart + g] !== undefined && userAnswers[qIdx * subPerPart + g] !== ''
                       );
                     }).length
                   }
@@ -887,7 +927,7 @@ export default function ExamPracticeLayout({
                   <span>đã làm</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <span className="w-2.5 h-2.5 rounded-xs bg-white border-2 border-blue-600 ring-1 ring-[#24085A] inline-block"></span>
+                  <span className="w-2.5 h-2.5 rounded-xs bg-blue-100 border border-blue-400 inline-block"></span>
                   <span>đang làm dở</span>
                 </div>
                 <div className="flex items-center gap-1">
@@ -900,11 +940,11 @@ export default function ExamPracticeLayout({
               <div className="grid grid-cols-6 sm:grid-cols-7 gap-1.5 max-h-[65vh] overflow-y-auto p-1 pt-2">
                 {Array.from({ length: totalQuestions }).map((_, qIdx) => {
                   const isCurrent = qIdx === currentQuestionIndex;
-                  const answeredGapsCount = [0, 1, 2, 3, 4].filter(
-                    (g) => userAnswers[qIdx * 5 + g] !== undefined && userAnswers[qIdx * 5 + g] !== ''
+                  const answeredGapsCount = Array.from({ length: subPerPart }).filter(
+                    (_, g) => userAnswers[qIdx * subPerPart + g] !== undefined && userAnswers[qIdx * subPerPart + g] !== ''
                   ).length;
-                  const isCompleted = answeredGapsCount === 5;
-                  const isInProgress = answeredGapsCount > 0 && answeredGapsCount < 5;
+                  const isCompleted = answeredGapsCount === subPerPart;
+                  const isInProgress = answeredGapsCount > 0 && answeredGapsCount < subPerPart;
 
                   return (
                     <button

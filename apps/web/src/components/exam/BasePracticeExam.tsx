@@ -11,6 +11,7 @@ export interface BasePracticeExamProps {
   topicTitle?: string; // Optional topic title for current test set
   defaultTimeSeconds?: number; // e.g. 360 (6 mins) or 420 (7 mins)
   subQuestionsPerSet?: number; // e.g. 5 for Part 1 & 2+3, 7 for Part 4
+  customTotalQuestions?: number; // e.g. 13 for Listening Part 1 (1 question per screen)
   pointsPerSubQuestion?: number; // default 2
   instructionsText?: React.ReactNode;
   isAnswerCorrect: (subIndex: number, answerValue: any) => boolean;
@@ -27,6 +28,7 @@ export default function BasePracticeExam({
   topicTitle,
   defaultTimeSeconds = 360,
   subQuestionsPerSet = 5,
+  customTotalQuestions,
   pointsPerSubQuestion = 2,
   instructionsText,
   isAnswerCorrect,
@@ -46,9 +48,13 @@ export default function BasePracticeExam({
     ? `Đề ${testNumberStr} - ${topicTitle}`
     : `Đề ${testNumberStr} - ${moduleName} ${partShortName}`;
 
-  const totalQuestions = isAllPractice ? totalSets : 1;
-  const totalSubQuestions = totalQuestions * subQuestionsPerSet;
-  const maxScore = totalSubQuestions * pointsPerSubQuestion;
+  const totalQuestions = customTotalQuestions !== undefined
+    ? customTotalQuestions
+    : (isAllPractice ? totalSets : 1);
+  const totalSubQuestions = isAllPractice && customTotalQuestions !== undefined
+    ? customTotalQuestions
+    : (totalQuestions * subQuestionsPerSet);
+  const maxScore = (customTotalQuestions !== undefined && !isAllPractice ? customTotalQuestions : totalSubQuestions) * pointsPerSubQuestion;
   const timeAllowedSeconds = isAllPractice ? 999999 : defaultTimeSeconds;
 
   return (
@@ -59,7 +65,7 @@ export default function BasePracticeExam({
       totalQuestions={totalQuestions}
       timeAllowedSeconds={timeAllowedSeconds}
       maxScore={maxScore}
-      customTotalSubQuestions={totalSubQuestions}
+      customTotalSubQuestions={customTotalQuestions !== undefined ? customTotalQuestions : totalSubQuestions}
       instructionsText={instructionsText}
       isAnswerCorrect={isAnswerCorrect}
       initialStep={isAllPractice ? 'questions' : 'start'}

@@ -54,9 +54,9 @@ export default function ReadingPart5View({
                   className={`px-3.5 py-1.5 text-[14px] appearance-auto max-w-full rounded-lg transition-all font-semibold cursor-pointer ${
                     isChecked
                       ? isCorr
-                        ? 'border-2 border-emerald-500 bg-white text-emerald-700 font-bold'
+                        ? 'border-2 border-emerald-500 bg-white text-emerald-700 font-normal'
                         : selectedVal
-                        ? 'border-2 border-red-500 bg-white text-red-700 font-bold'
+                        ? 'border-2 border-red-500 bg-white text-red-700 font-normal'
                         : 'border border-slate-300 bg-slate-50 text-slate-600'
                       : 'bg-white border border-slate-300 text-slate-800 focus:outline-none focus:ring-2 focus:border-[#24085A] focus:ring-[#24085A]/20 hover:border-slate-400'
                   }`}
@@ -69,26 +69,29 @@ export default function ReadingPart5View({
                   ))}
                 </select>
 
-                {isChecked && (
-                  <div className="flex items-center gap-1.5">
-                    {isCorr ? (
-                      <span className="w-5 h-5 rounded-full border border-emerald-500 text-emerald-500 flex items-center justify-center text-[11px] font-bold">
-                        ✓
-                      </span>
-                    ) : (
-                      <>
-                        <span className="w-5 h-5 rounded-full border border-red-500 text-red-500 flex items-center justify-center text-[11px] font-bold">
-                          ✕
-                        </span>
-                        <span className="text-emerald-600 font-extrabold text-sm flex items-center gap-0.5">
-                          <span>→</span>
-                          <span>{correctVal}</span>
-                        </span>
-                      </>
-                    )}
-                  </div>
-                )}
               </div>
+
+              {isChecked && (
+                <div className="sm:pl-7 pt-0.5 flex items-center gap-2 text-[14px]">
+                  {isCorr ? (
+                    <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-md text-[13px] font-normal inline-flex items-center gap-1.5">
+                      <span className="text-emerald-600 text-xs font-normal">✓</span>
+                      <span>{selectedVal}</span>
+                    </span>
+                  ) : (
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="bg-red-50 text-red-700 border border-red-200 px-3 py-1 rounded-md text-[13px] font-normal inline-flex items-center gap-1.5">
+                        <span className="text-red-600 text-xs font-normal">✕</span>
+                        <span className="line-through">{selectedVal || '(trống)'}</span>
+                      </span>
+                      <span className="text-slate-400 text-[13px] font-normal">→</span>
+                      <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-md text-[13px] font-normal inline-flex items-center gap-1.5">
+                        <span>{correctVal}</span>
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <p className="text-[14px] text-slate-800 leading-relaxed font-normal sm:pl-7">
                 {pText}

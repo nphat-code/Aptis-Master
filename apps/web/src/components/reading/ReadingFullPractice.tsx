@@ -151,6 +151,15 @@ export default function ReadingFullPractice({
       timeAllowedSeconds={2100} // 35 minutes
       maxScore={50}
       customTotalSubQuestions={29}
+      getCefrLevel={(calculatedScore, maxScore) => {
+        const scaled = maxScore === 50 ? calculatedScore : Math.round((calculatedScore * 50) / maxScore);
+        if (scaled >= 46) return 'C1';
+        if (scaled >= 38) return 'B2';
+        if (scaled >= 26) return 'B1';
+        if (scaled >= 16) return 'A2';
+        if (scaled >= 8) return 'A1';
+        return 'A0';
+      }}
       getSubQuestionWeight={(subIdx) => {
         if (subIdx <= 4) return 2;       // Part 1: 2 pt/câu (5 câu = 10đ)
         if (subIdx <= 9) return 1;       // Part 2: 1 pt/câu (5 câu = 5đ)

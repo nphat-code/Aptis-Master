@@ -16,6 +16,7 @@ export interface ListeningPart1ViewProps {
   questions: Question13Item[];
   userAnswers: Record<number, any>;
   baseAnswerKey?: number;
+  currentQuestionIndex?: number; // 0-based index for 1 question per screen
   onAnswer: (questionIndex: number, value: any) => void;
   isReviewMode?: boolean;
   showExplanation?: boolean;
@@ -25,6 +26,7 @@ export default function ListeningPart1View({
   questions,
   userAnswers,
   baseAnswerKey = 0,
+  currentQuestionIndex = 0,
   onAnswer,
   isReviewMode = false,
   showExplanation = false,
@@ -33,118 +35,89 @@ export default function ListeningPart1View({
     return <div className="text-slate-500 text-sm">Không có dữ liệu câu hỏi Listening Part 1.</div>;
   }
 
+  // Get current question for 1 question per screen
+  const safeIndex = Math.min(Math.max(0, currentQuestionIndex), questions.length - 1);
+  const q = questions[safeIndex] || questions[0];
+  const answerKey = baseAnswerKey + safeIndex;
+  const selectedVal = userAnswers[answerKey] || '';
+
+  const optionLetters = ['A', 'B', 'C', 'D', 'E'];
+
   return (
-    <div className="space-y-8 text-left">
-      {questions.map((q, idx) => {
-        const answerKey = baseAnswerKey + idx;
-        const selectedVal = userAnswers[answerKey] || '';
-        const isCorrect = selectedVal === q.correctAnswer;
+    <div key={safeIndex} className="max-w-3xl mx-auto space-y-3 text-left animate-slide-question">
+      
+      {/* 1. Question Text (Top) */}
+      <p className="text-[14px] font-normal text-slate-900 leading-relaxed">
+        {q.question}
+      </p>
 
-        return (
-          <div
-            key={idx}
-            className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-6 text-left"
-          >
-            {/* Question Heading & Title */}
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <span className="font-extrabold text-sm text-[#24085A]">
-                {q.heading || `Question ${idx + 1}`}
-              </span>
-              <span className="text-xs font-semibold text-slate-400 bg-slate-100 px-3 py-1 rounded-full">
-                Listening Part 1
-              </span>
-            </div>
+      {/* 2. Audio Player (Middle) */}
+      <div>
+        <AudioPlayer
+          src={q.audioUrl}
+          title={q.heading || `Listening Q${safeIndex + 1}`}
+        />
+      </div>
 
-            {/* Audio Player */}
-            <div className="pt-1">
-              <AudioPlayer src={q.audioUrl} title={q.heading || `Audio Q${idx + 1}`} />
-            </div>
+      {/* 3. Options Container Card (Exact Aptis Exam layout from screenshot) */}
+      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden divide-y divide-slate-200/80">
+        {q.options.map((opt, oIdx) => {
+          const letter = optionLetters[oIdx] || String.fromCharCode(65 + oIdx);
+          const isSelected = selectedVal === opt;
+          const isAnsCorrect = opt === q.correctAnswer;
 
-            {/* Question Text */}
-            <div className="space-y-4">
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 leading-snug">
-                {q.question}
-              </h3>
+          let optionStyle = 'bg-white hover:bg-slate-50 text-slate-800';
+          let letterStyle = 'text-slate-900 border-r border-slate-200/80 bg-slate-50/50';
 
-              {/* 3 Radio Options */}
-              <div className="space-y-2.5">
-                {q.options.map((opt, oIdx) => {
-                  const isSelected = selectedVal === opt;
-                  const isAnsCorrect = opt === q.correctAnswer;
+          if (showExplanation || isReviewMode) {
+            if (isAnsCorrect) {
+              optionStyle = 'bg-emerald-50 text-emerald-950 font-semibold';
+              letterStyle = 'text-emerald-800 border-r border-emerald-200 bg-emerald-100/60 font-black';
+            } else if (isSelected) {
+              optionStyle = 'bg-red-50 text-red-950 font-medium line-through';
+              letterStyle = 'text-red-800 border-r border-red-200 bg-red-100/60 font-black';
+            } else {
+              optionStyle = 'bg-white text-slate-400 opacity-60';
+              letterStyle = 'text-slate-400 border-r border-slate-200 bg-slate-50/30';
+            }
+          } else if (isSelected) {
+            optionStyle = 'bg-slate-200/90 text-slate-900 font-bold';
+            letterStyle = 'text-slate-900 border-r border-slate-300 bg-slate-300/80 font-bold';
+          }
 
-                  let borderStyle = 'border-slate-200/90 bg-white hover:bg-slate-50 hover:border-slate-300';
-                  if (showExplanation || isReviewMode) {
-                    if (isAnsCorrect) {
-                      borderStyle = 'border-emerald-500 bg-emerald-50/70 text-emerald-950 font-bold';
-                    } else if (isSelected) {
-                      borderStyle = 'border-red-500 bg-red-50/70 text-red-950 font-semibold';
-                    } else {
-                      borderStyle = 'border-slate-200 bg-slate-50/50 opacity-60';
-                    }
-                  } else if (isSelected) {
-                    borderStyle = 'border-[#24085A] bg-purple-50/60 font-semibold text-[#24085A] ring-1 ring-[#24085A]';
-                  }
-
-                  return (
-                    <button
-                      key={oIdx}
-                      type="button"
-                      disabled={isReviewMode}
-                      onClick={() => onAnswer(answerKey, opt)}
-                      className={`w-full p-4 rounded-2xl border text-left text-sm transition-all flex items-center justify-between gap-3 cursor-pointer ${borderStyle}`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
-                          isSelected
-                            ? 'border-[#24085A] bg-[#24085A] text-white'
-                            : 'border-slate-300 bg-white'
-                        }`}>
-                          {isSelected && <span className="w-2 h-2 bg-white rounded-full" />}
-                        </span>
-                        <span className="leading-snug">{opt}</span>
-                      </div>
-
-                      {/* Correct / Incorrect Badges in Review Mode */}
-                      {(showExplanation || isReviewMode) && (
-                        <div>
-                          {isAnsCorrect && (
-                            <span className="bg-emerald-600 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-md">
-                              Đáp án đúng
-                            </span>
-                          )}
-                          {!isAnsCorrect && isSelected && (
-                            <span className="bg-red-600 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-md">
-                              Đã chọn sai
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </button>
-                  );
-                })}
+          return (
+            <button
+              key={oIdx}
+              type="button"
+              disabled={isReviewMode}
+              onClick={() => onAnswer(answerKey, opt)}
+              className={`w-full text-left flex items-stretch transition-all cursor-pointer ${optionStyle}`}
+            >
+              {/* Left Column: Option Letter (A, B, C) */}
+              <div className={`w-14 sm:w-16 min-h-[52px] sm:min-h-[60px] flex items-center justify-center text-[14px] font-bold shrink-0 ${letterStyle}`}>
+                {letter}
               </div>
-            </div>
 
-            {/* Transcript & Explanation Card (Shown in Review Mode or when Show Explanation is toggled) */}
-            {(showExplanation || isReviewMode) && q.transcript && (
-              <div className="bg-purple-50/70 rounded-2xl p-5 border border-purple-200/80 space-y-2 text-left pt-3 animate-in fade-in duration-300">
-                <div className="flex items-center gap-2 font-bold text-xs text-[#24085A] uppercase tracking-wider">
-                  <svg className="w-4 h-4 text-[#24085A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                  </svg>
-                  <span>AUDIO TRANSCRIPT & EXPLANATION</span>
-                </div>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal italic">
-                  &ldquo;{q.transcript}&rdquo;
-                </p>
-                <div className="pt-1 text-xs font-semibold text-emerald-800">
-                  👉 Đáp án đúng: <span className="font-bold">{q.correctAnswer}</span>
-                </div>
+              {/* Right Column: Option Content Text */}
+              <div className="flex-1 px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between gap-3 text-[14px]">
+                <span>{opt}</span>
               </div>
-            )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Audio Transcript Box in Review / Explanation Mode */}
+      {(showExplanation || isReviewMode) && q.transcript && (
+        <div className="bg-purple-50/70 rounded-2xl p-5 border border-purple-200/80 space-y-2 text-left animate-in fade-in duration-300">
+          <div className="text-xs font-extrabold text-[#24085A] uppercase tracking-wider">
+            Script
           </div>
-        );
-      })}
+          <p className="text-[14px] font-normal text-slate-800 leading-relaxed">
+            {q.transcript}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

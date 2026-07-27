@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import scrapedData from '@/data/scraped_data.json';
 import BasePracticeExam from '../exam/BasePracticeExam';
-import DetailedAnswersCard, { AnswerDiffBadge } from '../exam/DetailedAnswersCard';
+import DetailedAnswersCard from '../exam/DetailedAnswersCard';
 import ListeningPart1View, { Question13Item } from './ListeningPart1View';
 
 export interface ListeningPart1PracticeProps {
@@ -29,6 +29,8 @@ export default function ListeningPart1Practice({
   const singleTestQuestions: Question13Item[] = rawQuestionsList[safeTestIndex] || [];
   const allQuestionsFlat: Question13Item[] = useMemo(() => rawQuestionsList.flat(), [rawQuestionsList]);
 
+  const totalQuestionsCount = isAllPractice ? allQuestionsFlat.length : singleTestQuestions.length;
+
   return (
     <BasePracticeExam
       moduleName="Listening"
@@ -37,7 +39,8 @@ export default function ListeningPart1Practice({
       totalSets={totalSets}
       defaultTimeSeconds={480} // 8 mins
       subQuestionsPerSet={13}
-      pointsPerSubQuestion={1}
+      customTotalQuestions={totalQuestionsCount}
+      pointsPerSubQuestion={2}
       instructionsText={
         <>
           <p className="text-sm font-medium text-slate-700 leading-relaxed">
@@ -63,15 +66,14 @@ export default function ListeningPart1Practice({
       }}
       onExit={onExit}
       renderQuestions={({ currentQuestionIndex, userAnswers, onAnswer, isReviewMode, showExplanation }) => {
-        const activeSetIndex = isAllPractice ? currentQuestionIndex : safeTestIndex;
-        const testQuestionsData: Question13Item[] = rawQuestionsList[activeSetIndex] || singleTestQuestions;
-        const baseAnswerKey = isAllPractice ? currentQuestionIndex * 13 : 0;
+        const activeQuestions = isAllPractice ? allQuestionsFlat : singleTestQuestions;
 
         return (
           <ListeningPart1View
-            questions={testQuestionsData}
+            questions={activeQuestions}
             userAnswers={userAnswers}
-            baseAnswerKey={baseAnswerKey}
+            baseAnswerKey={0}
+            currentQuestionIndex={currentQuestionIndex}
             onAnswer={onAnswer}
             isReviewMode={isReviewMode}
             showExplanation={showExplanation}
@@ -82,24 +84,92 @@ export default function ListeningPart1Practice({
         const activeQuestions = isAllPractice ? allQuestionsFlat : singleTestQuestions;
 
         return (
-          <DetailedAnswersCard
-            title="Chi tiết bài làm Listening Part 1"
-            subtitle="Thông tin ghi nhận (13 thông báo ngắn & tin nhắn thoại)."
-          >
-            <div className="space-y-4 text-left">
+          <DetailedAnswersCard title="Chi tiết bài làm">
+            <div className="space-y-5 text-left">
               {activeQuestions.map((q, idx) => {
                 const userAns = userAnswers[idx] || '';
                 const isCorr = userAns === q.correctAnswer;
+                const normalizedAudioUrl = q.audioUrl.startsWith('http') || q.audioUrl.startsWith('/')
+                  ? q.audioUrl
+                  : `/${q.audioUrl}`;
+
                 return (
-                  <div key={idx} className="bg-white p-4 rounded-xl border border-slate-200/80 space-y-2">
-                    <p className="text-xs sm:text-sm font-bold text-slate-900">
-                      {idx + 1}. {q.question}
+                  <div
+                    key={idx}
+                    className={`rounded-2xl p-5 sm:p-6 border text-left space-y-3.5 transition-all ${
+                      isCorr
+                        ? 'bg-[#f2fdf5] border-[#c6f6d5]'
+                        : 'bg-[#fff5f5] border-[#fed7d7]'
+                    }`}
+                  >
+                    {/* Question Header Status: (✓) Câu 1 / (⊗) Câu 2 */}
+                    <div className="flex items-center gap-2">
+                      {isCorr ? (
+                        <div className="w-5 h-5 rounded-full border border-emerald-600 text-emerald-600 flex items-center justify-center text-xs font-bold shrink-0">
+                          ✓
+                        </div>
+                      ) : (
+                        <div className="w-5 h-5 rounded-full border border-red-600 text-red-600 flex items-center justify-center text-xs font-bold shrink-0">
+                          ✕
+                        </div>
+                      )}
+                      <span className={`font-bold text-base ${isCorr ? 'text-emerald-950' : 'text-red-950'}`}>
+                        Câu {idx + 1}
+                      </span>
+                    </div>
+
+                    {/* Question Prompt Text */}
+                    <p className="text-[14px] text-slate-700 font-normal leading-relaxed">
+                      {q.question}
                     </p>
-                    <AnswerDiffBadge userAnswer={userAns || 'Chưa chọn'} correctAnswer={q.correctAnswer} isCorrect={isCorr} />
+
+                    {/* Audio Controls Bar */}
+                    <div className="pt-1">
+                      <audio
+                        controls
+                        src={normalizedAudioUrl}
+                        className="w-full h-10 rounded-lg outline-none opacity-90"
+                        preload="metadata"
+                      />
+                    </div>
+
+                    {/* Options Grid (A, B, C) */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                      {q.options.map((opt, oIdx) => {
+                        const letter = String.fromCharCode(65 + oIdx);
+                        const isCorrectOpt = opt === q.correctAnswer;
+                        const isUserSelected = userAns === opt;
+
+                        let optBoxStyle = 'bg-white/60 border-slate-200/80 text-slate-600 font-normal';
+
+                        if (isCorrectOpt) {
+                          optBoxStyle = 'bg-[#e6f4ea] border-[#a8dab5] text-slate-900 font-semibold ring-1 ring-[#a8dab5]';
+                        } else if (isUserSelected && !isCorr) {
+                          optBoxStyle = 'bg-red-100/80 border-red-300 text-red-950 font-medium line-through';
+                        }
+
+                        return (
+                          <div
+                            key={oIdx}
+                            className={`p-3 rounded-xl border text-[14px] flex items-center gap-2 ${optBoxStyle}`}
+                          >
+                            <span className="font-bold">{letter}.</span>
+                            <span>{opt}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Script Box */}
                     {q.transcript && (
-                      <p className="text-xs text-slate-500 italic pt-1 border-t border-slate-100 mt-2">
-                        &ldquo;{q.transcript}&rdquo;
-                      </p>
+                      <div className="pt-3 border-t border-slate-200/60 mt-3 space-y-1">
+                        <span className="text-xs font-extrabold text-[#24085A] uppercase tracking-wider block">
+                          Script
+                        </span>
+                        <p className="text-[14px] text-slate-700 font-normal leading-relaxed">
+                          {q.transcript}
+                        </p>
+                      </div>
                     )}
                   </div>
                 );

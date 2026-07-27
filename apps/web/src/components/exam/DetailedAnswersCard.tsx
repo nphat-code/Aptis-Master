@@ -40,7 +40,7 @@ export function AnswerDiffBadge({
 }: AnswerDiffBadgeProps) {
   if (isCorrect) {
     return (
-      <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold px-3 py-1 rounded-md text-[14px] inline-flex items-center">
+      <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 font-normal px-3 py-1 rounded-md text-[14px] inline-flex items-center">
         {userAnswer}
       </span>
     );
@@ -48,11 +48,11 @@ export function AnswerDiffBadge({
 
   return (
     <span className="inline-flex items-center gap-1.5 flex-wrap">
-      <span className="bg-red-100 text-red-800 border border-red-300 line-through font-bold px-3 py-1 rounded-md text-[14px]">
+      <span className="bg-red-100 text-red-800 border border-red-300 line-through font-normal px-3 py-1 rounded-md text-[14px]">
         {userAnswer || '(trống)'}
       </span>
-      <span className="text-slate-400 text-[14px] font-bold">→</span>
-      <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold px-3 py-1 rounded-md text-[14px]">
+      <span className="text-slate-400 text-[14px] font-normal">→</span>
+      <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 font-normal px-3 py-1 rounded-md text-[14px]">
         {correctAnswer}
       </span>
     </span>

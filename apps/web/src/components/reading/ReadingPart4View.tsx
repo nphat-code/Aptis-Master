@@ -89,9 +89,9 @@ export default function ReadingPart4View({
                   className={`px-3.5 py-1.5 text-[14px] appearance-auto min-w-[85px] rounded-lg transition-all font-semibold cursor-pointer ${
                     isChecked
                       ? isCorr
-                        ? 'border-2 border-emerald-500 bg-white text-emerald-700 font-bold'
+                        ? 'border-2 border-emerald-500 bg-white text-emerald-700 font-normal'
                         : selectedVal
-                        ? 'border-2 border-red-500 bg-white text-red-700 font-bold'
+                        ? 'border-2 border-red-500 bg-white text-red-700 font-normal'
                         : 'border border-slate-300 bg-white text-slate-600'
                       : 'bg-white border border-slate-300 text-slate-800 focus:outline-none focus:ring-2 focus:border-[#24085A] focus:ring-[#24085A]/20 hover:border-slate-400'
                   }`}
@@ -114,7 +114,7 @@ export default function ReadingPart4View({
                         <span className="w-5 h-5 rounded-full border border-red-500 text-red-500 flex items-center justify-center text-[11px] font-bold">
                           ✕
                         </span>
-                        <span className="text-emerald-600 font-extrabold text-sm flex items-center gap-0.5">
+                        <span className="text-emerald-700 font-normal text-sm flex items-center gap-0.5">
                           <span>→</span>
                           <span>{targetAns}</span>
                         </span>
