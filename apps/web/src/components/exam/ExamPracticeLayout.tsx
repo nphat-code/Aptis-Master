@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 export interface ExamPracticeLayoutProps {
   moduleName: string; // e.g. "Reading", "Listening", "Writing", "Speaking"
   partTitle: string; // e.g. "Part 1 – Gap Fill"
+  getPartTitle?: (questionIndex: number) => string;
   testTitle: string; // e.g. "Đề 01"
   totalQuestions: number; // e.g. 5
   timeAllowedSeconds: number; // e.g. 360 (6 mins)
@@ -14,6 +15,7 @@ export interface ExamPracticeLayoutProps {
   unlimitedTime?: boolean;
   customScore?: number;
   customTotalSubQuestions?: number;
+  getSubQuestionWeight?: (subIndex: number) => number;
   isAnswerCorrect?: (questionIndex: number, answerValue: any) => boolean;
   onExit: () => void;
 
@@ -35,6 +37,7 @@ export interface ExamPracticeLayoutProps {
 export default function ExamPracticeLayout({
   moduleName = 'Reading',
   partTitle = 'Part 1 – Gap Fill',
+  getPartTitle,
   testTitle = 'Đề 01',
   totalQuestions = 5,
   timeAllowedSeconds = 360,
@@ -44,6 +47,7 @@ export default function ExamPracticeLayout({
   unlimitedTime = false,
   customScore,
   customTotalSubQuestions,
+  getSubQuestionWeight,
   isAnswerCorrect,
   onExit,
   renderQuestions,
@@ -66,12 +70,52 @@ export default function ExamPracticeLayout({
   const [hasExamStarted, setHasExamStarted] = useState(initialStep === 'questions');
   const [timeLeftSeconds, setTimeLeftSeconds] = useState(timeAllowedSeconds);
 
+  const activePartTitle = getPartTitle ? getPartTitle(currentQuestionIndex) : partTitle;
+  const displayTotalSubCount = customTotalSubQuestions !== undefined ? customTotalSubQuestions : totalQuestions;
+
+  const reviewGroups = useMemo(() => {
+    if (customTotalSubQuestions === 29 && totalQuestions === 5) {
+      return [
+        { title: 'Part 1 – Gap Fill', startIndex: 0, count: 5, targetPartIndex: 0 },
+        { title: 'Part 2 – Text cohesion', startIndex: 5, count: 5, targetPartIndex: 1 },
+        { title: 'Part 3 – Text cohesion', startIndex: 10, count: 5, targetPartIndex: 2 },
+        { title: 'Part 4 – Opinion matching', startIndex: 15, count: 7, targetPartIndex: 3 },
+        { title: 'Part 5 – Long reading', startIndex: 22, count: 7, targetPartIndex: 4 },
+      ];
+    }
+    return [
+      { title: activePartTitle, startIndex: 0, count: displayTotalSubCount, targetPartIndex: 0 },
+    ];
+  }, [customTotalSubQuestions, totalQuestions, activePartTitle, displayTotalSubCount]);
+
+  const getPartIndexForSubQuestion = (subIdx: number): number => {
+    if (customTotalSubQuestions === 29 && totalQuestions === 5) {
+      if (subIdx <= 4) return 0;
+      if (subIdx <= 9) return 1;
+      if (subIdx <= 14) return 2;
+      if (subIdx <= 21) return 3;
+      return 4;
+    }
+    if (totalQuestions > 1 && customTotalSubQuestions) {
+      const subPerPart = Math.ceil(customTotalSubQuestions / totalQuestions);
+      return Math.min(totalQuestions - 1, Math.floor(subIdx / subPerPart));
+    }
+    return 0;
+  };
+
   // Set hasExamStarted to true when entering 'questions' step for the first time
   useEffect(() => {
     if (examStep === 'questions' && !hasExamStarted) {
       setHasExamStarted(true);
     }
   }, [examStep, hasExamStarted]);
+
+  // Reset showExplanation to false whenever switching to another question/part during active test (not in review mode)
+  useEffect(() => {
+    if (!reviewMode) {
+      setShowExplanation(false);
+    }
+  }, [currentQuestionIndex, reviewMode]);
 
   // Timer countdown - starts when hasExamStarted is true and continues continuously
   useEffect(() => {
@@ -128,9 +172,18 @@ export default function ExamPracticeLayout({
     setIsSubmitted(false);
     setReviewMode(false);
     setShowExplanation(false);
-    setHasExamStarted(true);
     setTimeLeftSeconds(timeAllowedSeconds);
-    setExamStep('questions');
+    setCurrentQuestionIndex(0);
+
+    if (totalQuestions > 1) {
+      // Full Part Test: return to 'start' screen
+      setHasExamStarted(false);
+      setExamStep('start');
+    } else {
+      // Single Part Practice: return directly to 'questions'
+      setHasExamStarted(true);
+      setExamStep('questions');
+    }
   };
 
   // Calculate answered count
@@ -138,7 +191,6 @@ export default function ExamPracticeLayout({
     (k) => userAnswers[Number(k)] !== undefined && userAnswers[Number(k)] !== ''
   ).length;
 
-  const displayTotalSubCount = customTotalSubQuestions !== undefined ? customTotalSubQuestions : totalQuestions;
   const pointsPerSubQuestion = maxScore / displayTotalSubCount;
 
   // Calculate correct answers count if isAnswerCorrect callback is provided
@@ -150,7 +202,22 @@ export default function ExamPracticeLayout({
       }).length
     : answeredCount;
 
-  const calculatedScore = customScore !== undefined ? customScore : Math.round(correctSubQuestionsCount * pointsPerSubQuestion);
+  const calculatedScore = useMemo(() => {
+    if (customScore !== undefined) return customScore;
+    if (!isAnswerCorrect) return Math.round(correctSubQuestionsCount * pointsPerSubQuestion);
+
+    let rawTotal = 0;
+    Object.keys(userAnswers).forEach((k) => {
+      const idx = Number(k);
+      const val = userAnswers[idx];
+      if (val !== undefined && val !== '' && isAnswerCorrect(idx, val)) {
+        const weight = getSubQuestionWeight ? getSubQuestionWeight(idx) : pointsPerSubQuestion;
+        rawTotal += weight;
+      }
+    });
+
+    return Math.round(rawTotal);
+  }, [customScore, isAnswerCorrect, userAnswers, getSubQuestionWeight, pointsPerSubQuestion, correctSubQuestionsCount]);
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-[#F4F4F6] text-slate-900 font-sans flex flex-col justify-between selection:bg-[#CC1C01] selection:text-white">
@@ -159,7 +226,7 @@ export default function ExamPracticeLayout({
       <header className="bg-[#24085A] text-white px-6 sm:px-10 py-2 flex items-center justify-between shadow-sm sticky top-0 z-30">
         <div className="flex flex-col leading-tight">
           <span className="text-slate-400 text-xs font-normal">{moduleName}</span>
-          <span className="font-bold text-sm sm:text-base tracking-tight text-white mt-0.5">{partTitle}</span>
+          <span className="font-bold text-sm sm:text-base tracking-tight text-white mt-0.5">{activePartTitle}</span>
         </div>
 
         <div className="flex items-center gap-3">
@@ -340,19 +407,21 @@ export default function ExamPracticeLayout({
             })}
           </div>
 
-          {/* Left Floating "Hiện đáp án" Button */}
-          <div className="fixed bottom-24 left-6 z-40">
-            <button
-              onClick={() => setShowExplanation(!showExplanation)}
-              className="bg-white border border-slate-300/90 hover:bg-slate-50 text-slate-700 text-xs font-semibold px-4 py-2 rounded-full shadow-md transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
-            >
-              <svg className="w-4 h-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <span>{showExplanation ? 'Ẩn đáp án' : 'Hiện đáp án'}</span>
-            </button>
-          </div>
+          {/* Left Floating "Hiện đáp án" Button (Hidden during review mode) */}
+          {!reviewMode && (
+            <div className="fixed bottom-24 left-6 z-40">
+              <button
+                onClick={() => setShowExplanation(!showExplanation)}
+                className="bg-white border border-slate-300/90 hover:bg-slate-50 text-slate-700 text-xs font-semibold px-4 py-2 rounded-full shadow-md transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+              >
+                <svg className="w-4 h-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span>{showExplanation ? 'Ẩn đáp án' : 'Hiện đáp án'}</span>
+              </button>
+            </div>
+          )}
 
           {/* Right Floating "Mục lục" Button for Marathon Mode */}
           {unlimitedTime && (
@@ -454,6 +523,7 @@ export default function ExamPracticeLayout({
                   onClick={() => {
                     setReviewMode(true);
                     setShowExplanation(true);
+                    setCurrentQuestionIndex(0);
                     setExamStep('questions');
                   }}
                   className="px-5 py-2.5 rounded-xl bg-slate-200/80 text-slate-800 font-bold text-sm hover:bg-slate-300/90 hover:-translate-y-1 hover:shadow-md active:translate-y-0 active:scale-95 transition-all duration-200 cursor-pointer flex items-center gap-2"
@@ -664,54 +734,55 @@ export default function ExamPracticeLayout({
               </p>
             </div>
 
-            {/* Accordion Card for Part 1 Questions Overview */}
-            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 overflow-y-auto flex-1 space-y-3">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-200/70">
-                <div>
-                  <div className="font-bold text-sm text-slate-900">{partTitle}</div>
-                  <div className="text-xs text-slate-400 font-medium">{displayTotalSubCount} Questions</div>
-                </div>
-                <div className="w-6 h-6 rounded-md bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-xs">
-                  -
-                </div>
-              </div>
-
-              {/* Questions Status List */}
-              <div className="space-y-2 pt-1">
-                {Array.from({ length: displayTotalSubCount }).map((_, qIdx) => {
-                  const hasAns = totalQuestions > 1
-                    ? [0, 1, 2, 3, 4].some((g) => userAnswers[qIdx * 5 + g] !== undefined && userAnswers[qIdx * 5 + g] !== '')
-                    : userAnswers[qIdx] !== undefined && userAnswers[qIdx] !== '';
-
-                  return (
-                    <div
-                      key={qIdx}
-                      onClick={() => {
-                        if (totalQuestions > 1) {
-                          setCurrentQuestionIndex(qIdx);
-                        }
-                        setShowQuestionReviewModal(false);
-                      }}
-                      className="bg-white p-3 rounded-xl border border-slate-200/70 flex items-center justify-between shadow-2xs hover:border-slate-400 hover:bg-slate-50 cursor-pointer transition-all active:scale-[0.99]"
-                    >
-                      <div>
-                        <div className="font-bold text-sm text-slate-900">
-                          {qIdx + 1 < 10 ? '0' + (qIdx + 1) : qIdx + 1}
-                        </div>
-                        <div className="text-[10px] font-semibold text-slate-400">Seen</div>
-                      </div>
-
-                      <div className={`text-xs font-bold px-2.5 py-1 rounded-md ${
-                        hasAns
-                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                          : 'bg-slate-100 text-slate-500 border border-slate-200'
-                      }`}>
-                        {hasAns ? 'Answered' : 'Not Attempted'}
-                      </div>
+            {/* Grouped Accordion Cards for Questions Overview */}
+            <div className="overflow-y-auto flex-1 space-y-4 pr-1">
+              {reviewGroups.map((group: { title: string; startIndex: number; count: number; targetPartIndex: number }, gIdx: number) => (
+                <div key={gIdx} className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-3 text-left">
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-200/70">
+                    <div>
+                      <div className="font-bold text-sm text-slate-900">{group.title}</div>
+                      <div className="text-xs text-slate-400 font-medium">{group.count} Questions</div>
                     </div>
-                  );
-                })}
-              </div>
+                    <div className="w-6 h-6 rounded-md bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-xs">
+                      -
+                    </div>
+                  </div>
+
+                  {/* Questions Status List for this Part */}
+                  <div className="space-y-2 pt-1">
+                    {Array.from({ length: group.count }).map((_, offset) => {
+                      const subIdx = group.startIndex + offset;
+                      const hasAns = userAnswers[subIdx] !== undefined && userAnswers[subIdx] !== '';
+
+                      return (
+                        <div
+                          key={subIdx}
+                          onClick={() => {
+                            setCurrentQuestionIndex(group.targetPartIndex);
+                            setShowQuestionReviewModal(false);
+                          }}
+                          className="bg-white p-3 rounded-xl border border-slate-200/70 flex items-center justify-between shadow-2xs hover:border-slate-400 hover:bg-slate-50 cursor-pointer transition-all active:scale-[0.99]"
+                        >
+                          <div>
+                            <div className="font-bold text-sm text-slate-900">
+                              {subIdx + 1 < 10 ? '0' + (subIdx + 1) : subIdx + 1}
+                            </div>
+                            <div className="text-[10px] font-semibold text-slate-400">Seen</div>
+                          </div>
+
+                          <div className={`text-xs font-bold px-2.5 py-1 rounded-md ${
+                            hasAns
+                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                              : 'bg-slate-100 text-slate-500 border border-slate-200'
+                          }`}>
+                            {hasAns ? 'Answered' : 'Not Attempted'}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
 
             {/* Modal Bottom Actions */}

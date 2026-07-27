@@ -5,6 +5,8 @@ import SkillPracticeView, { PartTab, PartTabContent } from './SkillPracticeView'
 import ReadingPart1Practice from './ReadingPart1Practice';
 import ReadingPart23Practice from './ReadingPart23Practice';
 import ReadingPart4Practice from './ReadingPart4Practice';
+import ReadingPart5Practice from './ReadingPart5Practice';
+import ReadingFullPractice from './ReadingFullPractice';
 import scrapedData from '../../../../scraped_data.json';
 
 interface ReadingViewProps {
@@ -17,6 +19,8 @@ export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
   const part23TotalSets = scrapedData?.reading?.question2?.questionSets?.length || 39;
   const part23TotalCount = part23TotalSets;
   const part4TotalCount = scrapedData?.reading?.question4?.question4Text?.length || 14;
+  const part5TotalCount = Object.keys(scrapedData?.reading?.question5?.paragraph_question5 || {}).length || 11;
+  const fullTotalCount = Object.keys((scrapedData as any)?.reading_tests || {}).length || 14;
 
   const partTabs: PartTab[] = [
     { id: 'full', label: 'Full Part – Tất cả các Part' },
@@ -29,9 +33,9 @@ export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
   const partTabContent: Record<string, PartTabContent> = {
     full: {
       title: 'Luyện tập full part kỹ năng Reading',
-      subtitle: 'Hoàn thành tất cả các Part của kỹ năng này trong một lượt thi liên tục để đánh giá năng lực chính xác nhất.',
+      subtitle: `${fullTotalCount} bộ đề luyện tập hoàn chỉnh`,
       badge: 'Full Part',
-      testCount: 30,
+      testCount: fullTotalCount,
     },
     part1: {
       title: 'Part 1 – Sentence comprehension',
@@ -53,9 +57,9 @@ export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
     },
     part5: {
       title: 'Part 5 – Long reading',
-      subtitle: '23 bộ đề luyện tập',
+      subtitle: `${part5TotalCount} bộ đề luyện tập`,
       badge: 'Part 5',
-      testCount: 23,
+      testCount: part5TotalCount,
     },
   };
 
@@ -148,11 +152,14 @@ export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
       )}
       partTabs={partTabs}
       partTabContent={partTabContent}
-      defaultPartTab="part1"
-      supportedPartIds={['part1', 'part23', 'part4']}
+      defaultPartTab="full"
+      supportedPartIds={['full', 'part1', 'part23', 'part4', 'part5']}
       tipsTitle="Mẹo học Reading Aptis"
       tipsContent={tipsContent}
       getMarathonCardProps={(partId) => {
+        if (partId === 'full') {
+          return null;
+        }
         if (partId === 'part1') {
           return {
             title: 'Luyện tất cả đề Part 1',
@@ -174,9 +181,24 @@ export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
             totalCount: part4TotalCount,
           };
         }
+        if (partId === 'part5') {
+          return {
+            title: 'Luyện tất cả đề Part 5',
+            subtitle: `Làm liên tục ${part5TotalCount} bài đọc dài — không giới hạn giờ`,
+            totalCount: part5TotalCount,
+          };
+        }
         return null;
       }}
       getCustomCardProps={(partId, testNum) => {
+        if (partId === 'full') {
+          const testNumberStr = testNum < 10 ? '0' + testNum : `${testNum}`;
+          return {
+            title: `Đề ${testNumberStr}`,
+            subtitle: '📖 Đầy đủ 5 Part (29 câu) • 35 phút',
+            badge: 'Full Part',
+          };
+        }
         if (partId === 'part1') {
           const testNumberStr = testNum < 10 ? '0' + testNum : `${testNum}`;
           return {
@@ -205,9 +227,22 @@ export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
             badge: 'Part 4',
           };
         }
+        if (partId === 'part5') {
+          const topicMap: Record<string, string> = scrapedData?.reading?.question5?.topic_name || {};
+          const topicTitle = topicMap[`topic_${testNum}`] || '';
+          const testNumberStr = testNum < 10 ? '0' + testNum : `${testNum}`;
+          return {
+            title: `Đề ${testNumberStr}${topicTitle ? ` - ${topicTitle}` : ''}`,
+            subtitle: '📖 1 bài đọc dài (7 đoạn văn) • 15 phút',
+            badge: 'Part 5',
+          };
+        }
         return null;
       }}
       renderPracticeExam={({ partId, testIndex, onExit }) => {
+        if (partId === 'full') {
+          return <ReadingFullPractice testIndex={testIndex} onExit={onExit} />;
+        }
         if (partId === 'part1') {
           return <ReadingPart1Practice testIndex={testIndex} onExit={onExit} />;
         }
@@ -216,6 +251,9 @@ export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
         }
         if (partId === 'part4') {
           return <ReadingPart4Practice testIndex={testIndex} onExit={onExit} />;
+        }
+        if (partId === 'part5') {
+          return <ReadingPart5Practice testIndex={testIndex} onExit={onExit} />;
         }
         return null;
       }}
