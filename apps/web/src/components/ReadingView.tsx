@@ -177,6 +177,14 @@ export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
         return null;
       }}
       getCustomCardProps={(partId, testNum) => {
+        if (partId === 'part1') {
+          const testNumberStr = testNum < 10 ? '0' + testNum : `${testNum}`;
+          return {
+            title: `Đề ${testNumberStr} - Reading Part 1`,
+            subtitle: '📖 Điền từ vào đoạn văn (5 câu) • 6 phút',
+            badge: 'Part 1',
+          };
+        }
         if (partId === 'part23') {
           const rawHeaders: Record<string, string> = scrapedData?.reading?.question2?.questheader1 || {};
           const topicTitle = rawHeaders[`question2Content_${testNum}`] || '';
