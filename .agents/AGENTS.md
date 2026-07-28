@@ -32,6 +32,10 @@
     - Correct selected options must strictly use green text (`text-emerald-800`), 2px green border (`border-2 border-emerald-500`), green background (`bg-[#ecfdf5]`), and explicit disabled styling (`disabled:bg-[#ecfdf5] disabled:text-emerald-800 disabled:border-emerald-500 disabled:opacity-100`).
     - Incorrect selected options must strictly use red text (`text-red-700`), 2px red border (`border-2 border-red-400`), red background (`bg-[#fef2f2]`), and explicit disabled styling (`disabled:bg-[#fef2f2] disabled:text-red-700 disabled:border-red-400 disabled:opacity-100`).
     - Standard base text color (`text-slate-800`) must be placed in the `else` branch when not checked, avoiding static base class conflicts.
+12. **Clean Subtitle Standard**:
+    - All skill practice view tabs (`partTabContent` subtitles in Reading, Listening, etc.) must use clean, concise subtitles (`X bộ đề luyện tập`).
+    - Avoid redundant parenthetical explanatory notes in Part subtitles (such as `(Ghép thông tin người nói)`, `(Hội thoại quan điểm & thái độ)`, or `(Bài phát biểu đơn)`).
+
 
 
 

@@ -40,19 +40,19 @@ export default function ListeningView({ onBackToHome, data }: ListeningViewProps
     },
     part2: {
       title: 'P.2 – Matching information (Câu 14)',
-      subtitle: `${totalTestSets} bộ đề luyện tập (Ghép thông tin người nói)`,
+      subtitle: `${totalTestSets} bộ đề luyện tập`,
       badge: 'P.2',
       testCount: totalTestSets,
     },
     part3: {
       title: 'P.3 – Short conversations (Câu 15)',
-      subtitle: `${totalTestSets} bộ đề luyện tập (Hội thoại quan điểm & thái độ)`,
+      subtitle: `${totalTestSets} bộ đề luyện tập`,
       badge: 'P.3',
       testCount: totalTestSets,
     },
     part4: {
       title: 'P.4 – Monologues (Câu 16 - 17)',
-      subtitle: `${totalTestSets} bộ đề luyện tập (Bài phát biểu đơn)`,
+      subtitle: `${totalTestSets} bộ đề luyện tập`,
       badge: 'P.4',
       testCount: totalTestSets,
     },
