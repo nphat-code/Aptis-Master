@@ -45,11 +45,6 @@ export function ListeningPart4View({
 
   return (
     <div className="space-y-8 text-left max-w-4xl mx-auto font-sans text-[14px] animate-slide-question">
-      {/* Instruction Prompt */}
-      <p className="text-[14px] text-slate-700 font-normal leading-relaxed">
-        Listen to a talk or presentation and answer the questions.
-      </p>
-
       {monologues.map((mono, mIdx) => {
         const normalizedAudioUrl = mono.audioUrl.startsWith('http') || mono.audioUrl.startsWith('/')
           ? mono.audioUrl
@@ -62,14 +57,7 @@ export function ListeningPart4View({
           : '';
 
         return (
-          <div key={mIdx} className="space-y-5 p-5 sm:p-6 bg-slate-50/60 rounded-2xl border border-slate-200/80">
-            {/* Header: Monologue title / Topic */}
-            <div className="flex items-center justify-between pb-2 border-b border-slate-200/80">
-              <span className="font-bold text-[#24085A] text-[15px]">
-                {mono.topic ? mono.topic.replace(/^Topic:\s*/i, '') : `Bài nghe ${mIdx + 1}`}
-              </span>
-            </div>
-
+          <div key={mIdx} className="space-y-6">
             {/* Audio Player */}
             <div>
               <AudioPlayer src={normalizedAudioUrl} />
@@ -90,7 +78,7 @@ export function ListeningPart4View({
                     {/* Question Text */}
                     <div className="flex items-start gap-2 text-[14px]">
                       <span className="font-bold text-[#24085A] shrink-0">
-                        {qItem.id || `1${mIdx + 6}.${qIdx + 1}`}.
+                        {qIdx + 1}.
                       </span>
                       <p className="text-[14px] font-medium text-slate-900 leading-snug">
                         {qItem.question}
@@ -109,10 +97,10 @@ export function ListeningPart4View({
 
                         if (isChecked) {
                           if (isAnsCorrect) {
-                            optionStyle = 'bg-[#ecfdf5] text-emerald-950 font-normal border-2 border-emerald-500';
+                            optionStyle = 'bg-[#ecfdf5] text-emerald-950 font-normal';
                             letterStyle = 'text-emerald-800 border-r border-emerald-300 bg-emerald-100/60 font-bold';
                           } else if (isSelected) {
-                            optionStyle = 'bg-[#fef2f2] text-red-950 font-normal border-2 border-red-400 line-through';
+                            optionStyle = 'bg-[#fef2f2] text-red-950 font-normal line-through';
                             letterStyle = 'text-red-800 border-r border-red-300 bg-red-100/60 font-bold';
                           } else {
                             optionStyle = 'bg-white text-slate-400 opacity-60';
@@ -141,27 +129,6 @@ export function ListeningPart4View({
                         );
                       })}
                     </div>
-
-                    {/* Inline Answer Feedback */}
-                    {isChecked && (
-                      <div className="pl-2 pt-0.5 flex items-center gap-2 text-[14px]">
-                        {isCorr ? (
-                          <span className="bg-[#ecfdf5] text-emerald-800 border border-[#a7f3d0] px-2.5 py-0.5 rounded-md text-[13px] font-normal inline-flex items-center gap-1">
-                            ✓ {selectedVal}
-                          </span>
-                        ) : (
-                          <div className="flex items-center gap-1.5 text-[13px] font-normal flex-wrap">
-                            <span className="bg-[#fef2f2] text-red-800 border border-[#fecaca] line-through px-2.5 py-0.5 rounded-md">
-                              {selectedVal || '(chưa chọn)'}
-                            </span>
-                            <span className="text-slate-400">→</span>
-                            <span className="bg-[#ecfdf5] text-emerald-800 border border-[#a7f3d0] px-2.5 py-0.5 rounded-md">
-                              {correctVal}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    )}
                   </div>
                 );
               })}

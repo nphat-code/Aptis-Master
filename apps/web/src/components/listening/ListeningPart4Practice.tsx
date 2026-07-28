@@ -77,14 +77,17 @@ export default function ListeningPart4Practice({
   const totalSetsCount = isAllPractice ? fullPart4Bank.length : totalTestSets;
   const currentTestMonologues = rawPart4List[safeTestIndex] || [];
 
+  const customQuestionsCount = isAllPractice ? fullPart4Bank.length : 2;
+
   return (
     <BasePracticeExam
       moduleName="Listening"
       partTitle="Part 4 – Monologues"
       testIndex={testIndex}
       totalSets={totalSetsCount}
-      defaultTimeSeconds={720} // 12 mins as requested
-      subQuestionsPerSet={isAllPractice ? 2 : 4}
+      defaultTimeSeconds={720} // 12 mins
+      subQuestionsPerSet={2}
+      customTotalQuestions={customQuestionsCount}
       pointsPerSubQuestion={2}
       isAnswerCorrect={(subIdx, val) => {
         if (isAllPractice) {
@@ -107,8 +110,8 @@ export default function ListeningPart4Practice({
       renderQuestions={({ currentQuestionIndex, userAnswers, onAnswer, isReviewMode, showExplanation }) => {
         const activeMonologues = isAllPractice
           ? [fullPart4Bank[currentQuestionIndex]].filter(Boolean)
-          : (rawPart4List[safeTestIndex] || currentTestMonologues);
-        const baseKey = isAllPractice ? currentQuestionIndex * 2 : 0;
+          : [currentTestMonologues[currentQuestionIndex]].filter(Boolean);
+        const baseKey = currentQuestionIndex * 2;
 
         return (
           <ListeningPart4View
@@ -150,12 +153,6 @@ export default function ListeningPart4Practice({
 
                       return (
                         <div key={mIdx} className="space-y-4">
-                          {!isAllPractice && mono.topic && (
-                            <div className="font-bold text-[#24085A] text-[14px]">
-                              {mono.topic.replace(/^Topic:\s*/i, '')}
-                            </div>
-                          )}
-
                           {/* Native Audio Player */}
                           <div>
                             <audio

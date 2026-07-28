@@ -168,8 +168,16 @@ export default function ListeningView({ onBackToHome, data }: ListeningViewProps
           };
         }
         if (partId === 'part4') {
+          const rawListeningTests = (scrapedData as any).listening_tests || {};
+          const testKey = `test${testNum}`;
+          const q16_17 = rawListeningTests[testKey]?.q16_17 || [];
+          const firstMono = q16_17[0] || {};
+          const topicRaw = firstMono.topic || '';
+          const cleanTopic = topicRaw.replace(/^Topic:\s*/i, '').trim();
+          const titleText = cleanTopic ? `Đề ${testNumberStr} - ${cleanTopic}` : `Đề ${testNumberStr} - Listening Part 4`;
+
           return {
-            title: `Đề ${testNumberStr} - Listening Part 4`,
+            title: titleText,
             subtitle: '🎧 Monologues (2 bài phát biểu) • 12 phút',
             badge: 'P.4',
           };

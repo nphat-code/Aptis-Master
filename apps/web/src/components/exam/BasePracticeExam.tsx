@@ -54,9 +54,9 @@ export default function BasePracticeExam({
     ? customTotalQuestions
     : (isAllPractice ? totalSets : 1);
   const totalSubQuestions = isAllPractice && customTotalQuestions !== undefined
-    ? customTotalQuestions
+    ? (subQuestionsPerSet > 1 ? customTotalQuestions * subQuestionsPerSet : customTotalQuestions)
     : (totalQuestions * subQuestionsPerSet);
-  const maxScore = (customTotalQuestions !== undefined && !isAllPractice ? customTotalQuestions : totalSubQuestions) * pointsPerSubQuestion;
+  const maxScore = totalSubQuestions * pointsPerSubQuestion;
   const timeAllowedSeconds = isAllPractice ? 999999 : defaultTimeSeconds;
 
   const finalInstructions = instructionsText || (
@@ -71,7 +71,7 @@ export default function BasePracticeExam({
       totalQuestions={totalQuestions}
       timeAllowedSeconds={timeAllowedSeconds}
       maxScore={maxScore}
-      customTotalSubQuestions={customTotalQuestions !== undefined ? customTotalQuestions : totalSubQuestions}
+      customTotalSubQuestions={totalSubQuestions}
       instructionsText={finalInstructions}
       isAnswerCorrect={isAnswerCorrect}
       initialStep={isAllPractice ? 'questions' : 'start'}
