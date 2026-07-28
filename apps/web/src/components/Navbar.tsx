@@ -63,10 +63,10 @@ export default function Navbar({ activeTab, setActiveTab, setSelectedSubPart }: 
               {/* 1. Thi thử (Pill Button) */}
               <button
                 onClick={() => handleSkillSelect('mock-test')}
-                className="bg-gradient-to-r from-[#FF2E00] via-[#FF5500] to-[#FF7700] hover:brightness-110 hover:-translate-y-0.5 hover:scale-[1.02] active:translate-y-0 text-white font-extrabold text-sm px-5 py-1.5 rounded-full shadow-md shadow-orange-500/35 hover:shadow-lg hover:shadow-orange-500/50 transition-all duration-200 flex items-center gap-2"
+                className="bg-gradient-to-r from-[#CC1C01] via-[#FF5500] to-[#FF7700] hover:brightness-110 hover:-translate-y-0.5 hover:scale-[1.02] active:translate-y-0 text-white font-extrabold text-sm px-5 py-1.5 rounded-full shadow-md shadow-[#CC1C01]/35 hover:shadow-lg hover:shadow-[#CC1C01]/50 transition-all duration-200 flex items-center gap-2"
               >
-                <svg className="w-4 h-4 fill-current text-white" viewBox="0 0 24 24">
-                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                 </svg>
                 <span>Thi thử</span>
               </button>
@@ -265,8 +265,10 @@ export default function Navbar({ activeTab, setActiveTab, setSelectedSubPart }: 
             </button>
 
             {/* Premium Badge */}
-            <div className="bg-gradient-to-r from-[#FF2E00] to-[#FF6600] text-white px-3 py-1 rounded-full text-xs font-extrabold shadow-2xs flex items-center gap-1 cursor-pointer">
-              <span>👑</span>
+            <div className="bg-gradient-to-r from-[#CC1C01] via-[#FF5500] to-[#FF7700] hover:brightness-110 text-white font-extrabold text-xs px-3.5 py-1.5 rounded-full shadow-md shadow-[#CC1C01]/35 transition-all duration-200 flex items-center gap-1.5 cursor-pointer">
+              <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 16l-1-8 4 3 4-5 4 5 4-3-1 8H5z" />
+              </svg>
               <span>Premium</span>
             </div>
 
@@ -275,7 +277,7 @@ export default function Navbar({ activeTab, setActiveTab, setSelectedSubPart }: 
               <svg className="w-5 h-5 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
               </svg>
-              <span className="absolute -top-0.5 -right-0.5 bg-[#FF2E00] text-white rounded-full text-[10px] font-black w-4 h-4 flex items-center justify-center border-2 border-white">
+              <span className="absolute -top-1 -right-1 bg-[#CC1C01] text-white rounded-full text-[11px] font-black w-5 h-5 flex items-center justify-center border-2 border-white shadow-2xs">
                 6
               </span>
             </button>
@@ -283,18 +285,22 @@ export default function Navbar({ activeTab, setActiveTab, setSelectedSubPart }: 
             {/* Dashboard Navigation */}
             <button 
               onClick={() => handleSkillSelect('dashboard')}
-              className="text-slate-800 hover:text-[#CC1C01] font-bold text-xs px-2.5 py-1 flex items-center gap-1.5 transition-colors"
+              className="text-slate-800 hover:bg-orange-100 hover:-translate-y-0.5 hover:shadow-[0_10px_26px_-10px_#cb1c0180] active:translate-y-0 active:scale-95 font-normal text-[14px] px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all duration-200 cursor-pointer"
             >
-              <span>🔥</span>
+              <svg className="w-4 h-4 text-[#CC1C01]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+              </svg>
               <span>Dashboard</span>
             </button>
 
-            {/* User Avatar Circle P (Phát) */}
+            {/* Default User Avatar */}
             <div 
               title="nguyenphat13112006@gmail.com"
-              className="w-8 h-8 rounded-full bg-[#E0523C] text-white font-black text-xs flex items-center justify-center cursor-pointer shadow-2xs hover:brightness-110 transition-all border border-white"
+              className="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center cursor-pointer shadow-2xs hover:bg-slate-300 hover:text-slate-700 transition-all border border-slate-300/80"
             >
-              P
+              <svg className="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+              </svg>
             </div>
           </div>
 
@@ -322,9 +328,12 @@ export default function Navbar({ activeTab, setActiveTab, setSelectedSubPart }: 
         <div className="lg:hidden border-t border-slate-100 bg-white px-4 pt-3 pb-6 space-y-2 shadow-lg animate-in slide-in-from-top duration-200 font-sans text-left">
           <button
             onClick={() => handleSkillSelect('mock-test')}
-            className="w-full bg-[#D9381E] text-white font-bold py-2.5 rounded-xl flex items-center justify-center gap-2"
+            className="w-full bg-gradient-to-r from-[#CC1C01] via-[#FF5500] to-[#FF7700] text-white font-bold py-2.5 rounded-xl flex items-center justify-center gap-2"
           >
-            📋 Thi thử ngay
+            <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
+            <span>Thi thử ngay</span>
           </button>
 
           <div className="pt-2 font-bold text-xs text-slate-400 uppercase tracking-wider px-2">
