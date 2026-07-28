@@ -75,14 +75,14 @@ export function ListeningPart2View({
                   disabled={isReviewMode}
                   value={selectedVal}
                   onChange={(e) => onAnswer(answerKey, e.target.value)}
-                  className={`w-full sm:flex-1 px-3 py-2 text-[14px] appearance-auto rounded-lg transition-all font-normal cursor-pointer bg-white border border-slate-300 text-slate-800 ${
+                  className={`w-full sm:flex-1 px-3 py-2 text-[14px] appearance-auto rounded-lg transition-all font-normal cursor-pointer disabled:opacity-100 ${
                     isChecked
                       ? isCorr
-                        ? 'border-[#a7f3d0] bg-[#ecfdf5] text-emerald-950'
+                        ? 'border-2 border-emerald-500 bg-[#ecfdf5] text-emerald-800 disabled:bg-[#ecfdf5] disabled:text-emerald-800 disabled:border-emerald-500'
                         : selectedVal
-                        ? 'border-[#fecaca] bg-[#fef2f2] text-red-950'
-                        : 'border-slate-300 bg-slate-50 text-slate-600'
-                      : 'focus:outline-none focus:border-slate-400 hover:border-slate-400'
+                        ? 'border-2 border-red-400 bg-[#fef2f2] text-red-700 disabled:bg-[#fef2f2] disabled:text-red-700 disabled:border-red-400'
+                        : 'border border-slate-300 bg-slate-50 text-slate-600 disabled:bg-slate-50'
+                      : 'bg-white border border-slate-300 text-slate-800 focus:outline-none focus:border-slate-400 hover:border-slate-400'
                   }`}
                 >
                   <option value=""></option>

@@ -27,5 +27,11 @@
 10. **Detailed Answers Subtitle & Layout Standard**:
     - If a Part has an instruction prompt, it must be provided as the `subtitle` prop directly below `Chi tiết bài làm` inside `DetailedAnswersCard` (just like Reading parts).
     - Detailed answer review cards must omit redundant topic titles and inner wrapper cards, placing the audio bar first (for listening), followed by speaker/question item boxes.
+11. **Option Select Box Styling Standard**:
+    - All `<select>` dropdown option boxes across all Reading and Listening parts when displaying answer feedback (`isChecked` / `isReviewMode`) must strictly use `font-normal` (`text-[14px]`).
+    - Correct selected options must strictly use green text (`text-emerald-800`), 2px green border (`border-2 border-emerald-500`), green background (`bg-[#ecfdf5]`), and explicit disabled styling (`disabled:bg-[#ecfdf5] disabled:text-emerald-800 disabled:border-emerald-500 disabled:opacity-100`).
+    - Incorrect selected options must strictly use red text (`text-red-700`), 2px red border (`border-2 border-red-400`), red background (`bg-[#fef2f2]`), and explicit disabled styling (`disabled:bg-[#fef2f2] disabled:text-red-700 disabled:border-red-400 disabled:opacity-100`).
+    - Standard base text color (`text-slate-800`) must be placed in the `else` branch when not checked, avoiding static base class conflicts.
+
 
 

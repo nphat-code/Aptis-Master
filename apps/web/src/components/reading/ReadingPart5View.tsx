@@ -51,13 +51,13 @@ export default function ReadingPart5View({
                   disabled={isReviewMode}
                   value={selectedVal}
                   onChange={(e) => onAnswer(answerKey, e.target.value)}
-                  className={`px-3.5 py-1.5 text-[14px] appearance-auto max-w-full rounded-lg transition-all font-normal cursor-pointer ${
+                  className={`px-3.5 py-1.5 text-[14px] appearance-auto max-w-full rounded-lg transition-all font-normal cursor-pointer disabled:opacity-100 ${
                     isChecked
                       ? isCorr
-                        ? 'border border-[#a7f3d0] bg-[#ecfdf5] text-emerald-950 font-normal'
+                        ? 'border-2 border-emerald-500 bg-[#ecfdf5] text-emerald-800 disabled:bg-[#ecfdf5] disabled:text-emerald-800 disabled:border-emerald-500'
                         : selectedVal
-                        ? 'border border-[#fecaca] bg-[#fef2f2] text-red-950 font-normal'
-                        : 'border border-slate-300 bg-slate-50 text-slate-600'
+                        ? 'border-2 border-red-400 bg-[#fef2f2] text-red-700 disabled:bg-[#fef2f2] disabled:text-red-700 disabled:border-red-400'
+                        : 'border border-slate-300 bg-slate-50 text-slate-600 disabled:bg-slate-50'
                       : 'bg-white border border-slate-300 text-slate-800 focus:outline-none focus:ring-2 focus:border-[#24085A] focus:ring-[#24085A]/20 hover:border-slate-400'
                   }`}
                 >
