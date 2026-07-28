@@ -45,7 +45,20 @@
     - Screen 1 renders Monologue 1 (Questions 1 & 2), and Screen 2 renders Monologue 2 (Questions 1 & 2). Questions on each screen must strictly use clean simple numbering (`1.` and `2.`), avoiding composite prefixes like `16.1` or `17.1`.
     - Topic names and outer wrapper boxes/cards must NEVER be rendered inside the exam room during test execution (`ListeningPart4View`). The audio player and question items must be placed directly in the main view without an enclosing border/background box.
     - Outer test selection cards for Part 4 (`getCustomCardProps`) must format titles using the first monologue's topic name: `Đề XX - [Tên Topic 1]` (e.g. `Đề 01 - The sport`), falling back to `Đề XX - Listening Part 4` if topic is missing.
-    - Navigation between monologues uses standard Next / Back buttons with `.animate-slide-question` transition animation.
+15. **Part Tab Styling & Formatting Standard**:
+    - All part filter tab buttons across all skill views (`SkillPracticeView`) must display active individual part tabs with an orange background (`bg-[#FEAD5D]`) and white text (`text-white shadow-sm`).
+    - Inactive tab buttons must strictly use gray text color `#666666` (`text-[#666666]`).
+    - Tab label text must be parsed into a bold prefix (`font-bold`, e.g. `Full Part`, `Part 1`, `P.1`) and normal weight description (`font-normal`, e.g. ` – Tất cả các Part`, ` – Sentence comprehension`).
+16. **Skill-Specific Exam Instructions & Listening Full Practice Standard**:
+    - `ExamInstructions` must provide explicit, skill-specific instruction text branches for both single part practice and Full Exam modes (`isFullExam`).
+    - Listening Full Exam instructions must strictly use the official 5-line Aptis text:
+      1. `You will listen to seventeen recordings.`
+      2. `Click on the PLAY button to listen to each recording.`
+      3. `You can listen to each recording TWO TIMES ONLY.`
+      4. `You have 40 minutes to complete the test.`
+      5. `When you click on the 'Next' button, the test will begin.`
+    - Total exam duration for Listening Full Exam is strictly 40 minutes (2400s), with 25 sub-questions (50 points max) and CEFR level thresholds: C1 ($\ge 42$), B2 ($\ge 34$), B1 ($\ge 24$), A2 ($\ge 16$), A1 ($\ge 8$).
+    - Header part titles during test execution (`partTitles`) must remain clean without parenthetical question numbers (e.g. `Part 1 – Word recognition`).
 
 
 

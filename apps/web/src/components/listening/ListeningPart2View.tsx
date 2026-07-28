@@ -2,6 +2,7 @@
 
 import React from 'react';
 import AudioPlayer from './AudioPlayer';
+import ScriptViewer from './ScriptViewer';
 
 export interface ListeningPart2Data {
   audioUrl: string;
@@ -120,15 +121,8 @@ export function ListeningPart2View({
       </div>
 
       {/* Script Box */}
-      {(showExplanation || isReviewMode) && data.transcript && (
-        <div className="pt-4 border-t border-slate-200/80 space-y-2 mt-4">
-          <div className="text-[14px] font-bold text-slate-900">
-            Script
-          </div>
-          <div className="text-[14px] text-slate-700 font-normal leading-relaxed whitespace-pre-line bg-slate-50 p-4 rounded-xl border border-slate-200/70">
-            {data.transcript}
-          </div>
-        </div>
+      {(showExplanation || isReviewMode) && (
+        <ScriptViewer transcript={data.transcript} />
       )}
     </div>
   );

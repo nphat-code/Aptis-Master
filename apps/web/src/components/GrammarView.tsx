@@ -18,7 +18,7 @@ export default function GrammarView({ onBackToHome, data }: GrammarViewProps) {
   const partTabContent: Record<string, PartTabContent> = {
     full: {
       title: 'Luyện tập full part Grammar & Vocabulary',
-      subtitle: 'Hoàn thành 25 câu Ngữ pháp + 25 câu Từ vựng trong 25 phút.',
+      subtitle: 'Hoàn thành tất cả các Part của kỹ năng này trong một lượt thi liên tục để đánh giá năng lực chính xác nhất.',
       badge: 'Full Part',
       testCount: 30,
     },
@@ -68,7 +68,7 @@ export default function GrammarView({ onBackToHome, data }: GrammarViewProps) {
       )}
       partTabs={partTabs}
       partTabContent={partTabContent}
-      defaultPartTab="part1"
+      defaultPartTab="full"
       tipsTitle="Mẹo thi Grammar & Vocabulary"
       tipsContent={tipsContent}
     />

@@ -20,7 +20,7 @@ export default function WritingView({ onBackToHome, data }: WritingViewProps) {
   const partTabContent: Record<string, PartTabContent> = {
     full: {
       title: 'Luyện tập full part kỹ năng Writing',
-      subtitle: 'Hoàn thành 4 Part viết liên tục trong 25 phút để đánh giá khả năng diễn đạt văn bản.',
+      subtitle: 'Hoàn thành tất cả các Part của kỹ năng này trong một lượt thi liên tục để đánh giá năng lực chính xác nhất.',
       badge: 'Full Part',
       testCount: 20,
     },
@@ -81,7 +81,7 @@ export default function WritingView({ onBackToHome, data }: WritingViewProps) {
       )}
       partTabs={partTabs}
       partTabContent={partTabContent}
-      defaultPartTab="part1"
+      defaultPartTab="full"
       tipsTitle="Mẹo thi Aptis Writing"
       tipsContent={tipsContent}
     />

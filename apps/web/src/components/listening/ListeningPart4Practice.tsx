@@ -6,6 +6,7 @@ import { shuffleArray } from '@/utils/shuffle';
 import BasePracticeExam from '../exam/BasePracticeExam';
 import DetailedAnswersCard from '../exam/DetailedAnswersCard';
 import ListeningPart4View, { ListeningPart4Monologue } from './ListeningPart4View';
+import ScriptViewer from './ScriptViewer';
 
 export interface ListeningPart4PracticeProps {
   testIndex: number; // 0-based test index or -1 for Marathon
@@ -219,16 +220,7 @@ export default function ListeningPart4Practice({
                           </div>
 
                           {/* Script */}
-                          {mono.transcript && (
-                            <div className="pt-3 border-t border-slate-200/60 mt-3 space-y-1">
-                              <span className="text-[14px] font-bold text-slate-900 block">
-                                Script
-                              </span>
-                              <p className="text-[14px] text-slate-700 font-normal leading-relaxed whitespace-pre-line bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
-                                {mono.transcript}
-                              </p>
-                            </div>
-                          )}
+                          <ScriptViewer transcript={mono.transcript} />
                         </div>
                       );
                     })}

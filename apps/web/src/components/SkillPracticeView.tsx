@@ -179,16 +179,24 @@ export default function SkillPracticeView({
             const activeClass = isActive
               ? isFullPart
                 ? 'bg-[#CC1C01] text-white shadow-sm'
-                : 'bg-[#FEAD5D] text-slate-900 shadow-sm font-extrabold'
-              : 'bg-[#F4F4F6] text-slate-600 hover:text-slate-900 hover:bg-slate-200/80 border border-slate-200/60';
+                : 'bg-[#FEAD5D] text-white shadow-sm'
+              : 'bg-[#F4F4F6] text-[#666666] hover:text-slate-900 hover:bg-slate-200/80 border border-slate-200/60';
+
+            const dashIndex = tab.label.search(/\s+[–—\-]\s+/);
+            const hasDash = dashIndex !== -1;
+            const prefix = hasDash ? tab.label.substring(0, dashIndex) : tab.label;
+            const rest = hasDash ? tab.label.substring(dashIndex) : '';
 
             return (
               <button
                 key={tab.id}
                 onClick={() => setActivePartTab(tab.id)}
-                className={`w-full px-2.5 py-3 rounded-lg text-xs sm:text-sm font-bold text-center justify-center transition-all duration-150 flex items-center ${activeClass}`}
+                className={`w-full px-2.5 py-3 rounded-lg text-xs sm:text-sm text-center justify-center transition-all duration-150 flex items-center ${activeClass}`}
               >
-                <span className="w-full text-center leading-snug">{tab.label}</span>
+                <span className="w-full text-center leading-snug">
+                  <span className="font-bold">{prefix}</span>
+                  {rest && <span className="font-normal">{rest}</span>}
+                </span>
               </button>
             );
           })}

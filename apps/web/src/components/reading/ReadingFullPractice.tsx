@@ -145,7 +145,7 @@ export default function ReadingFullPractice({
   return (
     <ExamPracticeLayout
       moduleName="Reading"
-      partTitle="Part 1 – Gap Fill"
+      partTitle="Full Part"
       getPartTitle={(idx) => partTitles[idx] || 'Full Part'}
       testTitle={`Reading Đề ${testNumberStr}`}
       totalQuestions={5} // 5 Parts -> Question 1 of 5 to Question 5 of 5

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import AudioPlayer from './AudioPlayer';
+import ScriptViewer from './ScriptViewer';
 
 export interface Question13Item {
   heading?: string;
@@ -108,15 +109,8 @@ export default function ListeningPart1View({
       </div>
 
       {/* Audio Transcript Box in Review / Explanation Mode */}
-      {(showExplanation || isReviewMode) && q.transcript && (
-        <div className="bg-purple-50/70 rounded-2xl p-5 border border-purple-200/80 space-y-2 text-left animate-in fade-in duration-300">
-          <div className="text-xs font-extrabold text-[#24085A] uppercase tracking-wider">
-            Script
-          </div>
-          <p className="text-[14px] font-normal text-slate-800 leading-relaxed">
-            {q.transcript}
-          </p>
-        </div>
+      {(showExplanation || isReviewMode) && (
+        <ScriptViewer transcript={q.transcript} />
       )}
     </div>
   );

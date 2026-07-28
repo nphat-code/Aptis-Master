@@ -6,6 +6,7 @@ import { shuffleArray } from '@/utils/shuffle';
 import BasePracticeExam from '../exam/BasePracticeExam';
 import DetailedAnswersCard from '../exam/DetailedAnswersCard';
 import ListeningPart2View, { ListeningPart2Data } from './ListeningPart2View';
+import ScriptViewer from './ScriptViewer';
 
 export interface ListeningPart2PracticeProps {
   testIndex: number; // 0-based test index or -1 for Marathon
@@ -194,16 +195,7 @@ export default function ListeningPart2Practice({
                     </div>
 
                     {/* Script Box */}
-                    {item.transcript && (
-                      <div className="pt-3 border-t border-slate-200/60 mt-3 space-y-1">
-                        <span className="text-[14px] font-bold text-slate-900 block">
-                          Script
-                        </span>
-                        <p className="text-[14px] text-slate-700 font-normal leading-relaxed whitespace-pre-line bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
-                          {item.transcript}
-                        </p>
-                      </div>
-                    )}
+                    <ScriptViewer transcript={item.transcript} />
                   </div>
                 );
               })}

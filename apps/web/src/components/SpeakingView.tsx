@@ -20,7 +20,7 @@ export default function SpeakingView({ onBackToHome, data }: SpeakingViewProps) 
   const partTabContent: Record<string, PartTabContent> = {
     full: {
       title: 'Luyện tập full part kỹ năng Speaking',
-      subtitle: 'Hoàn thành 4 Part nói liên tục trong 12 phút dưới áp lực đếm ngược thời gian.',
+      subtitle: 'Hoàn thành tất cả các Part của kỹ năng này trong một lượt thi liên tục để đánh giá năng lực chính xác nhất.',
       badge: 'Full Part',
       testCount: 20,
     },
@@ -81,7 +81,7 @@ export default function SpeakingView({ onBackToHome, data }: SpeakingViewProps) 
       )}
       partTabs={partTabs}
       partTabContent={partTabContent}
-      defaultPartTab="part1"
+      defaultPartTab="full"
       tipsTitle="Mẹo thi Aptis Speaking"
       tipsContent={tipsContent}
     />

@@ -75,7 +75,12 @@ export default function ExamPracticeLayout({
   const [hasExamStarted, setHasExamStarted] = useState(initialStep === 'questions');
   const [timeLeftSeconds, setTimeLeftSeconds] = useState(timeAllowedSeconds);
 
-  const activePartTitle = getPartTitle ? getPartTitle(currentQuestionIndex) : partTitle;
+  const activePartTitle = useMemo(() => {
+    if (examStep === 'start' || examStep === 'instructions') {
+      return partTitle;
+    }
+    return getPartTitle ? getPartTitle(currentQuestionIndex) : partTitle;
+  }, [examStep, partTitle, getPartTitle, currentQuestionIndex]);
   const displayTotalSubCount = customTotalSubQuestions !== undefined ? customTotalSubQuestions : totalQuestions;
   const subPerPart = totalQuestions > 0 ? Math.max(1, Math.round(displayTotalSubCount / totalQuestions)) : 1;
 
@@ -87,6 +92,14 @@ export default function ExamPracticeLayout({
         { title: 'Part 3 – Text cohesion', startIndex: 10, count: 5, targetPartIndex: 2 },
         { title: 'Part 4 – Opinion matching', startIndex: 15, count: 7, targetPartIndex: 3 },
         { title: 'Part 5 – Long reading', startIndex: 22, count: 7, targetPartIndex: 4 },
+      ];
+    }
+    if (customTotalSubQuestions === 25 && totalQuestions === 17) {
+      return [
+        { title: 'Part 1 – Word recognition', startIndex: 0, count: 13, targetPartIndex: 0 },
+        { title: 'Part 2 – Matching information', startIndex: 13, count: 4, targetPartIndex: 13 },
+        { title: 'Part 3 – Short conversations', startIndex: 17, count: 4, targetPartIndex: 14 },
+        { title: 'Part 4 – Monologues', startIndex: 21, count: 4, targetPartIndex: 15 },
       ];
     }
     return [
@@ -101,6 +114,13 @@ export default function ExamPracticeLayout({
       if (subIdx <= 14) return 2;
       if (subIdx <= 21) return 3;
       return 4;
+    }
+    if (customTotalSubQuestions === 25 && totalQuestions === 17) {
+      if (subIdx <= 12) return subIdx;
+      if (subIdx <= 16) return 13;
+      if (subIdx <= 20) return 14;
+      if (subIdx <= 22) return 15;
+      return 16;
     }
     if (totalQuestions > 1) {
       return Math.min(totalQuestions - 1, Math.floor(subIdx / subPerPart));

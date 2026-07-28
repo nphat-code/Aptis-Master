@@ -2,6 +2,7 @@
 
 import React from 'react';
 import AudioPlayer from './AudioPlayer';
+import ScriptViewer from './ScriptViewer';
 
 export interface Part4QuestionItem {
   id?: string;
@@ -135,15 +136,8 @@ export function ListeningPart4View({
             </div>
 
             {/* Script Box */}
-            {isChecked && formattedTranscript && (
-              <div className="pt-3 border-t border-slate-200/80 space-y-1.5 mt-3">
-                <div className="text-[14px] font-bold text-slate-900">
-                  Script
-                </div>
-                <div className="text-[14px] text-slate-700 font-normal leading-relaxed whitespace-pre-line bg-white p-4 rounded-xl border border-slate-200/70">
-                  {formattedTranscript}
-                </div>
-              </div>
+            {isChecked && (
+              <ScriptViewer transcript={formattedTranscript} />
             )}
           </div>
         );
