@@ -7,6 +7,7 @@ import scrapedData from '@/data/scraped_data.json';
 import ListeningPart1Practice from './listening/ListeningPart1Practice';
 import ListeningPart2Practice from './listening/ListeningPart2Practice';
 import ListeningPart3Practice from './listening/ListeningPart3Practice';
+import ListeningPart4Practice from './listening/ListeningPart4Practice';
 
 interface ListeningViewProps {
   onBackToHome?: () => void;
@@ -112,6 +113,14 @@ export default function ListeningView({ onBackToHome, data }: ListeningViewProps
             totalCount: totalP3,
           };
         }
+        if (partId === 'part4') {
+          const totalP4 = (scrapedData as any).listening?.listening_question16_17?.length || totalTestSets;
+          return {
+            title: 'Luyện tất cả đề Part 4',
+            subtitle: `Làm liên tục ${totalP4} bài Part 4 — không giới hạn giờ`,
+            totalCount: totalP4,
+          };
+        }
         return null;
       }}
       getCustomCardProps={(partId, testNum) => {
@@ -161,7 +170,7 @@ export default function ListeningView({ onBackToHome, data }: ListeningViewProps
         if (partId === 'part4') {
           return {
             title: `Đề ${testNumberStr} - Listening Part 4`,
-            subtitle: '🎧 Monologues (2 bài giảng) • 7 phút',
+            subtitle: '🎧 Monologues (2 bài phát biểu) • 12 phút',
             badge: 'P.4',
           };
         }
@@ -176,6 +185,9 @@ export default function ListeningView({ onBackToHome, data }: ListeningViewProps
         }
         if (partId === 'part3') {
           return <ListeningPart3Practice testIndex={testIndex} onExit={onExit} />;
+        }
+        if (partId === 'part4') {
+          return <ListeningPart4Practice testIndex={testIndex} onExit={onExit} />;
         }
         return null;
       }}

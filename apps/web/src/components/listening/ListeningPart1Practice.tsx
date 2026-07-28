@@ -2,6 +2,7 @@
 
 import React, { useMemo } from 'react';
 import scrapedData from '@/data/scraped_data.json';
+import { shuffleArray } from '@/utils/shuffle';
 import BasePracticeExam from '../exam/BasePracticeExam';
 import DetailedAnswersCard from '../exam/DetailedAnswersCard';
 import ListeningPart1View, { Question13Item } from './ListeningPart1View';
@@ -23,14 +24,23 @@ export default function ListeningPart1Practice({
   const safeTestIndex = isAllPractice ? 0 : (((testIndex % totalSets) + totalSets) % totalSets);
 
   const rawQuestionsList: Question13Item[][] = useMemo(() => {
-    return testKeys.map((tKey) => rawListeningTests[tKey]?.q1_13 || []);
+    return testKeys.map((tKey) => {
+      const list: Question13Item[] = rawListeningTests[tKey]?.q1_13 || [];
+      return list.map((q) => ({
+        ...q,
+        options: shuffleArray(q.options || []),
+      }));
+    });
   }, [rawListeningTests, testKeys]);
 
   const singleTestQuestions: Question13Item[] = rawQuestionsList[safeTestIndex] || [];
   const allQuestionsFlat: Question13Item[] = useMemo(() => {
     const rawAll = (scrapedData as any).listening?.listening_question1_13;
     if (Array.isArray(rawAll) && rawAll.length > 0) {
-      return rawAll;
+      return rawAll.map((q: any) => ({
+        ...q,
+        options: shuffleArray(q.options || []),
+      }));
     }
     return rawQuestionsList.flat();
   }, [rawQuestionsList]);

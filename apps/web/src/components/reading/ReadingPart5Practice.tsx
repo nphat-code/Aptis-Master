@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import scrapedData from '@/data/scraped_data.json';
+import { shuffleOptionsWithFixedFirst } from '@/utils/shuffle';
 import BasePracticeExam from '../exam/BasePracticeExam';
 import DetailedAnswersCard, { AnswerDiffBadge } from '../exam/DetailedAnswersCard';
 import ReadingPart5View from './ReadingPart5View';
@@ -25,6 +26,14 @@ export default function ReadingPart5Practice({
   const setKeys = Object.keys(rawParagraphsObj);
   const totalSets = setKeys.length || 11;
   const safeTestIndex = isAllPractice ? 0 : (((testIndex % totalSets) + totalSets) % totalSets);
+
+  const shuffledOptionsMap: Record<string, string[]> = useMemo(() => {
+    const map: Record<string, string[]> = {};
+    for (const key in rawOptionsObj) {
+      map[key] = shuffleOptionsWithFixedFirst(rawOptionsObj[key] || []);
+    }
+    return map;
+  }, [rawOptionsObj]);
 
   const getCorrectHeadingForSet = (setIdx: number, pIdx: number): string => {
     const opts = rawOptionsObj[`${setIdx}`] || [];
@@ -58,13 +67,15 @@ export default function ReadingPart5Practice({
         const activeSetIndex = isAllPractice ? currentQuestionIndex : safeTestIndex;
 
         const paragraphs = rawParagraphsObj[`${activeSetIndex}`] || [];
-        const rawOptions = rawOptionsObj[`${activeSetIndex}`] || [];
+        const options = shuffledOptionsMap[`${activeSetIndex}`] || [];
+        const correctAnswers = paragraphs.map((_, pIdx) => getCorrectHeadingForSet(activeSetIndex, pIdx));
         const baseKey = isAllPractice ? currentQuestionIndex * 7 : 0;
 
         return (
           <ReadingPart5View
             paragraphs={paragraphs}
-            options={rawOptions}
+            options={options}
+            correctAnswers={correctAnswers}
             userAnswers={userAnswers}
             baseAnswerKey={baseKey}
             onAnswer={onAnswer}

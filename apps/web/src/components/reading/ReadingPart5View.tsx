@@ -6,6 +6,7 @@ import QuestionInstructionHeader from '../exam/QuestionInstructionHeader';
 export interface ReadingPart5ViewProps {
   paragraphs: string[];
   options: string[];
+  correctAnswers?: string[];
   userAnswers: Record<number, any>;
   baseAnswerKey?: number;
   onAnswer: (key: number, value: string) => void;
@@ -16,6 +17,7 @@ export interface ReadingPart5ViewProps {
 export default function ReadingPart5View({
   paragraphs,
   options,
+  correctAnswers = [],
   userAnswers,
   baseAnswerKey = 0,
   onAnswer,
@@ -23,7 +25,7 @@ export default function ReadingPart5View({
   showExplanation = false,
 }: ReadingPart5ViewProps) {
   const availableHeadings = useMemo(() => {
-    return options.filter((opt) => Boolean(opt && opt.trim())).sort((a, b) => a.localeCompare(b));
+    return options.filter((opt) => Boolean(opt && opt.trim()));
   }, [options]);
 
   return (
@@ -36,7 +38,7 @@ export default function ReadingPart5View({
         {paragraphs.map((pText, pIdx) => {
           const answerKey = baseAnswerKey + pIdx;
           const selectedVal = userAnswers[answerKey] || '';
-          const correctVal = options[pIdx + 1] || '';
+          const correctVal = correctAnswers[pIdx] || options[pIdx + 1] || '';
           const isChecked = isReviewMode || showExplanation;
           const isCorr = selectedVal === correctVal;
 

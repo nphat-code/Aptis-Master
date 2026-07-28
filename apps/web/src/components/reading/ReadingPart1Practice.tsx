@@ -2,6 +2,7 @@
 
 import React, { useMemo } from 'react';
 import scrapedData from '@/data/scraped_data.json';
+import { shuffleArray } from '@/utils/shuffle';
 import BasePracticeExam from '../exam/BasePracticeExam';
 import DetailedAnswersCard, { AnswerDiffBadge } from '../exam/DetailedAnswersCard';
 import ReadingPart1View, { Question1Item } from './ReadingPart1View';
@@ -16,7 +17,16 @@ export default function ReadingPart1Practice({
   onExit,
 }: ReadingPart1PracticeProps) {
   const isAllPractice = testIndex === -1;
-  const rawQuestionsList = (scrapedData?.reading?.question1 || []) as Question1Item[][];
+  const rawQuestionsList = useMemo(() => {
+    const rawList = (scrapedData?.reading?.question1 || []) as Question1Item[][];
+    return rawList.map((set) =>
+      set.map((q) => ({
+        ...q,
+        answerOptions: shuffleArray(q.answerOptions || []),
+      }))
+    );
+  }, []);
+
   const totalSets = rawQuestionsList.length;
 
   const singleTestQuestions: Question1Item[] = rawQuestionsList[testIndex % totalSets] || rawQuestionsList[0] || [];

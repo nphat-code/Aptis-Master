@@ -2,6 +2,7 @@
 
 import React, { useMemo } from 'react';
 import scrapedData from '@/data/scraped_data.json';
+import { shuffleArray } from '@/utils/shuffle';
 import BasePracticeExam from '../exam/BasePracticeExam';
 import DetailedAnswersCard from '../exam/DetailedAnswersCard';
 import ListeningPart2View, { ListeningPart2Data } from './ListeningPart2View';
@@ -22,32 +23,43 @@ export default function ListeningPart2Practice({
 
   const safeTestIndex = isAllPractice ? 0 : (((testIndex % totalTestSets) + totalTestSets) % totalTestSets);
 
-  const rawPart2List: ListeningPart2Data[] = useMemo(() => {
-    return testKeys.map((tKey) => {
-      const q14 = rawListeningTests[tKey]?.q14 || {};
-      return {
-        audioUrl: q14.audioUrl || '',
-        topic: q14.topic || 'Topic: Matching Information',
-        options: q14.options || [],
-        correctAnswers: q14.correctAnswers || q14.options?.slice(0, 4) || [],
-        transcript: q14.transcript || '',
-      };
-    });
-  }, [rawListeningTests, testKeys]);
-
   const fullPart2Bank: ListeningPart2Data[] = useMemo(() => {
     const rawBank = (scrapedData as any).listening?.listening_question14;
     if (Array.isArray(rawBank) && rawBank.length > 0) {
       return rawBank.map((q14: any) => ({
         audioUrl: q14.audioUrl || '',
         topic: q14.topic || 'Topic: Matching Information',
-        options: q14.options || [],
+        options: shuffleArray(q14.options || []),
         correctAnswers: q14.correctAnswers || q14.options?.slice(0, 4) || [],
         transcript: q14.transcript || '',
       }));
     }
-    return rawPart2List;
-  }, [rawPart2List]);
+    return [];
+  }, []);
+
+  const rawPart2List: ListeningPart2Data[] = useMemo(() => {
+    return testKeys.map((tKey) => {
+      const q14 = rawListeningTests[tKey]?.q14 || {};
+      const matchedBankItem = fullPart2Bank.find(
+        (item) =>
+          (q14.audioUrl && item.audioUrl === q14.audioUrl) ||
+          (q14.topic && item.topic === q14.topic)
+      );
+
+      const actualCorrectAnswers =
+        q14.correctAnswers || matchedBankItem?.correctAnswers || q14.options?.slice(0, 4) || [];
+
+      const rawOpts = q14.options || matchedBankItem?.options || [];
+
+      return {
+        audioUrl: q14.audioUrl || matchedBankItem?.audioUrl || '',
+        topic: q14.topic || matchedBankItem?.topic || 'Topic: Matching Information',
+        options: shuffleArray(rawOpts),
+        correctAnswers: actualCorrectAnswers,
+        transcript: q14.transcript || matchedBankItem?.transcript || '',
+      };
+    });
+  }, [rawListeningTests, testKeys, fullPart2Bank]);
 
   const activeBank = isAllPractice ? fullPart2Bank : rawPart2List;
   const totalSetsCount = isAllPractice ? fullPart2Bank.length : totalTestSets;
