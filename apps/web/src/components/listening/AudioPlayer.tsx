@@ -10,6 +10,15 @@ export interface AudioPlayerProps {
   onEnded?: () => void;
 }
 
+// Module-level map to retain audio play counts across question navigation during a test session
+const playCountsMap: Record<string, number> = {};
+
+export function resetAudioPlayCounts() {
+  for (const key in playCountsMap) {
+    delete playCountsMap[key];
+  }
+}
+
 export default function AudioPlayer({
   src,
   title,
@@ -19,23 +28,25 @@ export default function AudioPlayer({
 }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [playCount, setPlayCount] = useState(0);
   const [hasError, setHasError] = useState(false);
 
   // Normalise audio src path (add leading slash if missing)
   const normalizedSrc = src.startsWith('http') || src.startsWith('/') ? src : `/${src}`;
 
+  // Initialize playCount from persistent playCountsMap
+  const [playCount, setPlayCount] = useState(() => playCountsMap[normalizedSrc] || 0);
+
   useEffect(() => {
-    // Reset state when src (question) changes
+    // Sync playCount from playCountsMap when normalizedSrc changes
     setIsPlaying(false);
-    setPlayCount(0);
+    setPlayCount(playCountsMap[normalizedSrc] || 0);
     setHasError(false);
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
       audioRef.current.load();
     }
-  }, [src]);
+  }, [normalizedSrc]);
 
   const togglePlay = () => {
     if (!audioRef.current) return;
@@ -47,7 +58,8 @@ export default function AudioPlayer({
       setIsPlaying(false);
     } else {
       // User clicks Play
-      if (playCount >= maxPlayCount) {
+      const currentCount = playCountsMap[normalizedSrc] || 0;
+      if (currentCount >= maxPlayCount) {
         return; // Max 2 plays reached, cannot play again
       }
 
@@ -56,7 +68,9 @@ export default function AudioPlayer({
         .play()
         .then(() => {
           setIsPlaying(true);
-          setPlayCount((prev) => prev + 1);
+          const newCount = (playCountsMap[normalizedSrc] || 0) + 1;
+          playCountsMap[normalizedSrc] = newCount;
+          setPlayCount(newCount);
         })
         .catch((err) => {
           console.warn('Audio play error:', err);

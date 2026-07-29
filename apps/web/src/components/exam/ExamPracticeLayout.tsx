@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { resetAudioPlayCounts } from '../listening/AudioPlayer';
 
 export interface ExamPracticeLayoutProps {
   moduleName: string; // e.g. "Reading", "Listening", "Writing", "Speaking"
@@ -128,6 +129,13 @@ export default function ExamPracticeLayout({
     return 0;
   };
 
+  // Reset audio play counts when entering test set or testTitle changes
+  useEffect(() => {
+    if (moduleName === 'Listening') {
+      resetAudioPlayCounts();
+    }
+  }, [moduleName, testTitle]);
+
   // Set hasExamStarted to true when entering 'questions' step for the first time
   useEffect(() => {
     if (examStep === 'questions' && !hasExamStarted) {
@@ -193,6 +201,9 @@ export default function ExamPracticeLayout({
 
   // Handle Reset / Retake Test
   const handleRetakeExam = () => {
+    if (moduleName === 'Listening') {
+      resetAudioPlayCounts();
+    }
     setUserAnswers({});
     setIsSubmitted(false);
     setReviewMode(false);
