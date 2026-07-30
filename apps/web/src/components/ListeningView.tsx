@@ -143,7 +143,7 @@ export default function ListeningView({ onBackToHome, data }: ListeningViewProps
     <SkillPracticeView
       skillId="listening"
       skillTitle="Phần thi Listening"
-      skillDescription="Luyện nghe theo format bài thi Aptis Listening. Rèn luyện phản xạ nghe bắt từ khóa và xác định thông tin chính xác."
+      skillDescription="Luyện nghe theo format bài thi Aptis Listening. Làm quen với các dạng câu hỏi và luyện tập với audio giống bài thi thật. Mỗi đoạn audio chỉ được nghe tối đa 2 lần."
       durationText="25-30 phút"
       icon={(
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
