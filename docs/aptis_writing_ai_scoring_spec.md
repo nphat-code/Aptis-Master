@@ -230,6 +230,25 @@ Mỗi lần AI chấm bài sẽ trả về **3 phân mục phản hồi chính**
 
 ---
 
+### 📌 PART 2 – Social media response (Test Run #5 - Book club - Completely Off-topic 14/30):
+
+**Đề bài:** *Now you've become a new member of the Book Club. Fill in the form. Write in sentences. Use 20-30 words. (Context: I am a final year student so I need to find a research a lot of materials such as books and scientific journals).*
+
+**Bài làm thử nghiệm (20 từ - Lạc đề hoàn toàn về đồ ăn):**  
+`I really love eating delicious pepperoni pizza with extra cheese and drinking cold iced tea with my friends every weekend.`
+
+**🤖 AI Output Trả Về Thực Tế:**
+- **Điểm số:** `14/30`
+- **Hoàn thành nhiệm vụ:**  
+  *Bài của bạn hoàn toàn lạc đề rồi. Đề bài yêu cầu bạn giới thiệu về lý do tham gia Book Club và nhu cầu tìm tài liệu cho việc học, chứ không phải nói về sở thích ăn uống, đi chơi nha.*
+- **Ngữ pháp & chính tả:**  
+  *Ngữ pháp và chính tả của bạn không có lỗi sai nào.*
+- **Từ vựng:**  
+  *Từ vựng bạn dùng khá đơn giản và phù hợp với một cuộc trò chuyện thông thường.*
+- **Kết luận rút ra:** Khi bài làm viết đúng ngữ pháp nhưng **hoàn toàn lạc đề**, AI sẽ đánh giá nghiêm trọng phần Task Completion và hạ điểm xuống còn `14/30`.
+
+---
+
 ## 4. Định Dạng Data JSON API Trả Về (AI Response JSON Schema)
 
 Để Frontend render giao diện kết quả đẹp mắt và nhất quán, backend/AI Service sẽ trả về dữ liệu theo cấu trúc JSON chuẩn dưới đây:
