@@ -3,6 +3,7 @@
 import React from 'react';
 import SkillPracticeView, { PartTab, PartTabContent } from './SkillPracticeView';
 import scrapedData from '@/data/scraped_data.json';
+import WritingPart1Practice from './writing/WritingPart1Practice';
 
 interface WritingViewProps {
   onBackToHome?: () => void;
@@ -244,7 +245,7 @@ export default function WritingView({ onBackToHome, data }: WritingViewProps) {
         if (partId === 'part1') {
           return {
             title: titleText,
-            subtitle: '✍️ Short answers (5 câu trả lời ngắn) • 3 phút',
+            subtitle: '✍️ Short answers (5 câu trả lời ngắn) • 6 phút',
             badge: 'P.1',
           };
         }
@@ -272,6 +273,9 @@ export default function WritingView({ onBackToHome, data }: WritingViewProps) {
         return null;
       }}
       renderPracticeExam={({ partId, testIndex, onExit }) => {
+        if (partId === 'part1') {
+          return <WritingPart1Practice testIndex={testIndex} onExit={onExit} />;
+        }
         return (
           <div className="max-w-xl mx-auto my-12 p-8 bg-white rounded-2xl border border-slate-200 text-center space-y-4 shadow-sm">
             <div className="w-12 h-12 rounded-full bg-orange-100 text-[#CC1C01] flex items-center justify-center mx-auto text-xl font-bold">
@@ -281,7 +285,7 @@ export default function WritingView({ onBackToHome, data }: WritingViewProps) {
               Tính năng Luyện tập Writing đang được hoàn thiện
             </h3>
             <p className="text-sm text-slate-600">
-              Chế độ luyện tập từng bài cho phần thi Writing sẽ sớm ra mắt trong phiên bản tiếp theo.
+              Chế độ luyện tập cho phần này sẽ sớm ra mắt trong phiên bản tiếp theo.
             </p>
             <button
               type="button"
