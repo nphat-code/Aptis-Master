@@ -16,6 +16,8 @@ export interface BasePracticeExamProps {
   customTotalQuestions?: number; // e.g. 13 for Listening Part 1 (1 question per screen)
   pointsPerSubQuestion?: number; // default 2
   instructionsText?: React.ReactNode;
+  customScore?: number;
+  getCefrLevel?: (score: number, maxScore: number) => string;
   isAnswerCorrect: (subIndex: number, answerValue: any) => boolean;
   onExit: () => void;
   renderQuestions: ExamPracticeLayoutProps['renderQuestions'];
@@ -33,6 +35,8 @@ export default function BasePracticeExam({
   customTotalQuestions,
   pointsPerSubQuestion = 2,
   instructionsText,
+  customScore,
+  getCefrLevel,
   isAnswerCorrect,
   onExit,
   renderQuestions,
@@ -71,6 +75,8 @@ export default function BasePracticeExam({
       totalQuestions={totalQuestions}
       timeAllowedSeconds={timeAllowedSeconds}
       maxScore={maxScore}
+      customScore={customScore}
+      getCefrLevel={getCefrLevel}
       customTotalSubQuestions={totalSubQuestions}
       instructionsText={finalInstructions}
       isAnswerCorrect={isAnswerCorrect}

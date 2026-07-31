@@ -116,7 +116,7 @@ Tất cả các lượt test thực tế (Live Test Runs) thuộc mọi Part (Pa
   - Q5: *What kind of music do you like?* ➔ `I love pop music.` *(4 từ - Đúng)*
 
 **2. 🤖 AI Output Trả Về Thực Tế:**
-- **Điểm số:** `18/30`
+- **Điểm số:** `12/30`
 - **Hoàn thành nhiệm vụ (Task Completion):**  
   *Học viên đã trả lời đầy đủ 5 câu hỏi và các câu trả lời đều bám sát nội dung yêu cầu của đề bài.*
 - **Ngữ pháp & chính tả (Grammar & Spelling):**  
@@ -131,7 +131,7 @@ Tất cả các lượt test thực tế (Live Test Runs) thuộc mọi Part (Pa
   - *Lỗi ngữ pháp:* `"I love listning music."` ➔ `"I love listening to music."` *(Thiếu giới từ 'to' sau 'listening')*
   - *Lỗi chính tả:* `"listning"` ➔ `"listening"` *(Sai chính tả từ 'listening')*
   - *Lỗi chính tả:* `"piza"` ➔ `"pizza"` *(Sai chính tả từ 'pizza')*
-- **Kết luận rút ra (Key Takeaway):** Trả lời đủ 5 câu nhưng mắc 2 lỗi chính tả và 1 lỗi ngữ pháp bị hạ điểm xuống `18/30`.
+- **Kết luận rút ra (Key Takeaway):** Trả lời đủ 5 câu nhưng mắc 2 lỗi chính tả và 1 lỗi ngữ pháp bị hạ điểm xuống `12/30`.
 
 ---
 

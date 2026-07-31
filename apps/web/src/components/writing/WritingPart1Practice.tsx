@@ -1,14 +1,151 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import scrapedData from '@/data/scraped_data.json';
 import BasePracticeExam from '../exam/BasePracticeExam';
 import DetailedAnswersCard from '../exam/DetailedAnswersCard';
 import WritingPart1View, { WritingPart1Item, countWords } from './WritingPart1View';
+import WritingAiFeedbackCard from './WritingAiFeedbackCard';
+import { WritingAiFeedbackResponse } from '@/app/api/writing/evaluate/route';
 
 export interface WritingPart1PracticeProps {
   testIndex?: number;
   onExit: () => void;
+}
+
+interface WritingResultsViewProps {
+  userAnswers: Record<number, any>;
+  targetQuestions: WritingPart1Item[];
+  clubName: string;
+  onAiEvaluated?: (score: number, cefrLevel: string) => void;
+}
+
+function WritingResultsView({
+  userAnswers,
+  targetQuestions,
+  clubName,
+  onAiEvaluated,
+}: WritingResultsViewProps) {
+  const [aiFeedback, setAiFeedback] = useState<WritingAiFeedbackResponse | null>(null);
+  const [isAiAnalyzing, setIsAiAnalyzing] = useState<boolean>(false);
+  const [hasEvaluated, setHasEvaluated] = useState<boolean>(false);
+
+  const runAiEvaluation = async () => {
+    setIsAiAnalyzing(true);
+    try {
+      const payloadQuestions = targetQuestions.map((q, idx) => ({
+        id: idx + 1,
+        questionText: q.questionText,
+        userAnswer: userAnswers[idx] || '',
+      }));
+
+      const res = await fetch('/api/writing/evaluate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          partId: 'part1',
+          clubName,
+          questions: payloadQuestions,
+        }),
+      });
+
+      if (!res.ok) throw new Error('API evaluation request failed');
+      const data: WritingAiFeedbackResponse = await res.json();
+      setAiFeedback(data);
+      if (onAiEvaluated) {
+        onAiEvaluated(data.score, data.cefrLevel);
+      }
+    } catch (err) {
+      console.error('AI Evaluation error:', err);
+    } finally {
+      setIsAiAnalyzing(false);
+      setHasEvaluated(true);
+    }
+  };
+
+  useEffect(() => {
+    if (!hasEvaluated && !isAiAnalyzing) {
+      runAiEvaluation();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <div className="space-y-6">
+      {/* AI Evaluation Loading / Card */}
+      {isAiAnalyzing && (
+        <div className="bg-white rounded-2xl p-8 border border-purple-100 text-center space-y-3 shadow-xs animate-pulse">
+          <div className="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mx-auto text-xl font-bold">
+            🤖
+          </div>
+          <h4 className="text-base font-bold text-slate-900">
+            AI đang phân tích bài làm & chấm điểm theo chuẩn CEFR...
+          </h4>
+          <p className="text-xs text-slate-500">
+            Hệ thống đang kiểm tra trả lời đúng trọng tâm câu hỏi, lỗi chính tả và ngữ pháp.
+          </p>
+        </div>
+      )}
+
+      {!isAiAnalyzing && aiFeedback && (
+        <WritingAiFeedbackCard
+          feedback={aiFeedback}
+          onReEvaluate={runAiEvaluation}
+        />
+      )}
+
+      {/* Standard Answer Details Card */}
+      <DetailedAnswersCard
+        title="Chi tiết bài làm"
+        subtitle={`You are joining a ${clubName || 'Club'}. Fill out the form. Write short answers (1-5 words) for each message.`}
+      >
+        <div className="space-y-4 text-left">
+          {targetQuestions.map((q, idx) => {
+            const userAns = userAnswers[idx] || '';
+            const wc = countWords(userAns);
+            const isValid = wc >= 1 && wc <= 5;
+
+            return (
+              <div
+                key={idx}
+                className="rounded-2xl p-5 border border-slate-200/80 bg-white text-left space-y-3 shadow-2xs"
+              >
+                {/* Question prompt */}
+                <div className="flex items-start gap-2 text-[14px]">
+                  <span className="font-normal text-slate-800">{idx + 1}.</span>
+                  <p className="font-normal text-slate-900 leading-relaxed">
+                    {q.questionText}
+                  </p>
+                </div>
+
+                {/* User Answer */}
+                <div className="pl-6 space-y-1 text-[14px]">
+                  <span className="text-xs font-semibold text-slate-600 block">Bài làm của bạn</span>
+                  <p className={`font-normal p-3 rounded-xl border text-[14px] ${
+                    userAns
+                      ? 'bg-slate-50 border-slate-200 text-slate-900'
+                      : 'bg-red-50/60 border-red-200 text-red-700'
+                  }`}>
+                    {userAns || <span className="italic text-slate-400">(Bỏ trống)</span>}
+                  </p>
+                </div>
+
+                {/* Model Sample Answer */}
+                {q.sampleAnswer && (
+                  <div className="pl-6 text-[14px]">
+                    <div className="p-3 bg-[#ecfdf5] border border-emerald-300/90 rounded-xl text-emerald-900 font-normal text-[14px] space-y-1">
+                      <span className="text-xs font-bold text-emerald-800 block">💡 Bài viết mẫu</span>
+                      <p className="font-normal text-emerald-950">{q.sampleAnswer}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </DetailedAnswersCard>
+    </div>
+  );
 }
 
 export default function WritingPart1Practice({
@@ -19,6 +156,9 @@ export default function WritingPart1Practice({
   const rawWritingTests = (scrapedData as any)?.writing || {};
   const testKeys = useMemo(() => Object.keys(rawWritingTests), [rawWritingTests]);
   const totalSets = testKeys.length || 40;
+
+  const [aiScore, setAiScore] = useState<number | undefined>(undefined);
+  const [aiCefrLevel, setAiCefrLevel] = useState<string | undefined>(undefined);
 
   const safeTestIndex = isAllPractice ? 0 : (((testIndex % totalSets) + totalSets) % totalSets);
 
@@ -57,7 +197,9 @@ export default function WritingPart1Practice({
       topicTitle={clubName}
       defaultTimeSeconds={360} // 6 mins for Writing Part 1
       subQuestionsPerSet={5}
-      pointsPerSubQuestion={2}
+      pointsPerSubQuestion={6} // Total max score 30
+      customScore={aiScore}
+      getCefrLevel={isAllPractice && aiCefrLevel ? () => `Band ${aiCefrLevel}` : undefined}
       isAnswerCorrect={(idx, val) => {
         const wc = countWords(val);
         return wc >= 1 && wc <= 5;
@@ -87,70 +229,15 @@ export default function WritingPart1Practice({
         const activeClubName = clubName || 'Club';
 
         return (
-          <DetailedAnswersCard
-            title="Chi tiết bài làm"
-            subtitle={`You are joining a ${activeClubName}. Fill out the form. Write short answers (1-5 words) for each message.`}
-          >
-            <div className="space-y-4 text-left">
-              {targetQuestions.map((q, idx) => {
-                const userAns = userAnswers[idx] || '';
-                const wc = countWords(userAns);
-                const isValid = wc >= 1 && wc <= 5;
-
-                return (
-                  <div
-                    key={idx}
-                    className={`rounded-2xl p-5 border text-left space-y-3 transition-all ${
-                      isValid
-                        ? 'bg-[#ecfdf5] border-[#a7f3d0]'
-                        : 'bg-[#fef2f2] border-[#fecaca]'
-                    }`}
-                  >
-                    {/* Question prompt */}
-                    <div className="flex items-start gap-2 text-[14px]">
-                      <span className="font-normal text-slate-800">{idx + 1}.</span>
-                      <p className="font-normal text-slate-900 leading-relaxed">
-                        {q.questionText}
-                      </p>
-                    </div>
-
-                    {/* User Answer & Status */}
-                    <div className="pl-6 space-y-1.5 text-[14px]">
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <span className="text-xs font-semibold text-slate-600">Bài làm của bạn:</span>
-                        <span className={`text-xs font-bold px-2.5 py-0.5 rounded-md ${
-                          isValid
-                            ? 'bg-emerald-200/80 text-emerald-900'
-                            : 'bg-red-200/80 text-red-900'
-                        }`}>
-                          {isValid ? `✓ ${wc} từ (Hợp lệ)` : wc === 0 ? '✗ Chưa trả lời' : `✗ ${wc} từ (Vượt quá 5 từ)`}
-                        </span>
-                      </div>
-                      <p className={`font-normal p-3 rounded-xl border text-[14px] ${
-                        isValid
-                          ? 'bg-white/80 border-emerald-300 text-emerald-900'
-                          : 'bg-white/80 border-red-300 text-red-900'
-                      }`}>
-                        {userAns ? `"${userAns}"` : <span className="italic text-slate-400">(Bỏ trống)</span>}
-                      </p>
-                    </div>
-
-                    {/* Model Sample Answer */}
-                    {q.sampleAnswer && (
-                      <div className="pl-6 pt-1 text-[14px]">
-                        <span className="text-xs font-bold text-slate-600 block mb-1">
-                          💡 Gợi ý bài mẫu (Sample Answer):
-                        </span>
-                        <div className="p-3 bg-white/90 border border-slate-200/90 rounded-xl text-slate-800 font-medium italic">
-                          &ldquo;{q.sampleAnswer}&rdquo;
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </DetailedAnswersCard>
+          <WritingResultsView
+            userAnswers={userAnswers}
+            targetQuestions={targetQuestions}
+            clubName={activeClubName}
+            onAiEvaluated={(score, cefr) => {
+              setAiScore(score);
+              setAiCefrLevel(cefr);
+            }}
+          />
         );
       }}
     />

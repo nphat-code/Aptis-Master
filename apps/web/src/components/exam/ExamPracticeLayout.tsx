@@ -549,20 +549,22 @@ export default function ExamPracticeLayout({
                   </div>
                 )}
 
-                {/* Correct Questions Count */}
-                <div>
-                  <div className="flex items-baseline justify-center">
-                    <span className="text-4xl sm:text-5xl font-black text-slate-900">
-                      {correctSubQuestionsCount}
-                    </span>
-                    <span className="text-xl sm:text-2xl font-bold text-slate-400 ml-0.5">
-                      /{displayTotalSubCount}
-                    </span>
+                {/* Correct Questions Count (Hidden for Writing module) */}
+                {moduleName !== 'Writing' && (
+                  <div>
+                    <div className="flex items-baseline justify-center">
+                      <span className="text-4xl sm:text-5xl font-black text-slate-900">
+                        {correctSubQuestionsCount}
+                      </span>
+                      <span className="text-xl sm:text-2xl font-bold text-slate-400 ml-0.5">
+                        /{displayTotalSubCount}
+                      </span>
+                    </div>
+                    <div className="text-xs font-semibold text-slate-500 mt-1">
+                      Số câu đúng
+                    </div>
                   </div>
-                  <div className="text-xs font-semibold text-slate-500 mt-1">
-                    Số câu đúng
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* Action Buttons Row with Hover Lift-up Effect */}
