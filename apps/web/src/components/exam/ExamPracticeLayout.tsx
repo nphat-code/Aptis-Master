@@ -506,111 +506,126 @@ export default function ExamPracticeLayout({
 
           {/* Main Results View */}
           <div className="space-y-6">
-            
-            {/* Card 1: Kết quả Reading Summary Card (Hover Lift-up buttons + Fade-in animation) */}
-            <div className="bg-[#FAFAFA] rounded-3xl p-8 text-center space-y-6 border border-slate-200/70 shadow-sm animate-result-appear">
-              <div className="space-y-1">
-                <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
-                  Kết quả {moduleName}
-                </h2>
-                <p className="text-xs text-slate-500 font-medium">
-                  {testTitle}
-                </p>
+            {/* Card 1: Kết quả Reading/Writing Summary Card */}
+            {moduleName === 'Writing' && customScore === undefined ? (
+              <div className="bg-white rounded-3xl p-12 border border-slate-200/80 text-center space-y-5 shadow-sm my-2 animate-pulse max-w-2xl mx-auto">
+                <div className="w-16 h-16 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mx-auto text-3xl font-bold">
+                  🤖
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold text-slate-900">
+                    AI đang phân tích bài làm & chấm điểm theo chuẩn CEFR...
+                  </h3>
+                  <p className="text-[14px] text-slate-500 font-normal leading-relaxed max-w-lg mx-auto">
+                    Hệ thống đang kiểm tra câu trả lời đúng trọng tâm, lỗi chính tả, cấu trúc ngữ pháp và vốn từ vựng của bạn. Vui lòng đợi trong giây lát!
+                  </p>
+                </div>
               </div>
-
-              {/* Score Grid (3 columns: Total Score | CEFR Level | Correct Questions) */}
-              <div className="flex items-center justify-center gap-8 sm:gap-14 py-2">
-                {/* Total Score */}
-                <div>
-                  <div className="flex items-baseline justify-center">
-                    <span className="text-4xl sm:text-5xl font-black text-[#CC1C01]">
-                      {calculatedScore}
-                    </span>
-                    <span className="text-xl sm:text-2xl font-bold text-slate-400 ml-0.5">
-                      /{maxScore}
-                    </span>
-                  </div>
-                  <div className="text-xs font-semibold text-slate-500 mt-1">
-                    Điểm
-                  </div>
+            ) : (
+              <div className="bg-[#FAFAFA] rounded-3xl p-8 text-center space-y-6 border border-slate-200/70 shadow-sm animate-result-appear">
+                <div className="space-y-1">
+                  <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
+                    Kết quả {moduleName}
+                  </h2>
+                  <p className="text-[14px] text-slate-500 font-medium">
+                    {testTitle}
+                  </p>
                 </div>
 
-                {/* CEFR Level Column (Trình độ) */}
-                {cefrLevel && (
+                {/* Score Grid (3 columns: Total Score | CEFR Level | Correct Questions) */}
+                <div className="flex items-center justify-center gap-8 sm:gap-14 py-2">
+                  {/* Total Score */}
                   <div>
                     <div className="flex items-baseline justify-center">
-                      <span className="text-4xl sm:text-5xl font-black text-[#24085A]">
-                        {cefrLevel}
-                      </span>
-                    </div>
-                    <div className="text-xs font-semibold text-slate-500 mt-1">
-                      Trình độ
-                    </div>
-                  </div>
-                )}
-
-                {/* Correct Questions Count (Hidden for Writing module) */}
-                {moduleName !== 'Writing' && (
-                  <div>
-                    <div className="flex items-baseline justify-center">
-                      <span className="text-4xl sm:text-5xl font-black text-slate-900">
-                        {correctSubQuestionsCount}
+                      <span className="text-4xl sm:text-5xl font-black text-[#CC1C01]">
+                        {calculatedScore}
                       </span>
                       <span className="text-xl sm:text-2xl font-bold text-slate-400 ml-0.5">
-                        /{displayTotalSubCount}
+                        /{maxScore}
                       </span>
                     </div>
-                    <div className="text-xs font-semibold text-slate-500 mt-1">
-                      Số câu đúng
+                    <div className="text-[14px] font-semibold text-slate-500 mt-1">
+                      Điểm
                     </div>
                   </div>
-                )}
+
+                  {/* CEFR Level Column (Trình độ) */}
+                  {cefrLevel && (
+                    <div>
+                      <div className="flex items-baseline justify-center">
+                        <span className="text-4xl sm:text-5xl font-black text-[#24085A]">
+                          {cefrLevel}
+                        </span>
+                      </div>
+                      <div className="text-[14px] font-semibold text-slate-500 mt-1">
+                        Trình độ
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Correct Questions Count (Hidden for Writing module) */}
+                  {moduleName !== 'Writing' && (
+                    <div>
+                      <div className="flex items-baseline justify-center">
+                        <span className="text-4xl sm:text-5xl font-black text-slate-900">
+                          {correctSubQuestionsCount}
+                        </span>
+                        <span className="text-xl sm:text-2xl font-bold text-slate-400 ml-0.5">
+                          /{displayTotalSubCount}
+                        </span>
+                      </div>
+                      <div className="text-[14px] font-semibold text-slate-500 mt-1">
+                        Số câu đúng
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Action Buttons Row with Hover Lift-up Effect */}
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                  <button
+                    onClick={onExit}
+                    className="px-5 py-2.5 rounded-xl border border-[#CC1C01] text-[#CC1C01] font-bold text-sm bg-white hover:bg-orange-50 hover:-translate-y-1 hover:shadow-md active:translate-y-0 active:scale-95 transition-all duration-200 cursor-pointer flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4 text-[#CC1C01]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                    </svg>
+                    <span>Quay lại</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setReviewMode(true);
+                      setShowExplanation(true);
+                      setCurrentQuestionIndex(0);
+                      setExamStep('questions');
+                    }}
+                    className="px-5 py-2.5 rounded-xl bg-slate-200/80 text-slate-800 font-bold text-sm hover:bg-slate-300/90 hover:-translate-y-1 hover:shadow-md active:translate-y-0 active:scale-95 transition-all duration-200 cursor-pointer flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span>Xem lại từng câu</span>
+                    <svg className="w-4 h-4 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                  </button>
+
+                  <button
+                    onClick={handleRetakeExam}
+                    className="px-5 py-2.5 rounded-xl bg-[#CC1C01] hover:bg-[#b01801] text-white font-extrabold text-sm shadow-md hover:shadow-lg hover:-translate-y-1 active:translate-y-0 active:scale-95 transition-all duration-200 cursor-pointer flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                    </svg>
+                    <span>Làm lại</span>
+                  </button>
+                </div>
               </div>
+            )}
 
-              {/* Action Buttons Row with Hover Lift-up Effect */}
-              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-                <button
-                  onClick={onExit}
-                  className="px-5 py-2.5 rounded-xl border border-[#CC1C01] text-[#CC1C01] font-bold text-sm bg-white hover:bg-orange-50 hover:-translate-y-1 hover:shadow-md active:translate-y-0 active:scale-95 transition-all duration-200 cursor-pointer flex items-center gap-2"
-                >
-                  <svg className="w-4 h-4 text-[#CC1C01]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                  </svg>
-                  <span>Quay lại</span>
-                </button>
-
-                <button
-                  onClick={() => {
-                    setReviewMode(true);
-                    setShowExplanation(true);
-                    setCurrentQuestionIndex(0);
-                    setExamStep('questions');
-                  }}
-                  className="px-5 py-2.5 rounded-xl bg-slate-200/80 text-slate-800 font-bold text-sm hover:bg-slate-300/90 hover:-translate-y-1 hover:shadow-md active:translate-y-0 active:scale-95 transition-all duration-200 cursor-pointer flex items-center gap-2"
-                >
-                  <svg className="w-4 h-4 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  <span>Xem lại từng câu</span>
-                  <svg className="w-4 h-4 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                  </svg>
-                </button>
-
-                <button
-                  onClick={handleRetakeExam}
-                  className="px-5 py-2.5 rounded-xl bg-[#CC1C01] hover:bg-[#b01801] text-white font-extrabold text-sm shadow-md hover:shadow-lg hover:-translate-y-1 active:translate-y-0 active:scale-95 transition-all duration-200 cursor-pointer flex items-center gap-2"
-                >
-                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-                  </svg>
-                  <span>Làm lại</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Card 2: Chi tiết bài làm Card (Static) */}
+            {/* Card 2: Detailed Answers Component (Always rendered to mount useEffect) */}
             {renderDetailedAnswers && renderDetailedAnswers({ userAnswers })}
           </div>
 

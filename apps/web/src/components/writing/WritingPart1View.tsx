@@ -91,15 +91,8 @@ export default function WritingPart1View({
                     </span>
                   ) : <div />}
 
-                  <span className={`font-medium ml-auto ${
-                    wordCount > 5
-                      ? 'text-red-600 font-semibold'
-                      : wordCount >= 1
-                      ? 'text-emerald-600'
-                      : 'text-slate-400'
-                  }`}>
+                  <span className="font-normal text-slate-500 ml-auto">
                     Words: {wordCount} / 5
-                    {wordCount > 5 && ' (Vượt quá số từ quy định)'}
                   </span>
                 </div>
               </div>

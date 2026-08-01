@@ -17,7 +17,7 @@ interface WritingResultsViewProps {
   userAnswers: Record<number, any>;
   targetQuestions: WritingPart1Item[];
   clubName: string;
-  onAiEvaluated?: (score: number, cefrLevel: string) => void;
+  onAiEvaluated?: (score: number | undefined, cefrLevel: string | undefined) => void;
 }
 
 function WritingResultsView({
@@ -32,6 +32,11 @@ function WritingResultsView({
 
   const runAiEvaluation = async () => {
     setIsAiAnalyzing(true);
+    setAiFeedback(null);
+    if (onAiEvaluated) {
+      onAiEvaluated(undefined, undefined);
+    }
+
     try {
       const payloadQuestions = targetQuestions.map((q, idx) => ({
         id: idx + 1,
@@ -70,29 +75,17 @@ function WritingResultsView({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  if (!aiFeedback) {
+    return null;
+  }
+
   return (
     <div className="space-y-6">
-      {/* AI Evaluation Loading / Card */}
-      {isAiAnalyzing && (
-        <div className="bg-white rounded-2xl p-8 border border-purple-100 text-center space-y-3 shadow-xs animate-pulse">
-          <div className="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mx-auto text-xl font-bold">
-            🤖
-          </div>
-          <h4 className="text-base font-bold text-slate-900">
-            AI đang phân tích bài làm & chấm điểm theo chuẩn CEFR...
-          </h4>
-          <p className="text-xs text-slate-500">
-            Hệ thống đang kiểm tra trả lời đúng trọng tâm câu hỏi, lỗi chính tả và ngữ pháp.
-          </p>
-        </div>
-      )}
-
-      {!isAiAnalyzing && aiFeedback && (
-        <WritingAiFeedbackCard
-          feedback={aiFeedback}
-          onReEvaluate={runAiEvaluation}
-        />
-      )}
+      {/* AI Evaluation Card */}
+      <WritingAiFeedbackCard
+        feedback={aiFeedback}
+        onReEvaluate={runAiEvaluation}
+      />
 
       {/* Standard Answer Details Card */}
       <DetailedAnswersCard

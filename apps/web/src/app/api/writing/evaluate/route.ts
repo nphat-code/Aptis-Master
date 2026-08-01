@@ -14,6 +14,7 @@ export interface EvaluateRequestBody {
 
 export interface RuleCorrection {
   questionIndex: number;
+  type?: 'Ngữ pháp' | 'Chính tả' | string;
   original: string;
   correction: string;
   explanation: string;
@@ -119,6 +120,132 @@ function generateLocalFallbackEvaluation(
   };
 }
 
+function replaceThirdPersonPronouns(text: string): string {
+  if (!text) return text;
+  return text
+    .replace(/\bỨng viên\b/g, 'Bạn')
+    .replace(/\bứng viên\b/g, 'bạn')
+    .replace(/\bThí sinh\b/g, 'Bạn')
+    .replace(/\bthí sinh\b/g, 'bạn');
+}
+
+// Programmatically enforce 100% exact mathematical score calculation based on detected errors
+function enforceExactScoreMath(data: WritingAiFeedbackResponse): WritingAiFeedbackResponse {
+  if (!data) return data;
+
+  // 1. Separate off-topic corrections from real grammar/spelling corrections
+  const rawCorrections = data.grammarAndSpelling?.corrections || [];
+  const offTopicQuestionIndices = new Set<number>();
+  const realCorrections: RuleCorrection[] = [];
+
+  for (const c of rawCorrections) {
+    if (!c.original || !c.correction) continue;
+
+    // Check if original === correction (hallucinated non-error item)
+    if (c.original.trim().toLowerCase() === c.correction.trim().toLowerCase()) {
+      continue;
+    }
+
+    // Check if explanation/correction indicates an off-topic error instead of a spelling/grammar error
+    const exp = (c.explanation || '').toLowerCase();
+    const corr = (c.correction || '').toLowerCase();
+    if (
+      exp.includes('không liên quan') ||
+      exp.includes('lạc đề') ||
+      exp.includes('off-topic') ||
+      exp.includes('unrelated') ||
+      corr.includes('không áp dụng') ||
+      corr.includes('không liên quan')
+    ) {
+      offTopicQuestionIndices.add(c.questionIndex);
+    } else {
+      realCorrections.push(c);
+    }
+  }
+
+  // 2. Build sanitized Task Details: mark off-topic questions as isCorrect = false, and spelling/grammar corrected questions as isCorrect = true!
+  const realCorrectionQuestionIndices = new Set(realCorrections.map((c) => c.questionIndex));
+  const rawTaskDetails = data.taskCompletion?.details || [];
+
+  const sanitizedTaskDetails = rawTaskDetails.map((d) => {
+    if (offTopicQuestionIndices.has(d.questionIndex)) {
+      return {
+        ...d,
+        isCorrect: false,
+        note: 'Câu trả lời không liên quan đến câu hỏi (Lạc đề).',
+      };
+    }
+    if (realCorrectionQuestionIndices.has(d.questionIndex)) {
+      return {
+        ...d,
+        isCorrect: true,
+        note: 'Câu trả lời phù hợp với chủ đề.',
+      };
+    }
+    return d;
+  });
+
+  const taskErrors = sanitizedTaskDetails.filter((d) => d.isCorrect === false).length;
+  const correctionsCount = realCorrections.length;
+
+  const totalErrors = correctionsCount + taskErrors;
+
+  let score = 30;
+  let cefrLevel: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' = 'C1';
+
+  if (totalErrors === 0) {
+    score = 30;
+    cefrLevel = 'C1';
+  } else if (totalErrors === 1) {
+    score = 24;
+    cefrLevel = 'B2';
+  } else if (totalErrors === 2) {
+    score = 18;
+    cefrLevel = 'B1';
+  } else if (totalErrors === 3) {
+    score = 12;
+    cefrLevel = 'A2';
+  } else {
+    score = Math.max(0, 30 - totalErrors * 6);
+    cefrLevel = score >= 18 ? 'B1' : score >= 12 ? 'A2' : 'A1';
+  }
+
+  const correctTaskCount = Math.max(0, 5 - taskErrors);
+  const taskStatus = taskErrors === 0 ? 'success' : taskErrors === 1 ? 'warning' : 'danger';
+  const taskSummary = taskErrors === 0
+    ? 'Bạn đã trả lời đúng yêu cầu 5/5 câu hỏi, các câu trả lời ngắn gọn và phù hợp với chủ đề.'
+    : `Bạn đã trả lời đúng yêu cầu ${correctTaskCount}/5 câu hỏi. Có ${taskErrors} câu chưa phù hợp với chủ đề hoặc vi phạm độ dài.`;
+
+  return {
+    ...data,
+    score,
+    maxScore: 30,
+    cefrLevel,
+    keyTakeaway: replaceThirdPersonPronouns(data.keyTakeaway || ''),
+    taskCompletion: {
+      ...data.taskCompletion,
+      status: taskStatus,
+      summary: replaceThirdPersonPronouns(taskSummary),
+      details: sanitizedTaskDetails.map((d) => ({
+        ...d,
+        note: replaceThirdPersonPronouns(d.note),
+      })),
+    },
+    grammarAndSpelling: {
+      ...data.grammarAndSpelling,
+      summary: replaceThirdPersonPronouns(data.grammarAndSpelling?.summary || ''),
+      corrections: realCorrections.map((c) => ({
+        ...c,
+        explanation: replaceThirdPersonPronouns(c.explanation),
+      })),
+    },
+    vocabulary: {
+      ...data.vocabulary,
+      summary: replaceThirdPersonPronouns(data.vocabulary?.summary || ''),
+    },
+  };
+}
+
 export async function POST(request: Request) {
   try {
     const body: EvaluateRequestBody = await request.json();
@@ -131,11 +258,13 @@ export async function POST(request: Request) {
     const apiKey =
       process.env.GEMINI_API_KEY ||
       process.env.NEXT_PUBLIC_GEMINI_API_KEY ||
-      process.env.OPENAI_API_KEY;
+      process.env.OPENAI_API_KEY ||
+      process.env.GROQ_API_KEY ||
+      process.env.OPENROUTER_API_KEY;
 
     // If no API key is provided in environment, use robust local rule fallback
     if (!apiKey) {
-      console.warn('[Writing API] No GEMINI_API_KEY or OPENAI_API_KEY configured. Returning rule-based evaluation.');
+      console.warn('[Writing API] No API keys configured. Returning rule-based evaluation.');
       const fallbackResult = generateLocalFallbackEvaluation(questions, clubName);
       return NextResponse.json(fallbackResult);
     }
@@ -162,27 +291,32 @@ CRITICAL RULES FOR APTIS WRITING PART 1 (Short answers):
    - 1 word, 2 words, 3 words, 4 words, and 5 words ARE ALL 100% VALID AND COMPLIANT.
    - NEVER say a 3-word, 4-word, or 5-word answer is "too long" or "quá dài"! 4-word and 5-word answers (e.g. "I enjoy reading books.", "My favorite food is pizza.") are PERFECT 100% valid English answers!
    - ONLY penalize for length if word count exceeds 5 words (i.e. 6 or more words).
-2. STRICT SCORE DEDUCTION RULES FOR PART 1 (Total scale: 30 points):
-   - Base max score: 30/30 (CEFR C1) for 5 on-topic answers with 0 errors.
-   - Exact Heavy Point Deductions:
-     * Each spelling mistake (e.g. "listning" -> "listening", "comdy" -> "comedy", "sculptur" -> "sculpture", "mouth" -> "month"): DEDUCT 6 POINTS.
-     * Each grammar error (e.g. missing preposition "to" in "go work", "enjoy draw" -> "enjoy drawing"): DEDUCT 6 POINTS.
-     * Each off-topic answer: DEDUCT 6 POINTS.
-     * Each empty/unanswered question: DEDUCT 6 POINTS.
-   - Mandatory Benchmark Score & CEFR Mapping:
-     * 0 errors: 30/30 (Band C1)
-     * 1 error: 24/30 (Band B2)
-     * 2 errors: 18/30 (Band B1)
-     * 3 errors (e.g. 2 spelling errors + 1 grammar error): STRICTLY 12/30 (Band A2). You MUST output score = 12 when candidate has 3 errors (2 spelling + 1 grammar)!
-     * 4+ errors / empty questions: 6/30 or 0/30 (Band A1)
-3. STRICT SEPARATION OF ASSESSMENT CRITERIA:
+2. ACCEPTED GREETING RESPONSES (e.g. to "How are you?"):
+   - Answers such as "I'm good.", "I am good.", "Good.", "I'm fine.", "Fine, thanks.", "Very well.", "Great!" ARE ALL 100% PERFECT, NATURAL, AND VALID ENGLISH RESPONSES for "How are you?".
+   - YOU MUST ACCEPT "I'm good." and "I am good." as 100% CORRECT for "How are you?". NEVER mark "I'm good." as wrong, incorrect, or inappropriate!
+3. MATHEMATICAL SCORE CALCULATION FOR PART 1 (Total scale: 30 points):
+   - Part 1 has 5 questions. Maximum score is 30 points.
+   - You MUST count the total number of errors (spelling mistakes + grammar errors + off-topic answers + empty answers):
+     * 0 total errors ➔ score = 30 (Band C1)
+     * EXACTLY 1 total error (e.g., 1 spelling error in the entire submission) ➔ score = 24 (Band B2)
+     * EXACTLY 2 total errors ➔ score = 18 (Band B1)
+     * EXACTLY 3 total errors (e.g. 2 spelling + 1 grammar) ➔ score = 12 (Band A2)
+     * 4 or 5 total errors / empty questions ➔ score = 6 or 0 (Band A1)
+   - CRITICAL REQUIREMENT: Match the score strictly to the number of items in grammarAndSpelling.corrections and off-topic questions. If there is ONLY 1 correction item and 0 off-topic questions, total errors = 1, so the score MUST BE 24! Do not output 12 when there is only 1 error!
+4. STRICT SEPARATION OF ASSESSMENT CRITERIA:
    - "Task Completion": Evaluates ONLY topic relevance and word count (1-5 words).
      * If candidate gives an OFF-TOPIC answer (e.g. asked "How are you?" but answered "My friend is good" instead of answering about oneself), mark that question's Task Completion note as off-topic, and set Task Completion status to "warning" or "danger".
      * NEVER mention spelling or grammar mistakes in Task Completion summary or notes!
-   - "Grammar & Spelling": Evaluates ONLY spelling mistakes (e.g. "autum" -> "autumn", "Footbal" -> "Football") and grammar errors.
+   - "Grammar & Spelling": Carefully check EVERY word in candidate answers for spelling or grammar mistakes (e.g. "Tokoyo" -> "Tokyo", "Japn" -> "Japan", "Footbal" -> "Football", "autum" -> "autumn", "sumer" -> "summer", "Englis" -> "English").
+     * You MUST create a correction item for EVERY misspelled word or grammar mistake!
      * NEVER put off-topic answers inside grammarAndSpelling.corrections! Corrections list is RESERVED STRICTLY for spelling and grammar errors.
-   - "Vocabulary": Evaluates vocabulary range and suggests alternative advanced words.
-4. FEEDBACK LANGUAGE: Write all summary feedback, details notes, error explanations, and takeaways in natural, encouraging Vietnamese. NEVER tell candidate that a 3, 4, or 5-word English answer should be shortened or translated into Vietnamese.
+     * NEVER add non-error items where original === correction (e.g. "Autumn -> Autumn") to corrections! If an answer has no spelling/grammar error, DO NOT create a correction item for it!
+   - "Vocabulary": Evaluates vocabulary range and suggests alternative advanced ENGLISH words/phrases (e.g. "lush greenery", "relaxing", "picturesque", "favorite pastime").
+     * ALL ITEMS inside vocabulary.suggestions MUST BE ENGLISH WORDS/PHRASES (e.g. "Use 'lush greenery' to describe plants", "Use 'relaxing' for garden activities")! NEVER output pure Vietnamese words like 'xinh đẹp' or 'thư giãn' inside the suggestions array!
+5. FEEDBACK LANGUAGE & PRONOUN RULES: Write all summary feedback, detail notes, error explanations, and takeaways in natural, encouraging Vietnamese.
+   - ALWAYS address the candidate as "bạn" (e.g. "Bạn đã trả lời..."). NEVER use formal third-person terms like "ứng viên" or "thí sinh"!
+   - In taskCompletion.summary, ALWAYS state clearly how many questions were answered correctly (e.g. "Bạn đã trả lời đúng yêu cầu 4/5 câu hỏi.").
+   - All suggested vocabulary items in suggestions array MUST BE IN ENGLISH. NEVER tell candidate that a 3, 4, or 5-word English answer should be shortened or translated into Vietnamese.
 
 Respond ONLY in valid raw JSON matching this schema:
 {
@@ -202,6 +336,7 @@ Respond ONLY in valid raw JSON matching this schema:
     "corrections": [
       {
         "questionIndex": 1,
+        "type": "Ngữ pháp" | "Chính tả",
         "original": "Original candidate answer",
         "correction": "Corrected sentence",
         "explanation": "Vietnamese explanation of the error"
@@ -217,43 +352,53 @@ Respond ONLY in valid raw JSON matching this schema:
 }
 `;
 
-    // 1. If Groq API Key is present (100% Free & Unlimited Rate Limits)
+    // 1. If Groq API Key is present
     if (process.env.GROQ_API_KEY) {
-      const groqModels = ['llama-3.3-70b-versatile', 'llama3-70b-8192', 'mixtral-8x7b-32768', 'gemma2-9b-it'];
-      for (const groqModel of groqModels) {
-        try {
-          const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-            },
-            body: JSON.stringify({
-              model: groqModel,
-              messages: [{ role: 'user', content: promptText }],
-              response_format: { type: 'json_object' },
-              temperature: 0.2,
-            }),
-          });
+      const groqKeys = process.env.GROQ_API_KEY.split(',').map((k) => k.trim()).filter(Boolean);
+      const groqModels = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192', 'mixtral-8x7b-32768'];
 
-          if (response.ok) {
-            const resData = await response.json();
-            const rawJsonText = resData.choices?.[0]?.message?.content || '';
-            if (rawJsonText) {
-              const parsedData: WritingAiFeedbackResponse = JSON.parse(rawJsonText);
-              return NextResponse.json(parsedData);
+      for (const groqKey of groqKeys) {
+        let keyRateLimited = false;
+        for (const groqModel of groqModels) {
+          if (keyRateLimited) break;
+          try {
+            const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${groqKey}`,
+              },
+              body: JSON.stringify({
+                model: groqModel,
+                messages: [{ role: 'user', content: promptText }],
+                response_format: { type: 'json_object' },
+                temperature: 0.2,
+              }),
+            });
+
+            if (response.ok) {
+              const resData = await response.json();
+              const rawJsonText = resData.choices?.[0]?.message?.content || '';
+              if (rawJsonText) {
+                const parsedData: WritingAiFeedbackResponse = JSON.parse(rawJsonText);
+                return NextResponse.json(enforceExactScoreMath(parsedData));
+              }
+            } else if (response.status === 429) {
+              console.warn(`[Groq API Rate Limit 429] Key (${groqKey.slice(0, 10)}...) TPD limit reached. Instantly swapping to next Groq Key!`);
+              keyRateLimited = true;
+              break;
+            } else {
+              const errText = await response.text();
+              console.warn(`[Groq API Warning] Key (${groqKey.slice(0, 10)}...) Model ${groqModel} failed (${response.status}):`, errText);
             }
-          } else {
-            const errText = await response.text();
-            console.warn(`[Groq API Warning] Model ${groqModel} failed (${response.status}):`, errText);
+          } catch (groqErr) {
+            console.warn(`[Groq API Error] Key (${groqKey.slice(0, 10)}...) Model ${groqModel} call exception:`, groqErr);
           }
-        } catch (groqErr) {
-          console.warn(`[Groq API Error] Model ${groqModel} call exception:`, groqErr);
         }
       }
     }
 
-    // 2. If OpenRouter API Key is present (Free models supported)
+    // 2. If OpenRouter API Key is present
     if (process.env.OPENROUTER_API_KEY) {
       try {
         const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -275,7 +420,7 @@ Respond ONLY in valid raw JSON matching this schema:
           const rawJsonText = resData.choices?.[0]?.message?.content || '';
           if (rawJsonText) {
             const parsedData: WritingAiFeedbackResponse = JSON.parse(rawJsonText);
-            return NextResponse.json(parsedData);
+            return NextResponse.json(enforceExactScoreMath(parsedData));
           }
         }
       } catch (orErr) {
@@ -315,7 +460,7 @@ Respond ONLY in valid raw JSON matching this schema:
             const rawJsonText = resData.candidates?.[0]?.content?.parts?.[0]?.text || '';
             if (rawJsonText) {
               const parsedData: WritingAiFeedbackResponse = JSON.parse(rawJsonText);
-              return NextResponse.json(parsedData);
+              return NextResponse.json(enforceExactScoreMath(parsedData));
             }
           } else {
             const errText = await response.text();
@@ -329,29 +474,32 @@ Respond ONLY in valid raw JSON matching this schema:
 
     // 4. If OpenAI API Key is present
     if (process.env.OPENAI_API_KEY) {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [{ role: 'user', content: promptText }],
-          response_format: { type: 'json_object' },
-          temperature: 0.2,
-        }),
-      });
+      try {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: 'gpt-4o-mini',
+            messages: [{ role: 'user', content: promptText }],
+            response_format: { type: 'json_object' },
+            temperature: 0.2,
+          }),
+        });
 
-      if (!response.ok) {
-        console.error('[OpenAI API Error]', await response.text());
-        return NextResponse.json(generateLocalFallbackEvaluation(questions, clubName));
+        if (response.ok) {
+          const resData = await response.json();
+          const rawJsonText = resData.choices?.[0]?.message?.content || '';
+          if (rawJsonText) {
+            const parsedData: WritingAiFeedbackResponse = JSON.parse(rawJsonText);
+            return NextResponse.json(enforceExactScoreMath(parsedData));
+          }
+        }
+      } catch (oaiErr) {
+        console.warn('[OpenAI API Error]', oaiErr);
       }
-
-      const resData = await response.json();
-      const rawJsonText = resData.choices?.[0]?.message?.content || '';
-      const parsedData: WritingAiFeedbackResponse = JSON.parse(rawJsonText);
-      return NextResponse.json(parsedData);
     }
 
     return NextResponse.json(generateLocalFallbackEvaluation(questions, clubName));

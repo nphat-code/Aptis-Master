@@ -71,13 +71,13 @@ export default function WritingAiFeedbackCard({
 
           {/* Sub-question detail breakdown if provided */}
           {taskCompletion.details && taskCompletion.details.length > 0 && (
-            <div className="pt-2 space-y-1.5">
+            <div className="pt-2 space-y-2">
               {taskCompletion.details.map((d, idx) => (
-                <div key={idx} className="flex items-start gap-2 text-xs text-slate-600">
-                  <span className={d.isCorrect ? 'text-emerald-600 font-bold' : 'text-red-500 font-bold'}>
+                <div key={idx} className="flex items-start gap-2 text-[14px] text-slate-700 leading-relaxed">
+                  <span className={`shrink-0 whitespace-nowrap font-bold ${d.isCorrect ? 'text-emerald-600' : 'text-red-500'}`}>
                     {d.isCorrect ? '✓' : '✗'} Câu {d.questionIndex}:
                   </span>
-                  <span>{d.note}</span>
+                  <span className="text-slate-600 font-normal">{d.note}</span>
                 </div>
               ))}
             </div>
@@ -105,39 +105,55 @@ export default function WritingAiFeedbackCard({
             {grammarAndSpelling.summary}
           </p>
 
-          {/* Detailed Error Corrections Table */}
+          {/* Detailed Error Corrections Cards - Styled exactly like user design */}
           {grammarAndSpelling.corrections && grammarAndSpelling.corrections.length > 0 && (
             <div className="pt-2 space-y-3">
-              <span className="text-xs font-bold text-slate-700 block uppercase">
-                🛠 Thẻ sửa lỗi chi tiết (Corrections):
-              </span>
-              {grammarAndSpelling.corrections.map((c, idx) => (
-                <div key={idx} className="bg-white rounded-xl p-3.5 border border-slate-200 space-y-2 text-xs">
-                  <div className="flex items-center gap-2 font-bold text-slate-800">
-                    <span className="w-5 h-5 rounded-full bg-red-100 text-red-700 flex items-center justify-center text-[10px]">
-                      {c.questionIndex}
-                    </span>
-                    <span>Câu {c.questionIndex}</span>
-                  </div>
+              <div className="flex items-center gap-2 font-bold text-slate-900 text-[15px]">
+                <span className="w-5 h-5 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xs font-bold">
+                  ✕
+                </span>
+                <span>Lỗi cần sửa</span>
+              </div>
 
-                  {/* Original vs Correction */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 font-mono text-[13px]">
-                    <div className="bg-[#fef2f2] border border-[#fecaca] text-red-900 p-2.5 rounded-lg">
-                      <span className="font-bold text-[10px] text-red-700 block uppercase font-sans mb-0.5">Bài làm gốc:</span>
-                      &ldquo;{c.original}&rdquo;
-                    </div>
-                    <div className="bg-[#ecfdf5] border border-[#a7f3d0] text-emerald-900 p-2.5 rounded-lg">
-                      <span className="font-bold text-[10px] text-emerald-700 block uppercase font-sans mb-0.5">Gợi ý sửa chuẩn:</span>
-                      &ldquo;{c.correction}&rdquo;
-                    </div>
-                  </div>
+              <div className="space-y-3">
+                {grammarAndSpelling.corrections.map((c, idx) => {
+                  // Determine error category type (Ngữ pháp or Chính tả)
+                  const rawType = c.type || '';
+                  const isSpelling =
+                    rawType.toLowerCase().includes('chính tả') ||
+                    rawType.toLowerCase().includes('spelling') ||
+                    c.explanation?.toLowerCase().includes('chính tả') ||
+                    c.explanation?.toLowerCase().includes('spelling');
+                  const errorTypeLabel = isSpelling ? 'Chính tả' : 'Ngữ pháp';
 
-                  {/* Explanation */}
-                  <p className="text-slate-600 font-sans italic text-[12px] pt-1">
-                    👉 <strong>Giải thích:</strong> {c.explanation}
-                  </p>
-                </div>
-              ))}
+                  return (
+                    <div
+                      key={idx}
+                      className="bg-[#fef2f2]/80 border border-rose-100/90 rounded-2xl p-4 sm:p-5 space-y-1.5 text-left"
+                    >
+                      {/* Error Category Header */}
+                      <div className="text-slate-500 font-medium text-[14px]">
+                        {errorTypeLabel}
+                      </div>
+
+                      {/* Original Error with Strikethrough */}
+                      <div className="text-rose-500 line-through font-normal text-[15px]">
+                        &ldquo;{c.original}&rdquo;
+                      </div>
+
+                      {/* Correction with Arrow */}
+                      <div className="text-emerald-600 font-normal text-[15px]">
+                        ➔ &ldquo;{c.correction}&rdquo;
+                      </div>
+
+                      {/* Explanation Text */}
+                      <div className="text-slate-500 text-[14px] font-normal leading-relaxed pt-0.5">
+                        {c.explanation}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
@@ -155,9 +171,9 @@ export default function WritingAiFeedbackCard({
           </p>
 
           {vocabulary.suggestions && vocabulary.suggestions.length > 0 && (
-            <div className="pt-2 text-xs space-y-1">
-              <span className="font-bold text-slate-700 block">💡 Gợi ý nâng cao:</span>
-              <ul className="list-disc list-inside space-y-1 text-slate-600">
+            <div className="pt-2 text-[14px] space-y-1.5 leading-relaxed">
+              <span className="font-bold text-slate-800 block text-[14px]">💡 Gợi ý nâng cao:</span>
+              <ul className="list-disc list-inside space-y-1 text-slate-600 font-normal">
                 {vocabulary.suggestions.map((sug, idx) => (
                   <li key={idx}>{sug}</li>
                 ))}
@@ -173,9 +189,9 @@ export default function WritingAiFeedbackCard({
           <button
             type="button"
             onClick={onReEvaluate}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
+            className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 text-[14px] font-medium transition-all duration-200 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 active:scale-95 shadow-xs hover:shadow-sm cursor-pointer"
           >
-            <span>🔄</span> Chấm lại bài bằng AI
+            Chấm lại
           </button>
         </div>
       )}
