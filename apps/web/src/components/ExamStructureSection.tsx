@@ -3,112 +3,136 @@
 import React from 'react';
 
 export default function ExamStructureSection() {
-  const skills = [
-    {
-      id: 'grammar',
-      name: 'Grammar & Vocabulary',
-      icon: (
-        <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5z" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 3v18" />
-        </svg>
-      ),
-      count: '25 câu',
-      time: '25 phút',
-    },
-    {
-      id: 'reading',
-      name: 'Reading',
-      icon: (
-        <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-        </svg>
-      ),
-      count: '4 phần',
-      time: '30 phút',
-    },
-    {
-      id: 'listening',
-      name: 'Listening',
-      icon: (
-        <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M3 18v-6a9 9 0 0118 0v6M3 15h3v4H3v-4zm15 0h3v4h-3v-4z" />
-        </svg>
-      ),
-      count: '25 câu',
-      time: '25 phút',
-    },
-    {
-      id: 'speaking',
-      name: 'Speaking',
-      icon: (
-        <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-        </svg>
-      ),
-      count: '4 phần',
-      time: '12 phút',
-    },
-    {
-      id: 'writing',
-      name: 'Writing',
-      icon: (
-        <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-        </svg>
-      ),
-      count: '4 phần',
-      time: '25 phút',
-    },
-  ];
+  const handleNavigate = (skillId: string) => {
+    if (typeof window !== 'undefined') {
+      window.location.href = `/${skillId}`;
+    }
+  };
 
   return (
-    <section className="bg-slate-50/60 py-16 md:py-20 border-t border-slate-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-        
-        {/* Header Title Area */}
-        <div className="text-center space-y-2">
-          <span className="text-[#FF3300] font-black text-xs uppercase tracking-widest block">
-            CẤU TRÚC BÀI THI
-          </span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#2D1510] tracking-tight">
-            5 kỹ năng trong{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF2E00] via-[#FF5500] to-[#FF7700]">
-              đề Aptis
-            </span>
+    <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-20">
+      
+      {/* Section Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
+        <div>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-3">
+            Ma Trận Kỹ Năng Aptis
           </h2>
-          <p className="text-slate-600 text-sm font-medium">
-            Hiểu rõ thời lượng từng phần để luyện đúng trọng tâm.
+          <p className="text-base text-[#bbcabf] max-w-2xl">
+            Hệ thống học liệu được thiết kế theo cấu trúc module, tối ưu cho việc ôn luyện chuyên sâu từng kỹ năng.
           </p>
         </div>
+      </div>
 
-        {/* 5 Skill Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {skills.map((skill) => (
-            <div
-              key={skill.id}
-              className="bg-white rounded-2xl p-5 border border-red-100 hover:border-red-300 hover:-translate-y-1.5 transition-all duration-300 flex flex-col items-center text-center space-y-3 cursor-pointer group shadow-sm hover:shadow-md"
-            >
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-[#FF2E00] via-[#FF5500] to-[#FF7700] flex items-center justify-center shadow-md shadow-orange-500/25 group-hover:scale-110 transition-transform">
-                {skill.icon}
-              </div>
-
-              <div>
-                <h4 className="font-bold text-sm text-slate-900 leading-tight">
-                  {skill.name}
-                </h4>
-              </div>
-
-              <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 pt-1">
-                <span className="bg-slate-100 px-2.5 py-0.5 rounded-full text-slate-700">{skill.count}</span>
-                <span>•</span>
-                <span className="bg-red-50 text-[#FF3300] px-2.5 py-0.5 rounded-full font-bold">{skill.time}</span>
-              </div>
+      {/* 3 + 2 Grid Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
+        
+        {/* Row 1: Reading, Listening, Writing */}
+        
+        {/* Reading Card */}
+        <div
+          onClick={() => handleNavigate('reading')}
+          className="md:col-span-2 glass-panel p-8 rounded-[32px] flex flex-col group transition-all bento-glow cursor-pointer relative overflow-hidden min-h-[320px]"
+        >
+          <div className="mb-auto">
+            <div className="w-14 h-14 rounded-2xl bg-[#4edea3]/10 flex items-center justify-center text-[#4edea3] mb-6 border border-[#4edea3]/20">
+              <span className="material-symbols-outlined text-3xl">menu_book</span>
             </div>
-          ))}
+            <h3 className="text-2xl font-bold text-white mb-2">Reading</h3>
+            <p className="text-sm text-[#bbcabf] leading-relaxed">
+              Luyện kỹ năng đọc hiểu đa dạng chủ đề từ dễ đến khó với hệ thống AI hỗ trợ.
+            </p>
+          </div>
+          <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-[#4edea3] font-bold text-sm">
+            <span>Vào luyện kỹ năng</span>
+            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+          </div>
+        </div>
+
+        {/* Listening Card */}
+        <div
+          onClick={() => handleNavigate('listening')}
+          className="md:col-span-2 glass-panel p-8 rounded-[32px] flex flex-col group transition-all bento-glow cursor-pointer border-[#c0c1ff]/20 hover:border-[#c0c1ff]/40 min-h-[320px]"
+        >
+          <div className="mb-auto">
+            <div className="w-14 h-14 rounded-2xl bg-[#c0c1ff]/10 flex items-center justify-center text-[#c0c1ff] mb-6 border border-[#c0c1ff]/20">
+              <span className="material-symbols-outlined text-3xl">headphones</span>
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-2">Listening</h3>
+            <p className="text-sm text-[#bbcabf] leading-relaxed">
+              Mô phỏng 100% âm thanh phòng thi thực tế với kho dữ liệu đa dạng các giọng đọc.
+            </p>
+          </div>
+          <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-[#c0c1ff] font-bold text-sm">
+            <span>Vào luyện kỹ năng</span>
+            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+          </div>
+        </div>
+
+        {/* Writing Card */}
+        <div
+          onClick={() => handleNavigate('writing')}
+          className="md:col-span-2 glass-panel p-8 rounded-[32px] flex flex-col group transition-all bento-glow cursor-pointer border-pink-400/20 hover:border-pink-400/40 min-h-[320px]"
+        >
+          <div className="mb-auto">
+            <div className="w-14 h-14 rounded-2xl bg-pink-400/10 flex items-center justify-center text-pink-400 mb-6 border border-pink-400/20">
+              <span className="material-symbols-outlined text-3xl">edit_note</span>
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-2">Writing</h3>
+            <p className="text-sm text-[#bbcabf] leading-relaxed">
+              AI sửa lỗi ngữ pháp & nâng cấp từ vựng B2/C1 dựa trên hàng ngàn bài thi thực tế.
+            </p>
+          </div>
+          <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-pink-400 font-bold text-sm">
+            <span>Vào luyện kỹ năng</span>
+            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+          </div>
+        </div>
+
+        {/* Row 2: Speaking, Grammar (Centered in 6-col grid) */}
+
+        {/* Speaking Card */}
+        <div
+          onClick={() => handleNavigate('speaking')}
+          className="md:col-start-2 md:col-span-2 glass-panel p-8 rounded-[32px] flex flex-col group transition-all bento-glow cursor-pointer border-orange-400/20 hover:border-orange-400/40 min-h-[320px]"
+        >
+          <div className="mb-auto">
+            <div className="w-14 h-14 rounded-2xl bg-orange-400/10 flex items-center justify-center text-orange-400 mb-6 border border-orange-400/20">
+              <span className="material-symbols-outlined text-3xl">mic</span>
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-2">Speaking</h3>
+            <p className="text-sm text-[#bbcabf] leading-relaxed">
+              Luyện nói 1:1 với AI Coach, chấm điểm theo tiêu chí độ trôi chảy và phát âm IPA.
+            </p>
+          </div>
+          <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-orange-400 font-bold text-sm">
+            <span>Vào luyện kỹ năng</span>
+            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+          </div>
+        </div>
+
+        {/* Grammar Card */}
+        <div
+          onClick={() => handleNavigate('grammar')}
+          className="md:col-span-2 glass-panel p-8 rounded-[32px] flex flex-col group transition-all bento-glow cursor-pointer border-[#ffb95f]/20 hover:border-[#ffb95f]/40 min-h-[320px]"
+        >
+          <div className="mb-auto">
+            <div className="w-14 h-14 rounded-2xl bg-[#ffb95f]/10 flex items-center justify-center text-[#ffb95f] mb-6 border border-[#ffb95f]/20">
+              <span className="material-symbols-outlined text-3xl">spellcheck</span>
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-2">Grammar</h3>
+            <p className="text-sm text-[#bbcabf] leading-relaxed">
+              Hệ thống ngữ pháp & từ vựng theo khung ESOL giúp củng cố nền tảng vững chắc.
+            </p>
+          </div>
+          <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-[#ffb95f] font-bold text-sm">
+            <span>Vào luyện kỹ năng</span>
+            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+          </div>
         </div>
 
       </div>
+
     </section>
   );
 }

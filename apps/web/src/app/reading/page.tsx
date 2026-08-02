@@ -15,10 +15,19 @@ export default function ReadingPage() {
       .catch((err) => console.error('Lỗi nạp scraped_data.json:', err));
   }, []);
 
+  const handleTabChange = (tab: string) => {
+    if (typeof window !== 'undefined') {
+      const targetPath = tab === 'dashboard' ? '/' : tab === 'mock-test' ? '/thi-thu' : `/${tab}`;
+      if (window.location.pathname !== targetPath) {
+        window.location.href = targetPath;
+      }
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans flex flex-col">
-      <Navbar activeTab="reading" setActiveTab={() => {}} />
-      <ReadingView onBackToHome={() => window.location.href = '/'} data={data} />
+    <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-sans flex flex-col">
+      <Navbar activeTab="reading" setActiveTab={handleTabChange} />
+      <ReadingView onBackToHome={() => handleTabChange('dashboard')} data={data} />
       <Footer />
     </div>
   );

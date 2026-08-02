@@ -46,9 +46,9 @@ export default function AptisPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center font-sans">
-        <div className="w-12 h-12 border-4 border-[#FF2E00] border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-[#FF2E00] font-bold text-sm">Đang nạp dữ liệu Aptis Kỳ Tích...</p>
+      <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] flex flex-col items-center justify-center font-sans">
+        <div className="w-12 h-12 border-4 border-[#4edea3] border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-[#4edea3] font-bold text-sm">Đang nạp dữ liệu AptisMaster...</p>
       </div>
     );
   }
@@ -56,7 +56,7 @@ export default function AptisPage() {
   // Render Skill Views for Reading, Listening, Speaking, Writing, Grammar
   if (activeTab === 'reading') {
     return (
-      <div className="min-h-screen bg-white text-slate-900 font-sans flex flex-col">
+      <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-sans flex flex-col">
         <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
         <ReadingView onBackToHome={() => setActiveTab('dashboard')} data={data} />
         <Footer />
@@ -66,7 +66,7 @@ export default function AptisPage() {
 
   if (activeTab === 'listening') {
     return (
-      <div className="min-h-screen bg-white text-slate-900 font-sans flex flex-col">
+      <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-sans flex flex-col">
         <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
         <ListeningView onBackToHome={() => setActiveTab('dashboard')} />
         <Footer />
@@ -76,7 +76,7 @@ export default function AptisPage() {
 
   if (activeTab === 'speaking') {
     return (
-      <div className="min-h-screen bg-white text-slate-900 font-sans flex flex-col">
+      <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-sans flex flex-col">
         <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
         <SpeakingView onBackToHome={() => setActiveTab('dashboard')} />
         <Footer />
@@ -86,7 +86,7 @@ export default function AptisPage() {
 
   if (activeTab === 'writing') {
     return (
-      <div className="min-h-screen bg-white text-slate-900 font-sans flex flex-col">
+      <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-sans flex flex-col">
         <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
         <WritingView onBackToHome={() => setActiveTab('dashboard')} />
         <Footer />
@@ -96,7 +96,7 @@ export default function AptisPage() {
 
   if (activeTab === 'grammar') {
     return (
-      <div className="min-h-screen bg-white text-slate-900 font-sans flex flex-col">
+      <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-sans flex flex-col">
         <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
         <GrammarView onBackToHome={() => setActiveTab('dashboard')} />
         <Footer />
@@ -105,11 +105,11 @@ export default function AptisPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans flex flex-col">
+    <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-sans flex flex-col">
       {/* 1. Header Navigation Bar (Navbar) - Fixed Top */}
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {/* 2. Hero Section - Aptis Kỳ Tích Style (Main Content Part 1) */}
+      {/* 2. Hero Section - Stitch Bento Grid Style */}
       <ScrollReveal delayMs={0}>
         <HeroSection 
           onStartMockTest={() => setActiveTab('mock-test')} 
@@ -117,27 +117,23 @@ export default function AptisPage() {
         />
       </ScrollReveal>
 
-      {/* 3. Stats & Benefits Highlights (Main Content Part 2 - Block A) */}
+      {/* 3. Stats & Benefits Highlights */}
       <ScrollReveal delayMs={100}>
         <StatsAndFeaturesSection />
       </ScrollReveal>
 
-      {/* 4. Study Roadmap Section (Main Content Part 2 - Block B) */}
-      <ScrollReveal delayMs={100}>
-        <RoadmapSection onSelectRoadmap={(type) => setActiveTab(type === 'urgent' ? 'mock-test' : 'reading')} />
-      </ScrollReveal>
 
-      {/* 5. Main Features Showcase (Main Content Part 3 - Block A) */}
+      {/* 5. Main Features Showcase */}
       <ScrollReveal delayMs={100}>
         <FeaturesGridSection />
       </ScrollReveal>
 
-      {/* 6. Exam Structure 5 Skills (Main Content Part 3 - Block B) */}
+      {/* 6. Exam Structure 5 Skills */}
       <ScrollReveal delayMs={100}>
         <ExamStructureSection />
       </ScrollReveal>
 
-      {/* 7. Why Choose Us / Strengths Grid (Main Content Part 3 - Block C) */}
+      {/* 7. Why Choose Us / Strengths Grid */}
       <ScrollReveal delayMs={100}>
         <StrengthsGridSection />
       </ScrollReveal>

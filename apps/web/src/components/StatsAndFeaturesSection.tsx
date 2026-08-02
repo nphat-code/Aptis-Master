@@ -4,103 +4,101 @@ import React from 'react';
 
 export default function StatsAndFeaturesSection() {
   return (
-    <section className="bg-slate-50/60 py-8 md:py-12 border-t border-slate-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+    <section className="bg-[#0b1326] py-16 text-[#dae2fd]">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 space-y-12">
         
-        {/* Row A: 4 Highlight Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Bento Grid: 4 Key Metrics Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           
           {/* Card 1 */}
-          <div className="bg-white rounded-2xl p-6 text-center border border-red-100 hover:border-red-300 hover:-translate-y-1.5 transition-all duration-300 cursor-pointer group">
-            <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#FF2E00] via-[#FF5500] to-[#FF8A00] group-hover:scale-105 transition-transform duration-300 inline-block mb-1">
-              596+
-            </span>
-            <span className="text-sm font-bold text-slate-800 block">Đề thi Aptis</span>
+          <div className="glass-panel rounded-[32px] p-8 border border-[#4edea3]/30 shadow-[0_0_20px_rgba(78,222,163,0.15)] group hover:scale-[1.02] transition-all duration-300 cursor-pointer">
+            <div className="text-2xl sm:text-3xl font-extrabold text-[#4edea3] mb-2 tracking-tight">100+</div>
+            <h3 className="text-xl font-bold text-white mb-2">Đề thi Aptis ESOL</h3>
+            <p className="text-xs text-[#bbcabf] leading-relaxed">Cập nhật chuẩn 2026 với cấu trúc mới nhất từ British Council.</p>
           </div>
 
           {/* Card 2 */}
-          <div className="bg-white rounded-2xl p-6 text-center border border-red-100 hover:border-red-300 hover:-translate-y-1.5 transition-all duration-300 cursor-pointer group">
-            <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#FF2E00] via-[#FF5500] to-[#FF8A00] group-hover:scale-105 transition-transform duration-300 inline-block mb-1">
-              Đề Key
-            </span>
-            <span className="text-sm font-bold text-slate-800 block">Update hằng ngày</span>
+          <div className="glass-panel rounded-[32px] p-8 border border-[#ffb95f]/30 shadow-[0_0_20px_rgba(255,185,95,0.15)] group hover:scale-[1.02] transition-all duration-300 cursor-pointer">
+            <div className="text-2xl sm:text-3xl font-extrabold text-[#ffb95f] mb-2 tracking-tight">98%</div>
+            <h3 className="text-xl font-bold text-white mb-2">Sát đề thi thật</h3>
+            <p className="text-xs text-[#bbcabf] leading-relaxed">Tỉ lệ tương thích thực tế cao nhất thị trường hiện nay.</p>
           </div>
 
           {/* Card 3 */}
-          <div className="bg-white rounded-2xl p-6 text-center border border-red-100 hover:border-red-300 hover:-translate-y-1.5 transition-all duration-300 cursor-pointer group">
-            <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#FF2E00] via-[#FF5500] to-[#FF8A00] group-hover:scale-105 transition-transform duration-300 inline-block mb-1">
-              AI
-            </span>
-            <span className="text-sm font-bold text-slate-800 block">Giải thích chi tiết từng câu</span>
+          <div className="glass-panel rounded-[32px] p-8 border border-[#c0c1ff]/30 shadow-[0_0_20px_rgba(192,193,255,0.15)] group hover:scale-[1.02] transition-all duration-300 cursor-pointer">
+            <div className="text-2xl sm:text-3xl font-extrabold text-[#c0c1ff] mb-2 tracking-tight">AI Scoring</div>
+            <h3 className="text-xl font-bold text-white mb-2">Chấm Speaking & Writing</h3>
+            <p className="text-xs text-[#bbcabf] leading-relaxed">Giải thích chi tiết từng lỗi sai và gợi ý cách diễn đạt hay hơn.</p>
           </div>
 
           {/* Card 4 */}
-          <div className="bg-white rounded-2xl p-6 text-center border border-red-100 hover:border-red-300 hover:-translate-y-1.5 transition-all duration-300 cursor-pointer group">
-            <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#FF2E00] via-[#FF5500] to-[#FF8A00] group-hover:scale-105 transition-transform duration-300 inline-block mb-1">
-              Mô phỏng
-            </span>
-            <span className="text-sm font-bold text-slate-800 block">Giống bài thi thật 100%</span>
+          <div className="glass-panel rounded-[32px] p-8 border border-[#4edeff]/30 shadow-[0_0_20px_rgba(78,222,255,0.15)] group hover:scale-[1.02] transition-all duration-300 cursor-pointer">
+            <div className="text-2xl sm:text-3xl font-extrabold text-[#4edeff] mb-2 tracking-tight">100%</div>
+            <h3 className="text-xl font-bold text-white mb-2">Mô phỏng thực tế</h3>
+            <p className="text-xs text-[#bbcabf] leading-relaxed">Đúng chuẩn thời gian, giao diện và áp lực phòng thi thật.</p>
           </div>
 
         </div>
 
-        {/* Row B: 5 Benefit Features Row Container */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-orange-100/80 shadow-sm shadow-orange-500/5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 text-center">
+        {/* Core Highlight Features: 5 Column Layout */}
+        <div className="glass-panel rounded-[40px] p-8 sm:p-10 border border-white/10 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#4edea3]/10 blur-[100px] rounded-full -mr-32 -mt-32 pointer-events-none" />
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-10 relative z-10">
             
             {/* Feature 1 */}
-            <div className="flex flex-col items-center space-y-2 group">
-              <div className="w-12 h-12 rounded-2xl bg-red-50 text-[#FF3300] border border-red-100 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
+            <div className="flex flex-col items-center text-center space-y-4 group cursor-pointer">
+              <div className="w-16 h-16 rounded-2xl bg-[#4edea3]/10 flex items-center justify-center text-[#4edea3] border border-[#4edea3]/20 group-hover:bg-[#4edea3]/20 transition-colors duration-300">
+                <span className="material-symbols-outlined text-[32px]">verified</span>
               </div>
-              <h4 className="font-bold text-sm text-slate-900">Sát đề thật</h4>
-              <p className="text-xs text-slate-500 font-medium">Mô phỏng 100% Aptis</p>
+              <div>
+                <h4 className="font-bold text-base text-white mb-1">Sát đề thật</h4>
+                <p className="text-xs text-[#bbcabf]">Mô phỏng 100% cấu trúc Aptis</p>
+              </div>
             </div>
 
             {/* Feature 2 */}
-            <div className="flex flex-col items-center space-y-2 group">
-              <div className="w-12 h-12 rounded-2xl bg-orange-50 text-orange-600 border border-orange-100 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                </svg>
+            <div className="flex flex-col items-center text-center space-y-4 group cursor-pointer">
+              <div className="w-16 h-16 rounded-2xl bg-[#c0c1ff]/10 flex items-center justify-center text-[#c0c1ff] border border-[#c0c1ff]/20 group-hover:bg-[#c0c1ff]/20 transition-colors duration-300">
+                <span className="material-symbols-outlined text-[32px]">mic</span>
               </div>
-              <h4 className="font-bold text-sm text-slate-900">AI chấm Speaking</h4>
-              <p className="text-xs text-slate-500 font-medium">Band + gợi ý sửa</p>
+              <div>
+                <h4 className="font-bold text-base text-white mb-1">AI chấm Speaking</h4>
+                <p className="text-xs text-[#bbcabf]">Phân tích Band + gợi ý sửa câu</p>
+              </div>
             </div>
 
             {/* Feature 3 */}
-            <div className="flex flex-col items-center space-y-2 group">
-              <div className="w-12 h-12 rounded-2xl bg-red-50 text-[#FF3300] border border-red-100 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                </svg>
+            <div className="flex flex-col items-center text-center space-y-4 group cursor-pointer">
+              <div className="w-16 h-16 rounded-2xl bg-[#ffb95f]/10 flex items-center justify-center text-[#ffb95f] border border-[#ffb95f]/20 group-hover:bg-[#ffb95f]/20 transition-colors duration-300">
+                <span className="material-symbols-outlined text-[32px]">edit_note</span>
               </div>
-              <h4 className="font-bold text-sm text-slate-900">AI chấm Writing</h4>
-              <p className="text-xs text-slate-500 font-medium">Nhận xét từng tiêu chí</p>
+              <div>
+                <h4 className="font-bold text-base text-white mb-1">AI chấm Writing</h4>
+                <p className="text-xs text-[#bbcabf]">Nhận xét chi tiết từng tiêu chí</p>
+              </div>
             </div>
 
             {/* Feature 4 */}
-            <div className="flex flex-col items-center space-y-2 group">
-              <div className="w-12 h-12 rounded-2xl bg-orange-50 text-orange-600 border border-orange-100 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
+            <div className="flex flex-col items-center text-center space-y-4 group cursor-pointer">
+              <div className="w-16 h-16 rounded-2xl bg-[#4edea3]/10 flex items-center justify-center text-[#4edea3] border border-[#4edea3]/20 group-hover:bg-[#4edea3]/20 transition-colors duration-300">
+                <span className="material-symbols-outlined text-[32px]">menu_book</span>
               </div>
-              <h4 className="font-bold text-sm text-slate-900">596+ đề luyện</h4>
-              <p className="text-xs text-slate-500 font-medium">Cập nhật liên tục</p>
+              <div>
+                <h4 className="font-bold text-base text-white mb-1">100+ đề luyện</h4>
+                <p className="text-xs text-[#bbcabf]">Kho dữ liệu cập nhật liên tục</p>
+              </div>
             </div>
 
             {/* Feature 5 */}
-            <div className="flex flex-col items-center space-y-2 group">
-              <div className="w-12 h-12 rounded-2xl bg-red-50 text-[#FF3300] border border-red-100 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
+            <div className="flex flex-col items-center text-center space-y-4 group cursor-pointer">
+              <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-[#dae2fd] border border-white/10 group-hover:bg-white/10 transition-colors duration-300">
+                <span className="material-symbols-outlined text-[32px]">insights</span>
               </div>
-              <h4 className="font-bold text-sm text-slate-900">Theo dõi tiến độ</h4>
-              <p className="text-xs text-slate-500 font-medium">Biểu đồ & streak</p>
+              <div>
+                <h4 className="font-bold text-base text-white mb-1">Theo dõi tiến độ</h4>
+                <p className="text-xs text-[#bbcabf]">Biểu đồ & streak hằng ngày</p>
+              </div>
             </div>
 
           </div>
