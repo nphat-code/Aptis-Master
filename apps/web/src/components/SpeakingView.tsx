@@ -51,21 +51,24 @@ export default function SpeakingView({ onBackToHome, data }: SpeakingViewProps) 
   };
 
   const tipsContent = (
-    <>
-      <div className="bg-rose-50/60 p-4 rounded-2xl border border-rose-200/60 text-slate-800 space-y-1">
-        <p className="font-medium">
-          Duy trì tốc độ nói vừa phải, phát âm rõ ràng. Không ngập ngừng quá 3 giây và áp dụng công thức PREP (Point - Reason - Example - Point) để trả lời trôi chảy.
+    <div className="space-y-4 text-sm font-sans">
+      <div className="bg-[#4edea3]/10 p-5 rounded-2xl border border-[#4edea3]/30 text-[#dae2fd] space-y-1.5 shadow-inner">
+        <p className="font-medium text-xs sm:text-sm leading-relaxed">
+          🗣️ <strong className="text-[#4edea3]">Chiến thuật Speaking Aptis 2026:</strong> Duy trì tốc độ nói vừa phải, phát âm chuẩn ngữ điệu. Tránh ngập ngừng quá 3 giây và áp dụng công thức <strong className="text-white">PREP (Point - Reason - Example - Point)</strong> để mở rộng ý.
         </p>
       </div>
 
-      <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-2">
-        <h4 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-          <span className="bg-[#CC1C01] text-white text-xs px-2.5 py-0.5 rounded-md">Part 2 & 3</span>
-          Bí quyết miêu tả & so sánh bức tranh
+      <div className="bg-[#0b1326]/80 p-5 sm:p-6 rounded-2xl border border-white/10 space-y-3 hover:border-[#4edea3]/30 transition-all shadow-md">
+        <h4 className="font-extrabold text-white text-base flex items-center gap-3">
+          <span className="bg-[#4edea3]/20 text-[#4edea3] text-xs px-3 py-1 rounded-full border border-[#4edea3]/30 font-extrabold">Part 1, 2 & 3</span>
+          Personal Info & Photo Description
         </h4>
-        <p className="text-xs font-medium text-slate-700">Miêu tả bối cảnh tổng quan (In the foreground/background, On the left/right), cảm xúc nhân vật và sự tương đồng/khác biệt.</p>
+        <ul className="space-y-2 text-xs sm:text-sm text-[#bbcabf] pt-1">
+          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Miêu tả tổng quan bức tranh (In the foreground, In the background, On the left/right).</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>So sánh điểm tương đồng và khác biệt giữa 2 bức tranh trong 45 giây.</span></li>
+        </ul>
       </div>
-    </>
+    </div>
   );
 
   return (

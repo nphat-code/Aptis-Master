@@ -120,7 +120,7 @@ export default function ExamStructureSection() {
             <div className="w-14 h-14 rounded-2xl bg-[#ffb95f]/10 flex items-center justify-center text-[#ffb95f] mb-6 border border-[#ffb95f]/20">
               <span className="material-symbols-outlined text-3xl">spellcheck</span>
             </div>
-            <h3 className="text-2xl font-bold text-white mb-2">Grammar</h3>
+            <h3 className="text-2xl font-bold text-white mb-2">Grammar & Vocabulary</h3>
             <p className="text-sm text-[#bbcabf] leading-relaxed">
               Hệ thống ngữ pháp & từ vựng theo khung ESOL giúp củng cố nền tảng vững chắc.
             </p>

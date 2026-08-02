@@ -28,7 +28,7 @@ export default function Navbar({ activeTab, setActiveTab, setSelectedSubPart }: 
     { id: 'listening', label: 'Listening' },
     { id: 'writing', label: 'Writing' },
     { id: 'speaking', label: 'Speaking' },
-    { id: 'grammar', label: 'Grammar' },
+    { id: 'grammar', label: 'Grammar & Vocabulary' },
     { id: 'mock-test', label: 'Thi thử Full' },
   ];
 

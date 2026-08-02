@@ -16,10 +16,10 @@ export interface PartTabContent {
 }
 
 export interface SkillPracticeViewProps {
-  skillId: string; // e.g. "reading", "listening", "speaking", "writing", "grammar"
-  skillTitle: string; // e.g. "Phần thi Reading"
+  skillId: string;
+  skillTitle: string;
   skillDescription: string;
-  durationText?: string; // e.g. "30 phút"
+  durationText?: string;
   icon?: React.ReactNode;
   partTabs: PartTab[];
   partTabContent: Record<string, PartTabContent>;
@@ -27,7 +27,7 @@ export interface SkillPracticeViewProps {
   completedCount?: number;
   tipsTitle?: string;
   tipsContent?: React.ReactNode;
-  supportedPartIds?: string[]; // e.g. ['part1', 'part23']
+  supportedPartIds?: string[];
   renderPracticeExam?: (props: { partId: string; testIndex: number; onExit: () => void }) => React.ReactNode;
   getCustomCardProps?: (partId: string, testNum: number) => { title?: string; subtitle?: string; badge?: string } | null;
   getMarathonCardProps?: (partId: string) => { title: string; subtitle: string; totalCount: number } | null;
@@ -53,13 +53,11 @@ export default function SkillPracticeView({
   const [showTipsModal, setShowTipsModal] = useState(false);
   const [showUpdatingModalPart, setShowUpdatingModalPart] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('newest');
   const [activePartTab, setActivePartTab] = useState(defaultPartTab || partTabs[0]?.id || 'full');
   const [activePracticeTestIndex, setActivePracticeTestIndex] = useState<number | null>(null);
 
   const currentTabInfo = partTabContent[activePartTab] || partTabContent[partTabs[0]?.id || 'full'];
 
-  // Render Practice Exam Workspace when test index is selected
   if (activePracticeTestIndex !== null && renderPracticeExam) {
     return renderPracticeExam({
       partId: activePartTab,
@@ -71,10 +69,8 @@ export default function SkillPracticeView({
   const marathonInfo = getMarathonCardProps ? getMarathonCardProps(activePartTab) : null;
   const isCurrentPartSupported = supportedPartIds.includes(activePartTab);
 
-  // Calculate progress percentage
   const totalAvailableTests = currentTabInfo ? currentTabInfo.testCount : 10;
   const progressPercent = Math.min(Math.round((completedCount / (totalAvailableTests || 1)) * 100), 100);
-  const strokeDashoffset = 364.42 - (364.42 * progressPercent) / 100;
 
   return (
     <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-sans pb-24 pt-24">
@@ -145,18 +141,9 @@ export default function SkillPracticeView({
                 </div>
               </div>
 
-              {/* Circular Gauge */}
               <div className="relative flex items-center justify-center w-28 h-28 flex-shrink-0">
                 <svg className="w-full h-full transform -rotate-90">
-                  <circle
-                    className="text-[#2d3449]"
-                    cx="56"
-                    cy="56"
-                    fill="transparent"
-                    r="50"
-                    stroke="currentColor"
-                    strokeWidth="9"
-                  />
+                  <circle className="text-[#2d3449]" cx="56" cy="56" fill="transparent" r="50" stroke="currentColor" strokeWidth="9" />
                   <circle
                     className="text-[#4edea3]"
                     cx="56"
@@ -207,163 +194,184 @@ export default function SkillPracticeView({
 
         </section>
 
-        {/* 2. Filter & Search Bar Section */}
-        <section className="mb-10">
-          <div className="glass-panel rounded-3xl p-6 flex flex-col gap-6">
-            
-            {/* Search Input Box */}
-            <div className="relative w-full">
-              <span className="material-symbols-outlined absolute left-6 top-1/2 -translate-y-1/2 text-[#bbcabf] text-xl">
-                search
-              </span>
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder={`Tìm kiếm bộ đề, chủ đề ${skillTitle.replace('Phần thi ', '')}...`}
-                className="w-full bg-[#131b2e] border border-[#3c4a42] rounded-2xl pl-14 pr-10 py-3.5 text-[#dae2fd] text-sm focus:border-[#4edea3] focus:ring-1 focus:ring-[#4edea3] transition-all placeholder:text-[#bbcabf]/60"
-              />
-              {searchTerm && (
-                <button
-                  onClick={() => setSearchTerm('')}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#bbcabf] hover:text-white font-bold text-sm"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-
-            {/* Filter Tabs & Sort Controls (Rule 15 Compliant: Active orange #FEAD5D / red #CC1C01, inactive #666666) */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-t border-[#3c4a42]/30 pt-6">
+        {/* 2. Main Practice Workspace (Option 2: Sidebar 3:9 Layout) */}
+        <section className="grid grid-cols-12 gap-8 items-start mb-16">
+          
+          {/* Left Sticky Sidebar Menu (3/12 cols) */}
+          <aside className="col-span-12 lg:col-span-3 sticky top-28 z-20 space-y-4">
+            <div className="glass-panel rounded-3xl p-5 border border-white/10 shadow-2xl space-y-4">
               
-              {/* Part Filter Tabs */}
-              <div className="flex flex-wrap bg-[#131b2e] p-1.5 rounded-2xl gap-1">
+              <div className="flex items-center justify-between border-b border-white/10 pb-3.5 px-1">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[#4edea3] text-xl">view_list</span>
+                  <h3 className="font-extrabold text-base text-white">Cấu trúc phần thi</h3>
+                </div>
+                <span className="text-[10px] font-bold bg-[#4edea3]/10 text-[#4edea3] px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                  2026
+                </span>
+              </div>
+
+              {/* Vertical Part Cards Navigation */}
+              <div className="flex flex-col gap-2">
                 {partTabs.map((tab) => {
                   const isActive = activePartTab === tab.id;
-                  const isFullPart = tab.id === 'full';
+
+                  let partIcon = 'grid_view';
+                  if (tab.id.includes('1')) partIcon = 'filter_1';
+                  else if (tab.id.includes('2') || tab.id.includes('23')) partIcon = 'filter_2';
+                  else if (tab.id.includes('3')) partIcon = 'filter_3';
+                  else if (tab.id.includes('4')) partIcon = 'filter_4';
+                  else if (tab.id.includes('5')) partIcon = 'filter_5';
 
                   const activeClass = isActive
-                    ? isFullPart
-                      ? 'bg-[#CC1C01] text-white shadow-lg'
-                      : 'bg-[#FEAD5D] text-white shadow-lg'
-                    : 'text-[#666666] hover:text-[#dae2fd] hover:bg-[#222a3d]';
+                    ? 'bg-[#10b981]/20 text-[#4edea3] border border-[#4edea3]/40 shadow-[0_0_20px_rgba(78,222,163,0.3)] scale-[1.02]'
+                    : 'text-[#666666] hover:text-[#dae2fd] hover:bg-white/5 border border-transparent';
 
                   const dashIndex = tab.label.search(/\s+[–—\-]\s+/);
                   const hasDash = dashIndex !== -1;
                   const prefix = hasDash ? tab.label.substring(0, dashIndex) : tab.label;
-                  const rest = hasDash ? tab.label.substring(dashIndex) : '';
+                  const rawRest = hasDash ? tab.label.substring(dashIndex) : '';
+                  const rest = rawRest.replace(/^\s*[–—\-]\s*/, '');
+
+                  const tabInfo = partTabContent[tab.id];
+                  const testCount = tabInfo ? tabInfo.testCount : 10;
 
                   return (
                     <button
                       key={tab.id}
                       onClick={() => setActivePartTab(tab.id)}
-                      className={`px-6 py-2.5 rounded-xl text-xs sm:text-sm transition-all cursor-pointer ${activeClass}`}
+                      className={`w-full text-left p-3.5 rounded-2xl text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer flex items-center justify-between gap-3 ${activeClass}`}
                     >
-                      <span className="font-bold">{prefix}</span>
-                      {rest && <span className="font-normal">{rest}</span>}
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className="material-symbols-outlined text-xl shrink-0">{partIcon}</span>
+                        <div className="flex flex-col min-w-0">
+                          <span className="font-bold tracking-tight truncate">{prefix}</span>
+                          {rest && <span className="font-normal text-[11px] opacity-80 truncate">{rest}</span>}
+                        </div>
+                      </div>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${isActive ? 'bg-[#4edea3]/20 text-[#4edea3]' : 'bg-white/5 text-[#666666]'}`}>
+                        {testCount} đề
+                      </span>
                     </button>
                   );
                 })}
               </div>
 
-              {/* Sort Dropdown */}
-              <div className="flex items-center gap-3 self-end lg:self-auto">
-                <span className="text-xs font-medium text-[#bbcabf]">Sắp xếp:</span>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="bg-[#131b2e] border border-[#3c4a42] rounded-xl text-[#dae2fd] text-xs py-2 px-3.5 focus:ring-1 focus:ring-[#4edea3] focus:border-[#4edea3]"
-                >
-                  <option value="newest">Mới nhất</option>
-                  <option value="popular">Được làm nhiều nhất</option>
-                  <option value="difficulty">Độ khó: Dễ đến Khó</option>
-                </select>
-              </div>
+            </div>
+          </aside>
 
+          {/* Right Workspace Area (9/12 cols): Search Bar & Practice Test Cards */}
+          <div className="col-span-12 lg:col-span-9 space-y-6">
+            
+            {/* Search Bar Container */}
+            <div className="glass-panel rounded-3xl p-5 sm:p-6 border border-white/10 shadow-xl">
+              <div className="relative w-full">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#4edea3] text-xl pointer-events-none">
+                  search
+                </span>
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder={`Tìm kiếm bộ đề, chủ đề ${skillTitle.replace('Phần thi ', '')}...`}
+                  className="w-full bg-[#0b1326]/70 border border-white/15 rounded-2xl pl-12 pr-10 py-3.5 text-[#dae2fd] text-sm focus:border-[#4edea3] focus:ring-2 focus:ring-[#4edea3]/30 transition-all placeholder:text-[#bbcabf]/60 outline-none"
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#222a3d] text-[#bbcabf] hover:text-white flex items-center justify-center font-bold text-xs transition-colors cursor-pointer"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Practice Test Cards Grid (3 Columns inside the 9-col container) */}
+            <div key={`grid-${activePartTab}`} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Card 0: Marathon Card if available */}
+              {marathonInfo && (!searchTerm || marathonInfo.title.toLowerCase().includes(searchTerm.toLowerCase())) && (
+                <div
+                  key={`marathon-${activePartTab}`}
+                  className="animate-card-appear"
+                  style={{ animationDelay: '0ms' }}
+                >
+                  <TestPracticeCard
+                    title={marathonInfo.title}
+                    badge="Marathon"
+                    isMarathon={true}
+                    subtitle={marathonInfo.subtitle}
+                    actionText="Bắt đầu"
+                    onClick={() => setActivePracticeTestIndex(-1)}
+                  />
+                </div>
+              )}
+
+              {Array.from({ length: currentTabInfo.testCount }, (_, index) => {
+                const testNum = index + 1;
+                const customProps = getCustomCardProps ? getCustomCardProps(activePartTab, testNum) : null;
+                const testNumberStr = testNum < 10 ? '0' + testNum : `${testNum}`;
+
+                const cardTitle = customProps?.title || `Đề ${testNumberStr} - ${currentTabInfo.badge}`;
+                const cardSubtitle = customProps?.subtitle || 'Đề thi mô phỏng cấu trúc chuẩn ESOL 2026';
+                const cardBadge = customProps?.badge || currentTabInfo.badge;
+
+                if (
+                  searchTerm &&
+                  !cardTitle.toLowerCase().includes(searchTerm.toLowerCase()) &&
+                  !cardSubtitle.toLowerCase().includes(searchTerm.toLowerCase())
+                ) {
+                  return null;
+                }
+
+                const hasMarathon = !!marathonInfo && !searchTerm;
+                const cardStaggerIndex = hasMarathon ? index + 1 : index;
+                const delayMs = Math.min(cardStaggerIndex * 35, 450);
+
+                return (
+                  <div
+                    key={`card-${activePartTab}-${testNum}`}
+                    className="animate-card-appear"
+                    style={{ animationDelay: `${delayMs}ms` }}
+                  >
+                    <TestPracticeCard
+                      title={cardTitle}
+                      badge={cardBadge}
+                      isMarathon={false}
+                      subtitle={cardSubtitle}
+                      actionText={activePartTab === 'full' ? 'Bắt đầu luyện tập' : 'Luyện tập'}
+                      onClick={() => {
+                        if (isCurrentPartSupported) {
+                          setActivePracticeTestIndex(index);
+                        } else {
+                          setShowUpdatingModalPart(currentTabInfo.badge);
+                        }
+                      }}
+                    />
+                  </div>
+                );
+              })}
             </div>
 
           </div>
-        </section>
 
-        {/* 3. Practice Cards Grid (CONTINUOUS SCROLL - NO PAGINATION) */}
-        <section key={`grid-${activePartTab}`} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Card 0: Marathon Card if available */}
-          {marathonInfo && (!searchTerm || marathonInfo.title.toLowerCase().includes(searchTerm.toLowerCase())) && (
-            <div
-              key={`marathon-${activePartTab}`}
-              className="animate-card-appear"
-              style={{ animationDelay: '0ms' }}
-            >
-              <TestPracticeCard
-                title={marathonInfo.title}
-                badge="Marathon"
-                isMarathon={true}
-                subtitle={marathonInfo.subtitle}
-                actionText="Bắt đầu"
-                onClick={() => setActivePracticeTestIndex(-1)}
-              />
-            </div>
-          )}
-
-          {Array.from({ length: currentTabInfo.testCount }, (_, index) => {
-            const testNum = index + 1;
-            const customProps = getCustomCardProps ? getCustomCardProps(activePartTab, testNum) : null;
-            const testNumberStr = testNum < 10 ? '0' + testNum : `${testNum}`;
-
-            const cardTitle = customProps?.title || `Đề ${testNumberStr} - ${currentTabInfo.badge}`;
-            const cardSubtitle = customProps?.subtitle || 'Đề thi mô phỏng cấu trúc chuẩn ESOL 2026';
-            const cardBadge = customProps?.badge || currentTabInfo.badge;
-
-            // Search filter
-            if (
-              searchTerm &&
-              !cardTitle.toLowerCase().includes(searchTerm.toLowerCase()) &&
-              !cardSubtitle.toLowerCase().includes(searchTerm.toLowerCase())
-            ) {
-              return null;
-            }
-
-            const hasMarathon = !!marathonInfo && !searchTerm;
-            const cardStaggerIndex = hasMarathon ? index + 1 : index;
-            const delayMs = Math.min(cardStaggerIndex * 35, 450);
-
-            return (
-              <div
-                key={`card-${activePartTab}-${testNum}`}
-                className="animate-card-appear"
-                style={{ animationDelay: `${delayMs}ms` }}
-              >
-                <TestPracticeCard
-                  title={cardTitle}
-                  badge={cardBadge}
-                  isMarathon={false}
-                  subtitle={cardSubtitle}
-                  actionText={activePartTab === 'full' ? 'Bắt đầu luyện tập' : 'Luyện tập'}
-                  onClick={() => {
-                    if (isCurrentPartSupported) {
-                      setActivePracticeTestIndex(index);
-                    } else {
-                      setShowUpdatingModalPart(currentTabInfo.badge);
-                    }
-                  }}
-                />
-              </div>
-            );
-          })}
         </section>
 
       </main>
 
-      {/* Skill Tips Modal */}
+      {/* Skill Tips Modal (Ultra-Sleek Stitch Dark Glassmorphic Modal) */}
       {showTipsModal && tipsContent && (
-        <div className="fixed inset-0 z-50 bg-[#060e20]/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#171f33] rounded-3xl p-6 sm:p-8 max-w-3xl w-full space-y-6 shadow-2xl border border-[#3c4a42] animate-in fade-in zoom-in-95 duration-200">
-            
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
-              <div className="flex items-center gap-3 text-[#4edea3]">
-                <span className="text-2xl">💡</span>
+        <div className="fixed inset-0 z-50 bg-[#060e20]/85 backdrop-blur-xl flex items-center justify-center p-4">
+          <div className="bg-[#131b2e] rounded-[32px] p-6 sm:p-8 max-w-3xl w-full space-y-6 shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-white/10 relative overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="absolute top-0 right-0 w-72 h-72 bg-[#4edea3]/5 blur-[90px] rounded-full pointer-events-none" />
+
+            <div className="flex items-center justify-between border-b border-white/10 pb-4 relative z-10">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-[#4edea3]/10 border border-[#4edea3]/20 flex items-center justify-center text-[#4edea3] text-2xl shadow-inner">
+                  💡
+                </div>
                 <div>
-                  <h3 className="font-extrabold text-xl text-[#dae2fd]">
+                  <h3 className="font-extrabold text-xl sm:text-2xl text-white">
                     {tipsTitle || `Mẹo học ${skillTitle}`}
                   </h3>
                   <p className="text-xs text-[#bbcabf] font-medium">
@@ -373,22 +381,22 @@ export default function SkillPracticeView({
               </div>
               <button 
                 onClick={() => setShowTipsModal(false)}
-                className="w-9 h-9 rounded-full bg-[#222a3d] text-[#bbcabf] hover:bg-[#2d3449] flex items-center justify-center font-bold text-base transition-colors cursor-pointer"
+                className="w-9 h-9 rounded-full bg-[#222a3d] text-[#bbcabf] hover:text-white hover:bg-white/10 flex items-center justify-center font-bold text-sm transition-colors cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            <div className="space-y-6 text-sm text-[#dae2fd] leading-relaxed max-h-[70vh] overflow-y-auto pr-3 font-sans custom-scrollbar">
+            <div className="space-y-6 text-sm text-[#dae2fd] leading-relaxed max-h-[65vh] overflow-y-auto pr-3 font-sans custom-scrollbar relative z-10">
               {tipsContent}
             </div>
 
-            <div className="pt-2 flex justify-end border-t border-white/10">
+            <div className="pt-3 flex justify-end border-t border-white/10 relative z-10">
               <button
                 onClick={() => setShowTipsModal(false)}
-                className="bg-[#4edea3] text-[#003824] font-bold text-sm px-6 py-2.5 rounded-xl hover:bg-[#3ec991] transition-colors shadow-xs cursor-pointer"
+                className="bg-[#4edea3] text-[#003824] font-extrabold text-sm px-7 py-3 rounded-2xl hover:scale-105 transition-all shadow-[0_0_20px_rgba(78,222,163,0.35)] cursor-pointer"
               >
-                Đã hiểu
+                Đã hiểu chiến thuật
               </button>
             </div>
 

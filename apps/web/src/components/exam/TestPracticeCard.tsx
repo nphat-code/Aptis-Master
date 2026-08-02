@@ -14,83 +14,94 @@ export interface TestPracticeCardProps {
   onClick: () => void;
 }
 
-const defaultImages = [
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuB6m6qiX72DLJ4WfLYv9MssTeTE3WgqXGvoYLaWK0_-aSULuQVP4hFkOt8mMbWYwKzV7wHZuO4kN92qqgPoTKII7VoTHB94hLX7cZWKOYwKyiXkBupgjAXAn-IW0fpjMKM5xPvSX8Rvsma_PPv4GRfEY6T4-SKq-CyADlFxP880dZDj66uYeMJ02Avc6Y1tGdWBeCZyYwQJZegdPH8N8FVbxFAMR1WJkdl9COL6X5Hw3n-RKlTWYy8ikw',
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuC0HBGEsJpjDnTOKYZt9s0xE4cEOk0rsRWrMS5UaWdL5kQx6mxV_HRN3nkpK8qNeq-rQjGvm-rpsFI-Zhp7WTwa2OOrPVgzH98_-hIj55BFs1gaOBNpiPcAp3TMdqRv09eeGw7ujfYWJk95iAZe5ebnribLofpASZmapOWwxvGhCxZqTHDvU6n7zSNN00Ia8pAd7g4yaBHFIcbvoWZng0fMS42xsQ9qR5YhwPg3cGez8TcASA5m5Pg7gw',
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuBa0qT5EzqS4tYXKGHH1_vIAAEitc6h0ktce7EqT4bMAsWSQVtzqgWAwmRxrjSX645vYEK3OfIol0ihiw2shaXR2ZzBXRCYeibWLBOfP3t_gOLEe9akGxt1eChBYt1R0OgSCMX0kIuwh0FR3MIkdo1ca123j_dt8jjtaj8Q_CdRY9W1DJa_hr8uDyLQSOcmH56N6044eOZrySe7-5m73UTLFOQCjJ1lQPibKa8sTGDWydLhd6mfynwBZQ',
-];
-
 export function TestPracticeCard({
   title,
   badge,
   isMarathon = false,
   subtitle = 'Đề thi mô phỏng cấu trúc chuẩn ESOL 2026',
   actionText = 'Luyện tập',
-  imageUrl,
   durationText = '30 phút',
-  levelText = 'B1 - B2',
+  levelText = 'Chuẩn ESOL 2026',
   onClick,
 }: TestPracticeCardProps) {
-  // Pick deterministic default image based on title length
-  const cardImg = imageUrl || defaultImages[title.length % defaultImages.length];
-
   return (
     <div
       onClick={onClick}
-      className={`glass-panel rounded-3xl overflow-hidden bento-card flex flex-col group h-full cursor-pointer transition-all duration-300 ${
-        isMarathon ? 'border-2 border-[#ffb95f]' : 'hover:border-[#4edea3]/40'
+      className={`glass-panel rounded-3xl p-6 sm:p-7 flex flex-col justify-between group h-full cursor-pointer transition-all duration-300 border relative overflow-hidden hover:scale-[1.015] ${
+        isMarathon
+          ? 'border-[#ffb95f]/40 bg-[#ffb95f]/5 shadow-[0_0_20px_rgba(255,185,95,0.15)]'
+          : 'border-white/10 hover:border-[#4edea3]/40 shadow-xl'
       }`}
     >
-      {/* Top Banner Image with Glass Badge */}
-      <div className="h-44 overflow-hidden relative">
-        <img
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-          alt={title}
-          src={cardImg}
-        />
-        <div className="absolute top-4 left-4 px-3.5 py-1 rounded-full bg-[#0b1326]/80 backdrop-blur-md border border-white/10 text-[12px] font-extrabold text-[#4edea3] tracking-wider uppercase">
-          {isMarathon ? '🔥 MARATHON' : badge}
-        </div>
+      {/* Subtle Background Glow */}
+      <div
+        className={`absolute top-0 right-0 w-36 h-36 blur-[60px] rounded-full pointer-events-none transition-all duration-500 ${
+          isMarathon ? 'bg-[#ffb95f]/10 group-hover:bg-[#ffb95f]/20' : 'bg-[#4edea3]/5 group-hover:bg-[#4edea3]/15'
+        }`}
+      />
+
+      {/* Top Header Row: Badge & Icon */}
+      <div className="flex items-center justify-between gap-3 mb-5 relative z-10">
+        <span
+          className={`px-3.5 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider border ${
+            isMarathon
+              ? 'bg-[#ffb95f]/15 text-[#ffb95f] border-[#ffb95f]/30'
+              : 'bg-[#4edea3]/10 text-[#4edea3] border-[#4edea3]/20'
+          }`}
+        >
+          {isMarathon ? '🔥 MARATHON FULL' : badge}
+        </span>
+
+        <span
+          className={`material-symbols-outlined text-xl transition-colors ${
+            isMarathon ? 'text-[#ffb95f]' : 'text-[#bbcabf] group-hover:text-[#4edea3]'
+          }`}
+        >
+          {isMarathon ? 'bolt' : 'assignment'}
+        </span>
       </div>
 
-      {/* Card Body */}
-      <div className="p-6 sm:p-7 flex flex-col flex-grow">
-        <h4 className="text-xl font-extrabold text-[#dae2fd] mb-2.5 group-hover:text-[#4edea3] transition-colors leading-snug">
+      {/* Main Content Area */}
+      <div className="mb-6 relative z-10 flex-grow">
+        <h4 className="text-lg sm:text-xl font-extrabold text-[#dae2fd] mb-2.5 group-hover:text-[#4edea3] transition-colors leading-snug">
           {title}
         </h4>
-        <p className="text-xs sm:text-sm text-[#bbcabf] mb-6 line-clamp-2 leading-relaxed">
+        <p className="text-xs sm:text-sm text-[#bbcabf] line-clamp-2 leading-relaxed font-normal">
           {subtitle}
         </p>
+      </div>
 
-        <div className="mt-auto">
-          {/* Metadata Row */}
-          <div className="flex items-center justify-between mb-5 pt-3 border-t border-white/5">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5 text-[#bbcabf]">
-                <span className="material-symbols-outlined text-[18px]">schedule</span>
-                <span className="text-xs font-medium">{durationText}</span>
-              </div>
-              <div className="flex items-center gap-1.5 text-[#bbcabf]">
-                <span className="material-symbols-outlined text-[18px]">bar_chart</span>
-                <span className="text-xs font-medium">{levelText}</span>
-              </div>
-            </div>
+      {/* Footer Area: Meta & CTA Button */}
+      <div className="mt-auto relative z-10 space-y-4 pt-4 border-t border-white/10">
+        {/* Meta badges */}
+        <div className="flex items-center justify-between text-xs text-[#bbcabf] font-medium">
+          <div className="flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-[17px] text-[#4edea3]">schedule</span>
+            <span>{durationText}</span>
           </div>
-
-          {/* Action Button */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onClick();
-            }}
-            className="w-full py-3.5 rounded-2xl bg-[#222a3d] border border-[#3c4a42] text-[#dae2fd] font-bold text-sm hover:bg-[#4edea3] hover:text-[#003824] hover:border-[#4edea3] transition-all flex items-center justify-center gap-2 group/btn cursor-pointer"
-          >
-            <span>{actionText}</span>
-            <span className="material-symbols-outlined text-base transition-transform group-hover/btn:translate-x-1">
-              arrow_forward
-            </span>
-          </button>
+          <div className="flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-[17px] text-[#4edea3]">verified</span>
+            <span>{levelText}</span>
+          </div>
         </div>
+
+        {/* CTA Action Button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onClick();
+          }}
+          className={`w-full py-3 rounded-2xl border font-extrabold text-sm transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-sm ${
+            isMarathon
+              ? 'bg-[#ffb95f]/20 border-[#ffb95f]/40 text-[#ffb95f] hover:bg-[#ffb95f] hover:text-[#2a1700]'
+              : 'bg-[#171f33] border-white/10 text-[#dae2fd] group-hover:bg-[#4edea3] group-hover:text-[#003824] group-hover:border-[#4edea3]'
+          }`}
+        >
+          <span>{actionText}</span>
+          <span className="material-symbols-outlined text-base transition-transform group-hover:translate-x-1">
+            arrow_forward
+          </span>
+        </button>
       </div>
     </div>
   );

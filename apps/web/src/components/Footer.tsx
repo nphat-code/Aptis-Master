@@ -45,11 +45,11 @@ export default function Footer() {
         <div>
           <h5 className="text-[#dae2fd] font-bold mb-5 text-sm uppercase tracking-wider">Kỹ năng</h5>
           <ul className="space-y-3 text-xs sm:text-sm">
-            <li><a className="text-[#bbcabf] hover:text-[#4edea3] transition-all" href="/reading">Reading Practice</a></li>
-            <li><a className="text-[#bbcabf] hover:text-[#4edea3] transition-all" href="/listening">Listening Mock</a></li>
-            <li><a className="text-[#bbcabf] hover:text-[#4edea3] transition-all" href="/writing">Writing Task 1 & 2</a></li>
-            <li><a className="text-[#bbcabf] hover:text-[#4edea3] transition-all" href="/speaking">Speaking Coach</a></li>
-            <li><a className="text-[#bbcabf] hover:text-[#4edea3] transition-all" href="/grammar">Grammar Master</a></li>
+            <li><a className="text-[#bbcabf] hover:text-[#4edea3] transition-all" href="/reading">Reading</a></li>
+            <li><a className="text-[#bbcabf] hover:text-[#4edea3] transition-all" href="/listening">Listening</a></li>
+            <li><a className="text-[#bbcabf] hover:text-[#4edea3] transition-all" href="/writing">Writing</a></li>
+            <li><a className="text-[#bbcabf] hover:text-[#4edea3] transition-all" href="/speaking">Speaking</a></li>
+            <li><a className="text-[#bbcabf] hover:text-[#4edea3] transition-all" href="/grammar">Grammar & Vocabulary</a></li>
           </ul>
         </div>
 

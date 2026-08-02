@@ -64,79 +64,49 @@ export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
   };
 
   const tipsContent = (
-    <>
-      <div className="bg-orange-50/60 p-4 rounded-2xl border border-orange-200/60 text-slate-800 space-y-1">
-        <p className="font-medium">
-          Reading là một trong những kỹ năng dễ cải thiện nhất trong bài thi Aptis nếu bạn biết cách học đúng trọng tâm. Thay vì làm thật nhiều đề, hãy chia nhỏ từng Part để ôn luyện và ghi nhớ theo hệ thống.
+    <div className="space-y-4 text-sm font-sans">
+      <div className="bg-[#4edea3]/10 p-5 rounded-2xl border border-[#4edea3]/30 text-[#dae2fd] space-y-1.5 shadow-inner">
+        <p className="font-medium text-xs sm:text-sm leading-relaxed">
+          💡 <strong className="text-[#4edea3]">Chiến thuật Reading Aptis 2026:</strong> Reading là một trong những kỹ năng dễ cải thiện điểm số nhất nếu biết làm theo trọng tâm. Thay vì làm đề dàn trải, hãy chia nhỏ từng Part để luyện phản xạ và nhớ theo dạng bài.
         </p>
       </div>
 
-      <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-2">
-        <h4 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-          <span className="bg-[#CC1C01] text-white text-xs px-2.5 py-0.5 rounded-md">Part 1</span>
+      <div className="bg-[#0b1326]/80 p-5 sm:p-6 rounded-2xl border border-white/10 space-y-3 hover:border-[#4edea3]/30 transition-all shadow-md">
+        <h4 className="font-extrabold text-white text-base flex items-center gap-3">
+          <span className="bg-[#4edea3]/20 text-[#4edea3] text-xs px-3 py-1 rounded-full border border-[#4edea3]/30 font-extrabold">Part 1</span>
           Sentence comprehension
         </h4>
-        <p className="text-xs font-semibold text-slate-500">Học đầy đủ kho câu hỏi (Phần dễ lấy điểm nhất)</p>
-        <ul className="list-disc list-inside space-y-1 text-xs text-slate-700 pt-1 font-medium">
-          <li>Học đầy đủ các câu hỏi trong kho đề.</li>
-          <li>Làm đi làm lại nhiều lần để ghi nhớ.</li>
-          <li>Khi luyện, cố gắng nhìn câu hỏi là nhận ra đáp án thay vì đọc lại từ đầu.</li>
-          <li>Mục tiêu là tạo phản xạ nhanh khi gặp những dạng câu hỏi quen thuộc.</li>
+        <p className="text-xs font-semibold text-[#4edea3]">Học đầy đủ kho câu hỏi (Phần dễ tích lũy điểm tối đa)</p>
+        <ul className="space-y-2 text-xs sm:text-sm text-[#bbcabf] pt-1">
+          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Học đầy đủ các câu hỏi có trong kho đề luyện tập.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Làm đi làm lại nhiều lần để tạo phản xạ nhận diện đáp án ngay lập tức.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Khi luyện, cố gắng vừa nhìn câu hỏi là nhận ra đáp án thay vì phải đọc hiểu từ đầu.</span></li>
         </ul>
       </div>
 
-      <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-2">
-        <h4 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-          <span className="bg-[#CC1C01] text-white text-xs px-2.5 py-0.5 rounded-md">Part 2</span>
+      <div className="bg-[#0b1326]/80 p-5 sm:p-6 rounded-2xl border border-white/10 space-y-3 hover:border-[#4edea3]/30 transition-all shadow-md">
+        <h4 className="font-extrabold text-white text-base flex items-center gap-3">
+          <span className="bg-[#4edea3]/20 text-[#4edea3] text-xs px-3 py-1 rounded-full border border-[#4edea3]/30 font-extrabold">Part 2</span>
           Text cohesion (Sắp xếp đoạn văn)
         </h4>
-        <p className="text-xs font-semibold text-slate-500">Tiếp tục học theo kho câu hỏi</p>
-        <ul className="list-disc list-inside space-y-1 text-xs text-slate-700 pt-1 font-medium">
-          <li>Học đầy đủ các câu hỏi trong kho.</li>
-          <li>Luyện nhiều lần để ghi nhớ đáp án.</li>
-          <li>Chú ý những câu dễ nhầm để tránh lặp lại lỗi.</li>
-          <li>Việc luyện tập thường xuyên sẽ giúp bạn tăng tốc độ xử lý khi làm bài.</li>
+        <p className="text-xs font-semibold text-[#4edea3]">Luyện kỹ thuật liên kết từ và ngữ cảnh</p>
+        <ul className="space-y-2 text-xs sm:text-sm text-[#bbcabf] pt-1">
+          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Học theo kho câu hỏi và ghi nhớ các cặp từ nối logic (However, Therefore, In addition).</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Chú ý những câu dễ gây nhầm lẫn để không bị mất điểm đáng tiếc.</span></li>
         </ul>
       </div>
 
-      <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-2">
-        <h4 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-          <span className="bg-[#CC1C01] text-white text-xs px-2.5 py-0.5 rounded-md">Part 3</span>
-          Luyện nhận diện đáp án
+      <div className="bg-[#0b1326]/80 p-5 sm:p-6 rounded-2xl border border-white/10 space-y-3 hover:border-[#4edea3]/30 transition-all shadow-md">
+        <h4 className="font-extrabold text-white text-base flex items-center gap-3">
+          <span className="bg-[#4edea3]/20 text-[#4edea3] text-xs px-3 py-1 rounded-full border border-[#4edea3]/30 font-extrabold">Part 3, 4 & 5</span>
+          Opinion matching & Long reading
         </h4>
-        <ul className="list-disc list-inside space-y-1 text-xs text-slate-700 pt-1 font-medium">
-          <li>Học kỹ từng câu hỏi và ghi nhớ cách tìm đáp án.</li>
-          <li>Làm lại nhiều lần để tạo phản xạ.</li>
-          <li>Đừng chỉ ghi nhớ đáp án, hãy hiểu vì sao đáp án đó đúng để áp dụng khi gặp câu hỏi tương tự.</li>
+        <ul className="space-y-2 text-xs sm:text-sm text-[#bbcabf] pt-1">
+          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Hiểu rõ bản chất lý do đáp án đúng thay vì chỉ học thuộc lòng vẹt.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Độ dài văn bản dài yêu cầu kỹ năng Skimming (đọc lướt lấy ý chính) và Scanning (tìm từ khóa cụ thể).</span></li>
         </ul>
       </div>
-
-      <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-2">
-        <h4 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-          <span className="bg-[#CC1C01] text-white text-xs px-2.5 py-0.5 rounded-md">Part 4</span>
-          Opinion matching
-        </h4>
-        <p className="text-xs font-semibold text-slate-500">Không quá khó nếu ôn tập đầy đủ</p>
-        <ul className="list-disc list-inside space-y-1 text-xs text-slate-700 pt-1 font-medium">
-          <li>Học đầy đủ các câu hỏi trong kho đề.</li>
-          <li>Luyện nhiều lần để ghi nhớ cách làm bài.</li>
-          <li>Chú ý những câu có nội dung dễ gây nhầm lẫn.</li>
-        </ul>
-      </div>
-
-      <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-2">
-        <h4 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-          <span className="bg-[#CC1C01] text-white text-xs px-2.5 py-0.5 rounded-md">Part 5</span>
-          Long reading
-        </h4>
-        <p className="text-xs font-semibold text-slate-500">Học theo Keyword (Part khó nhất)</p>
-        <ul className="list-disc list-inside space-y-1 text-xs text-slate-700 pt-1 font-medium">
-          <li>Học theo keyword chính thay vì cố học thuộc cả đoạn văn.</li>
-          <li>Ghi nhớ ý chính của từng bài thay vì học thuộc từng câu.</li>
-          <li>Cách học này sẽ giúp bạn xử lý câu hỏi nhanh hơn khi gặp đoạn văn tương tự.</li>
-        </ul>
-      </div>
-    </>
+    </div>
   );
 
   return (

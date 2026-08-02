@@ -61,80 +61,34 @@ export default function ListeningView({ onBackToHome, data }: ListeningViewProps
   };
 
   const tipsContent = (
-    <div className="space-y-4 text-[14px]">
-      <div className="bg-orange-50/60 p-4 rounded-2xl border border-orange-200/60 text-slate-800 space-y-1">
-        <p className="font-medium">
-          Listening Aptis sẽ dễ hơn rất nhiều nếu bạn chia nhỏ việc học theo từng nhóm câu hỏi thay vì luyện đề một cách dàn trải. Tập trung bắt từ khóa chính và rèn luyện phản xạ theo từng phần sẽ giúp bạn tối ưu điểm số.
+    <div className="space-y-4 text-sm font-sans">
+      <div className="bg-[#4edea3]/10 p-5 rounded-2xl border border-[#4edea3]/30 text-[#dae2fd] space-y-1.5 shadow-inner">
+        <p className="font-medium text-xs sm:text-sm leading-relaxed">
+          🎧 <strong className="text-[#4edea3]">Chiến thuật Listening Aptis 2026:</strong> Listening sẽ dễ dàng hơn rất nhiều nếu bạn học theo từng nhóm câu hỏi thay vì luyện đề dàn trải. Tập trung bắt từ khóa chính (Keywords) và luyện phản xạ âm thanh liên tục.
         </p>
       </div>
 
-      <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-2">
-        <h4 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-          <span className="bg-[#CC1C01] text-white text-xs px-2.5 py-0.5 rounded-md">Câu 1–13</span>
-          Part 1 – Nhận biết thông tin (Phần dễ lấy điểm nhất)
+      <div className="bg-[#0b1326]/80 p-5 sm:p-6 rounded-2xl border border-white/10 space-y-3 hover:border-[#4edea3]/30 transition-all shadow-md">
+        <h4 className="font-extrabold text-white text-base flex items-center gap-3">
+          <span className="bg-[#4edea3]/20 text-[#4edea3] text-xs px-3 py-1 rounded-full border border-[#4edea3]/30 font-extrabold">Câu 1–13</span>
+          Part 1 – Nhận biết thông tin (Tích lũy tối đa điểm)
         </h4>
-        <p className="text-xs font-semibold text-slate-500">Mẹo luyện tập hiệu quả:</p>
-        <ul className="list-disc list-inside space-y-1 text-xs text-slate-700 pt-1 font-medium">
-          <li>Học đầy đủ các câu hỏi trong bộ tài liệu.</li>
-          <li>Luyện nhiều lần để ghi nhớ các đáp án thường gặp.</li>
-          <li>Khi luyện tập, tập trung nhận diện nhanh đáp án phù hợp thay vì mất quá nhiều thời gian phân tích.</li>
-          <li>Đầu tư thời gian cho phần này sẽ giúp bạn tích lũy được tối đa điểm ngay từ đầu bài thi.</li>
+        <ul className="space-y-2 text-xs sm:text-sm text-[#bbcabf] pt-1">
+          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Học đầy đủ các câu hỏi trong bộ tài liệu thi.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Luyện nghe phản xạ nhanh đáp án thay vì mất quá nhiều thời gian phân tích từ vựng.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Lưu ý số lần nghe tối đa là 2 lần cho mỗi audio.</span></li>
         </ul>
       </div>
 
-      <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-2">
-        <h4 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-          <span className="bg-[#CC1C01] text-white text-xs px-2.5 py-0.5 rounded-md">Câu 14</span>
-          Part 2 – Monologue matching (Phần khó nhất)
+      <div className="bg-[#0b1326]/80 p-5 sm:p-6 rounded-2xl border border-white/10 space-y-3 hover:border-[#4edea3]/30 transition-all shadow-md">
+        <h4 className="font-extrabold text-white text-base flex items-center gap-3">
+          <span className="bg-[#4edea3]/20 text-[#4edea3] text-xs px-3 py-1 rounded-full border border-[#4edea3]/30 font-extrabold">Câu 14–17</span>
+          Part 2, 3 & 4 – Hội thoại & Độc thoại nâng cao
         </h4>
-        <p className="text-xs font-semibold text-slate-500">Chú ý đáp án gây nhiễu & thứ tự người nói:</p>
-        <ul className="list-disc list-inside space-y-1 text-xs text-slate-700 pt-1 font-medium">
-          <li>Thường có 6 đáp án với 2 đáp án gây nhiễu. Thứ tự người nói có thể thay đổi nên không ghi nhớ vẹt vị trí A, B, C, D.</li>
-          <li>Học kỹ nội dung của từng đoạn hội thoại trong tài liệu.</li>
-          <li>Ghi nhớ đáp án đi kèm để hiểu cách phân biệt các lựa chọn.</li>
-          <li>Khi luyện tập, chú ý nội dung thay vì chỉ dựa vào thứ tự người nói. Đây là phần cần dành nhiều thời gian nhất.</li>
+        <ul className="space-y-2 text-xs sm:text-sm text-[#bbcabf] pt-1">
+          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Cảnh giác với các thông tin gây nhiễu (Distractors) trong đáp án.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Tận dụng thời gian chuẩn bị trước khi bấm Audio để đọc nhanh câu hỏi & phương án lựa chọn.</span></li>
         </ul>
-      </div>
-
-      <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-2">
-        <h4 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-          <span className="bg-[#CC1C01] text-white text-xs px-2.5 py-0.5 rounded-md">Câu 15</span>
-          Part 3 – Dialogue opinion (Tương đối dễ học)
-        </h4>
-        <p className="text-xs font-semibold text-slate-500">So với câu 14, phần này nhẹ hơn vì số lượng câu hỏi ít hơn:</p>
-        <ul className="list-disc list-inside space-y-1 text-xs text-slate-700 pt-1 font-medium">
-          <li>Học đầy đủ các dạng câu hỏi trong kho đề.</li>
-          <li>Luyện theo phương pháp nhanh nếu muốn rút ngắn thời gian ôn tập.</li>
-          <li>Khi đã quen, hãy học theo phương pháp đầy đủ để ghi nhớ chắc chắn hơn.</li>
-          <li>Luyện tập đều đặn sẽ giúp bạn xử lý phần này rất nhanh khi làm bài.</li>
-        </ul>
-      </div>
-
-      <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-2">
-        <h4 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-          <span className="bg-[#CC1C01] text-white text-xs px-2.5 py-0.5 rounded-md">Câu 16–17</span>
-          Part 4 – Academic lecture (Dễ lấy điểm)
-        </h4>
-        <p className="text-xs font-semibold text-slate-500">Hình thành phản xạ chọn đáp án:</p>
-        <ul className="list-disc list-inside space-y-1 text-xs text-slate-700 pt-1 font-medium">
-          <li>Học kỹ các đáp án trong bộ tài liệu.</li>
-          <li>Luyện nhiều lần để tăng tốc độ nhận diện.</li>
-          <li>Mục tiêu là khi nhìn thấy dạng câu hỏi, bạn có thể nhanh chóng xác định được đáp án phù hợp.</li>
-          <li>Nếu luyện đủ số lượng câu hỏi, bạn sẽ hình thành phản xạ rất tốt ở hai câu này.</li>
-        </ul>
-      </div>
-
-      <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-2">
-        <h4 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-          <span className="bg-[#24085A] text-white text-xs px-2.5 py-0.5 rounded-md">Khuyên dùng</span>
-          Thứ tự ôn tập Listening hiệu quả nhất
-        </h4>
-        <ol className="list-decimal list-inside space-y-1 text-xs text-slate-700 pt-1 font-medium">
-          <li>Hoàn thành <strong>Câu 1–13</strong> (Part 1).</li>
-          <li>Dành nhiều thời gian cho <strong>Câu 14</strong> (Part 2 - Phần khó nhất).</li>
-          <li>Ôn tập <strong>Câu 15</strong> (Part 3).</li>
-          <li>Kết thúc với <strong>Câu 16 và 17</strong> (Part 4).</li>
-        </ol>
       </div>
     </div>
   );

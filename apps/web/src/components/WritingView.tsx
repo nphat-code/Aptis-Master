@@ -56,123 +56,32 @@ export default function WritingView({ onBackToHome, data }: WritingViewProps) {
   };
 
   const tipsContent = (
-    <div className="space-y-4 text-[14px]">
-      {/* Banner / Overview Note */}
-      <div className="bg-orange-50/60 p-4 rounded-2xl border border-orange-200/60 text-slate-800 space-y-1">
-        <p className="font-medium">
-          Writing Aptis gồm 4 dạng bài, trong đó <strong>Question 4 (Viết 2 Email)</strong> chiếm trọng số điểm lớn nhất. Thay vì học thuộc lòng bài mẫu dàn trải, hãy học theo <strong>Bố cục (Form)</strong> và luyện tập linh hoạt cho từng chủ đề.
+    <div className="space-y-4 text-sm font-sans">
+      <div className="bg-[#4edea3]/10 p-5 rounded-2xl border border-[#4edea3]/30 text-[#dae2fd] space-y-1.5 shadow-inner">
+        <p className="font-medium text-xs sm:text-sm leading-relaxed">
+          ✍️ <strong className="text-[#4edea3]">Chiến thuật Writing Aptis 2026:</strong> Writing gồm 4 phần, trong đó <strong className="text-white">Part 4 (Viết 2 Email)</strong> chiếm trọng số điểm lớn nhất. Hãy nắm chắc cấu trúc Email trang trọng (Formal) và thân mật (Informal).
         </p>
       </div>
 
-      {/* Part 1 */}
-      <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-2">
-        <h4 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-          <span className="bg-[#CC1C01] text-white text-xs px-2.5 py-0.5 rounded-md">Câu 1–5</span>
-          Part 1 – Short answers (Trả lời câu hỏi ngắn)
+      <div className="bg-[#0b1326]/80 p-5 sm:p-6 rounded-2xl border border-white/10 space-y-3 hover:border-[#4edea3]/30 transition-all shadow-md">
+        <h4 className="font-extrabold text-white text-base flex items-center gap-3">
+          <span className="bg-[#4edea3]/20 text-[#4edea3] text-xs px-3 py-1 rounded-full border border-[#4edea3]/30 font-extrabold">Part 1 & 2</span>
+          Short answers & Personal info
         </h4>
-        <p className="text-xs font-semibold text-slate-500">Điền thông tin cá nhân ngắn gọn (1–5 từ/câu):</p>
-        <ul className="list-disc list-inside space-y-1 text-xs text-slate-700 pt-1 font-medium">
-          <li>Điền câu trả lời ngắn từ 1 đến 5 từ về sở thích, thời tiết, hoạt động thường ngày.</li>
-          <li>Viết đúng ngữ pháp, đúng chính tả và nhớ viết hoa chữ cái đầu câu.</li>
-          <li>Trả lời thẳng vào trọng tâm, không viết quá dài dòng.</li>
+        <ul className="space-y-2 text-xs sm:text-sm text-[#bbcabf] pt-1">
+          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Part 1: Trả lời ngắn từ 1-5 từ. Viết đúng chính tả, ngữ pháp và nhớ viết hoa chữ cái đầu.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Part 2: Viết câu hoàn chỉnh từ 20-30 từ. Trả lời đúng trọng tâm câu hỏi.</span></li>
         </ul>
       </div>
 
-      {/* Part 2 */}
-      <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-2">
-        <h4 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-          <span className="bg-[#CC1C01] text-white text-xs px-2.5 py-0.5 rounded-md">Part 2</span>
-          Part 2 – Social media response (Đoạn văn ngắn 20–30 từ)
+      <div className="bg-[#0b1326]/80 p-5 sm:p-6 rounded-2xl border border-white/10 space-y-3 hover:border-[#4edea3]/30 transition-all shadow-md">
+        <h4 className="font-extrabold text-white text-base flex items-center gap-3">
+          <span className="bg-[#4edea3]/20 text-[#4edea3] text-xs px-3 py-1 rounded-full border border-[#4edea3]/30 font-extrabold">Part 3 & 4</span>
+          Social room & Formal/Informal Emails
         </h4>
-        <p className="text-xs font-semibold text-slate-500">Viết về lý do tham gia CLB hoặc trải nghiệm bản thân:</p>
-        <ul className="list-disc list-inside space-y-1 text-xs text-slate-700 pt-1 font-medium">
-          <li>Viết một đoạn văn hoàn chỉnh từ 20 đến 30 từ (khoảng 2–3 câu).</li>
-          <li>Sử dụng câu hoàn chỉnh, tránh viết tắt (*I am* thay vì *I'm*).</li>
-          <li>Nêu rõ lý do yêu thích chủ đề CLB và mong muốn học hỏi thêm kiến thức.</li>
-        </ul>
-      </div>
-
-      {/* Part 3 */}
-      <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-2">
-        <h4 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-          <span className="bg-[#CC1C01] text-white text-xs px-2.5 py-0.5 rounded-md">Part 3</span>
-          Part 3 – Three questions (3 tin nhắn 30–40 từ)
-        </h4>
-        <p className="text-xs font-semibold text-slate-500">Trả lời hội thoại trong phòng chat CLB:</p>
-        <ul className="list-disc list-inside space-y-1 text-xs text-slate-700 pt-1 font-medium">
-          <li>Trả lời câu hỏi của 3 thành viên khác nhau trong phòng chat.</li>
-          <li>Mỗi câu trả lời đạt độ dài từ 30 đến 40 từ (khoảng 3 câu).</li>
-          <li>Phát triển ý rõ ràng: đưa ra quan điểm cá nhân, gợi ý giải pháp hoặc chia sẻ trải nghiệm liên quan.</li>
-        </ul>
-      </div>
-
-      {/* Part 4 - Question 4 */}
-      <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-3">
-        <h4 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-          <span className="bg-[#CC1C01] text-white text-xs px-2.5 py-0.5 rounded-md">Part 4</span>
-          Part 4 – Informal & Formal email (Viết 2 Email)
-        </h4>
-
-        {/* Sub-card Email 1 */}
-        <div className="bg-white p-3.5 rounded-xl border border-slate-200 space-y-1.5">
-          <h5 className="font-bold text-xs text-slate-900 flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#CC1C01]"></span>
-            Email 1 (≈50 từ gửi bạn cùng CLB) – Văn phong Thân mật (Informal)
-          </h5>
-          <p className="text-xs text-slate-600 font-medium">
-            <strong>Bố cục chuẩn:</strong> Lời chào (<code className="text-[#CC1C01] font-mono">Hi [Tên],</code>) ➔ Nêu lý do viết ➔ Cảm nhận/suy nghĩ ➔ Kế hoạch/ý kiến ➔ Lời kết (<code className="text-[#CC1C01] font-mono">Best,</code>).
-          </p>
-          <p className="text-xs text-slate-500">Được dùng từ viết tắt (*I'm, I've, don't*) và từ ngữ giao tiếp đời thường tự nhiên.</p>
-        </div>
-
-        {/* Sub-card Email 2 */}
-        <div className="bg-white p-3.5 rounded-xl border border-slate-200 space-y-1.5">
-          <h5 className="font-bold text-xs text-slate-900 flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#24085A]"></span>
-            Email 2 (120–150 từ gửi Quản lý CLB) – Văn phong Trang trọng (Formal)
-          </h5>
-          <p className="text-xs text-slate-600 font-medium">
-            <strong>Bố cục chuẩn:</strong> Giới thiệu bản thân & lý do ➔ Nêu quan điểm ➔ Nguyên nhân/giải thích ➔ Đề xuất giải pháp ➔ Lời kết lịch sự (<code className="text-[#24085A] font-mono">Sincerely, / Best regards,</code>).
-          </p>
-          <p className="text-xs text-slate-500">Tuyệt đối không viết tắt, sử dụng từ ngữ trang trọng lịch sự và các từ nối (*In addition, Furthermore, For instance*).</p>
-        </div>
-      </div>
-
-      {/* Vocab Helper Section */}
-      <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-3">
-        <h4 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-          <span className="bg-[#24085A] text-white text-xs px-2.5 py-0.5 rounded-md">Từ vựng</span>
-          Bộ từ vựng cốt lõi cho Email (Opinion & Emotion)
-        </h4>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-          {/* Opinion Vocab */}
-          <div className="bg-white p-3 rounded-xl border border-slate-200 space-y-1.5">
-            <span className="font-bold text-slate-900 block border-b pb-1">Từ vựng Đánh giá (Opinion)</span>
-            <p className="text-[#047857] font-semibold">Tích cực: <span className="font-normal text-slate-700">Excellent, Practical, Meaningful, Useful, Effective, Creative, Inspiring</span></p>
-            <p className="text-[#b91c1c] font-semibold">Tiêu cực: <span className="font-normal text-slate-700">Unclear, Unrealistic, Unnecessary, Confusing, Ineffective, Disappointing</span></p>
-          </div>
-
-          {/* Emotion Vocab */}
-          <div className="bg-white p-3 rounded-xl border border-slate-200 space-y-1.5">
-            <span className="font-bold text-slate-900 block border-b pb-1">Từ vựng Cảm xúc (Emotion)</span>
-            <p className="text-[#047857] font-semibold">Tích cực: <span className="font-normal text-slate-700">Excited, Happy, Pleased, Motivated, Inspired, Hopeful</span></p>
-            <p className="text-[#b91c1c] font-semibold">Tiêu cực: <span className="font-normal text-slate-700">Worried, Concerned, Disappointed, Confused, Surprised, Upset</span></p>
-          </div>
-        </div>
-      </div>
-
-      {/* Rules / Checklist */}
-      <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-2">
-        <h4 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-          <span className="bg-[#24085A] text-white text-xs px-2.5 py-0.5 rounded-md">Lưu ý</span>
-          Quy trình làm bài & Kiểm tra lỗi
-        </h4>
-        <ul className="list-disc list-inside space-y-1 text-xs text-slate-700 pt-1 font-medium">
-          <li>Đọc kỹ yêu cầu đề bài, đảm bảo trả lời đầy đủ tất cả các ý được hỏi.</li>
-          <li>Chia đoạn văn rõ ràng, sử dụng từ nối để liên kết giữa các câu.</li>
-          <li>Học theo Bố cục (Form) thay vì học thuộc lòng nguyên văn bài mẫu.</li>
-          <li>Dành 2–3 phút cuối kiểm tra lại lỗi chính tả, số lượng từ và cấu trúc ngữ pháp.</li>
+        <ul className="space-y-2 text-xs sm:text-sm text-[#bbcabf] pt-1">
+          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Part 3: Trả lời 3 câu hỏi trong phòng chat (30-40 từ/câu). Dùng từ nối linh hoạt.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Part 4: Email người bạn (50 từ, văn phong Informal) và Email gửi quản lý (120-150 từ, văn phong Formal).</span></li>
         </ul>
       </div>
     </div>
