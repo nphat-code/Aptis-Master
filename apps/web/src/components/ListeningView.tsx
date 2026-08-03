@@ -12,10 +12,11 @@ import ListeningFullPractice from './listening/ListeningFullPractice';
 
 interface ListeningViewProps {
   onBackToHome?: () => void;
+  onExamStateChange?: (isExamActive: boolean) => void;
   data?: any;
 }
 
-export default function ListeningView({ onBackToHome, data }: ListeningViewProps) {
+export default function ListeningView({ onBackToHome, onExamStateChange, data }: ListeningViewProps) {
   const rawListeningTests = (scrapedData as any).listening_tests || {};
   const totalTestSets = Object.keys(rawListeningTests).length || 15;
 
@@ -108,6 +109,7 @@ export default function ListeningView({ onBackToHome, data }: ListeningViewProps
       partTabContent={partTabContent}
       defaultPartTab="full"
       supportedPartIds={['full', 'part1', 'part2', 'part3', 'part4']}
+      onExamStateChange={onExamStateChange}
       tipsTitle="Mẹo thi Aptis Listening"
       tipsContent={tipsContent}
       getMarathonCardProps={(partId) => {

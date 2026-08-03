@@ -5,10 +5,11 @@ import SkillPracticeView, { PartTab, PartTabContent } from './SkillPracticeView'
 
 interface SpeakingViewProps {
   onBackToHome?: () => void;
+  onExamStateChange?: (isExamActive: boolean) => void;
   data?: any;
 }
 
-export default function SpeakingView({ onBackToHome, data }: SpeakingViewProps) {
+export default function SpeakingView({ onBackToHome, onExamStateChange, data }: SpeakingViewProps) {
   const partTabs: PartTab[] = [
     { id: 'full', label: 'Full Part – Tất cả các Part' },
     { id: 'part1', label: 'Part 1 – Personal info' },
@@ -85,6 +86,7 @@ export default function SpeakingView({ onBackToHome, data }: SpeakingViewProps) 
       partTabs={partTabs}
       partTabContent={partTabContent}
       defaultPartTab="full"
+      onExamStateChange={onExamStateChange}
       tipsTitle="Mẹo thi Aptis Speaking"
       tipsContent={tipsContent}
     />

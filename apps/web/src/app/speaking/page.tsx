@@ -1,12 +1,15 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import SpeakingView from '@/components/SpeakingView';
 import Footer from '@/components/Footer';
 
 export default function SpeakingPage() {
+  const router = useRouter();
   const [data, setData] = useState<any>(null);
+  const [isExamActive, setIsExamActive] = useState(false);
 
   useEffect(() => {
     fetch('/scraped_data.json')
@@ -19,16 +22,20 @@ export default function SpeakingPage() {
     if (typeof window !== 'undefined') {
       const targetPath = tab === 'dashboard' ? '/' : tab === 'mock-test' ? '/thi-thu' : `/${tab}`;
       if (window.location.pathname !== targetPath) {
-        window.location.href = targetPath;
+        router.push(targetPath);
       }
     }
   };
 
   return (
     <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-sans flex flex-col">
-      <Navbar activeTab="speaking" setActiveTab={handleTabChange} />
-      <SpeakingView onBackToHome={() => handleTabChange('dashboard')} />
-      <Footer />
+      {!isExamActive && <Navbar activeTab="speaking" setActiveTab={handleTabChange} />}
+      <div key="speaking-content" className="animate-tab-fade-up flex-1 flex flex-col">
+        <SpeakingView onBackToHome={() => handleTabChange('dashboard')} onExamStateChange={setIsExamActive} />
+      </div>
+      {!isExamActive && <Footer />}
     </div>
   );
 }
+
+

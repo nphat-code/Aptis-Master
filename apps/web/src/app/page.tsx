@@ -20,6 +20,7 @@ export default function AptisPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [isExamActive, setIsExamActive] = useState(false);
 
   useEffect(() => {
     // Detect URL path on mount
@@ -53,93 +54,67 @@ export default function AptisPage() {
     );
   }
 
-  // Render Skill Views for Reading, Listening, Speaking, Writing, Grammar
-  if (activeTab === 'reading') {
+  const renderContent = () => {
+    if (activeTab === 'reading' || activeTab === 'mock-test') {
+      return <ReadingView onBackToHome={() => setActiveTab('dashboard')} onExamStateChange={setIsExamActive} data={data} />;
+    }
+    if (activeTab === 'listening') {
+      return <ListeningView onBackToHome={() => setActiveTab('dashboard')} onExamStateChange={setIsExamActive} />;
+    }
+    if (activeTab === 'speaking') {
+      return <SpeakingView onBackToHome={() => setActiveTab('dashboard')} onExamStateChange={setIsExamActive} />;
+    }
+    if (activeTab === 'writing') {
+      return <WritingView onBackToHome={() => setActiveTab('dashboard')} onExamStateChange={setIsExamActive} />;
+    }
+    if (activeTab === 'grammar') {
+      return <GrammarView onBackToHome={() => setActiveTab('dashboard')} onExamStateChange={setIsExamActive} />;
+    }
     return (
-      <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-sans flex flex-col">
-        <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
-        <ReadingView onBackToHome={() => setActiveTab('dashboard')} data={data} />
-        <Footer />
-      </div>
-    );
-  }
+      <>
+        {/* 2. Hero Section - Stitch Bento Grid Style */}
+        <ScrollReveal delayMs={0}>
+          <HeroSection 
+            onStartMockTest={() => setActiveTab('mock-test')} 
+            onStartPractice={() => setActiveTab('reading')} 
+          />
+        </ScrollReveal>
 
-  if (activeTab === 'listening') {
-    return (
-      <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-sans flex flex-col">
-        <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
-        <ListeningView onBackToHome={() => setActiveTab('dashboard')} />
-        <Footer />
-      </div>
-    );
-  }
+        {/* 3. Stats & Benefits Highlights */}
+        <ScrollReveal delayMs={100}>
+          <StatsAndFeaturesSection />
+        </ScrollReveal>
 
-  if (activeTab === 'speaking') {
-    return (
-      <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-sans flex flex-col">
-        <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
-        <SpeakingView onBackToHome={() => setActiveTab('dashboard')} />
-        <Footer />
-      </div>
-    );
-  }
+        {/* 5. Main Features Showcase */}
+        <ScrollReveal delayMs={100}>
+          <FeaturesGridSection />
+        </ScrollReveal>
 
-  if (activeTab === 'writing') {
-    return (
-      <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-sans flex flex-col">
-        <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
-        <WritingView onBackToHome={() => setActiveTab('dashboard')} />
-        <Footer />
-      </div>
-    );
-  }
+        {/* 6. Exam Structure 5 Skills */}
+        <ScrollReveal delayMs={100}>
+          <ExamStructureSection />
+        </ScrollReveal>
 
-  if (activeTab === 'grammar') {
-    return (
-      <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-sans flex flex-col">
-        <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
-        <GrammarView onBackToHome={() => setActiveTab('dashboard')} />
-        <Footer />
-      </div>
+        {/* 7. Why Choose Us / Strengths Grid */}
+        <ScrollReveal delayMs={100}>
+          <StrengthsGridSection />
+        </ScrollReveal>
+      </>
     );
-  }
+  };
 
   return (
     <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-sans flex flex-col">
-      {/* 1. Header Navigation Bar (Navbar) - Fixed Top */}
-      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
+      {/* 1. Header Navigation Bar (Navbar) - Hide during active exam */}
+      {!isExamActive && <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />}
 
-      {/* 2. Hero Section - Stitch Bento Grid Style */}
-      <ScrollReveal delayMs={0}>
-        <HeroSection 
-          onStartMockTest={() => setActiveTab('mock-test')} 
-          onStartPractice={() => setActiveTab('reading')} 
-        />
-      </ScrollReveal>
+      {/* 2. Main Workspace Content Area - Animates from bottom to top on tab switch */}
+      <div key={`page-content-${activeTab}`} className="animate-tab-fade-up flex-1 flex flex-col">
+        {renderContent()}
+      </div>
 
-      {/* 3. Stats & Benefits Highlights */}
-      <ScrollReveal delayMs={100}>
-        <StatsAndFeaturesSection />
-      </ScrollReveal>
-
-
-      {/* 5. Main Features Showcase */}
-      <ScrollReveal delayMs={100}>
-        <FeaturesGridSection />
-      </ScrollReveal>
-
-      {/* 6. Exam Structure 5 Skills */}
-      <ScrollReveal delayMs={100}>
-        <ExamStructureSection />
-      </ScrollReveal>
-
-      {/* 7. Why Choose Us / Strengths Grid */}
-      <ScrollReveal delayMs={100}>
-        <StrengthsGridSection />
-      </ScrollReveal>
-
-      {/* 8. Footer Component */}
-      <Footer />
+      {/* 3. Footer - Hide during active exam */}
+      {!isExamActive && <Footer />}
     </div>
   );
 }

@@ -1,13 +1,14 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function StrengthsGridSection() {
+  const router = useRouter();
   const handleStartMock = () => {
-    if (typeof window !== 'undefined') {
-      window.location.href = '/thi-thu';
-    }
+    router.push('/thi-thu');
   };
+
 
   return (
     <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-20">

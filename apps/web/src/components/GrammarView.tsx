@@ -5,10 +5,11 @@ import SkillPracticeView, { PartTab, PartTabContent } from './SkillPracticeView'
 
 interface GrammarViewProps {
   onBackToHome?: () => void;
+  onExamStateChange?: (isExamActive: boolean) => void;
   data?: any;
 }
 
-export default function GrammarView({ onBackToHome, data }: GrammarViewProps) {
+export default function GrammarView({ onBackToHome, onExamStateChange, data }: GrammarViewProps) {
   const partTabs: PartTab[] = [
     { id: 'full', label: 'Full Part – Tất cả các Part' },
     { id: 'part1', label: 'Part 1 – Grammar sentence fill' },
@@ -72,6 +73,7 @@ export default function GrammarView({ onBackToHome, data }: GrammarViewProps) {
       partTabs={partTabs}
       partTabContent={partTabContent}
       defaultPartTab="full"
+      onExamStateChange={onExamStateChange}
       tipsTitle="Mẹo thi Grammar & Vocabulary"
       tipsContent={tipsContent}
     />

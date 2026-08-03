@@ -6,7 +6,7 @@ import Navbar from '@/components/Navbar';
 import ReadingView from '@/components/ReadingView';
 import Footer from '@/components/Footer';
 
-export default function ReadingPage() {
+export default function ThiThuPage() {
   const router = useRouter();
   const [data, setData] = useState<any>(null);
   const [isExamActive, setIsExamActive] = useState(false);
@@ -29,13 +29,11 @@ export default function ReadingPage() {
 
   return (
     <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-sans flex flex-col">
-      {!isExamActive && <Navbar activeTab="reading" setActiveTab={handleTabChange} />}
-      <div key="reading-content" className="animate-tab-fade-up flex-1 flex flex-col">
+      {!isExamActive && <Navbar activeTab="mock-test" setActiveTab={handleTabChange} />}
+      <div key="thi-thu-content" className="animate-tab-fade-up flex-1 flex flex-col">
         <ReadingView onBackToHome={() => handleTabChange('dashboard')} onExamStateChange={setIsExamActive} data={data} />
       </div>
       {!isExamActive && <Footer />}
     </div>
   );
 }
-
-

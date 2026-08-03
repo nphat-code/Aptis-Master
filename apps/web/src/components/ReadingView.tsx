@@ -11,10 +11,11 @@ import scrapedData from '@/data/scraped_data.json';
 
 interface ReadingViewProps {
   onBackToHome?: () => void;
+  onExamStateChange?: (isExamActive: boolean) => void;
   data?: any;
 }
 
-export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
+export default function ReadingView({ onBackToHome, onExamStateChange, data }: ReadingViewProps) {
   const part1TotalCount = (scrapedData as any)?.reading?.question1?.length || 48;
   const part23TotalSets = (scrapedData as any)?.reading?.question2?.questionSets?.length || 39;
   const part23TotalCount = part23TotalSets;
@@ -124,6 +125,7 @@ export default function ReadingView({ onBackToHome, data }: ReadingViewProps) {
       partTabContent={partTabContent}
       defaultPartTab="full"
       supportedPartIds={['full', 'part1', 'part23', 'part4', 'part5']}
+      onExamStateChange={onExamStateChange}
       tipsTitle="Mẹo học Reading Aptis"
       tipsContent={tipsContent}
       getMarathonCardProps={(partId) => {

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { TestPracticeCard } from './exam/TestPracticeCard';
 
 export interface PartTab {
@@ -28,6 +29,7 @@ export interface SkillPracticeViewProps {
   tipsTitle?: string;
   tipsContent?: React.ReactNode;
   supportedPartIds?: string[];
+  onExamStateChange?: (isExamActive: boolean) => void;
   renderPracticeExam?: (props: { partId: string; testIndex: number; onExit: () => void }) => React.ReactNode;
   getCustomCardProps?: (partId: string, testNum: number) => { title?: string; subtitle?: string; badge?: string } | null;
   getMarathonCardProps?: (partId: string) => { title: string; subtitle: string; totalCount: number } | null;
@@ -46,6 +48,7 @@ export default function SkillPracticeView({
   tipsTitle,
   tipsContent,
   supportedPartIds = [],
+  onExamStateChange,
   renderPracticeExam,
   getCustomCardProps,
   getMarathonCardProps,
@@ -55,6 +58,12 @@ export default function SkillPracticeView({
   const [searchTerm, setSearchTerm] = useState('');
   const [activePartTab, setActivePartTab] = useState(defaultPartTab || partTabs[0]?.id || 'full');
   const [activePracticeTestIndex, setActivePracticeTestIndex] = useState<number | null>(null);
+
+  React.useEffect(() => {
+    if (onExamStateChange) {
+      onExamStateChange(activePracticeTestIndex !== null);
+    }
+  }, [activePracticeTestIndex, onExamStateChange]);
 
   const currentTabInfo = partTabContent[activePartTab] || partTabContent[partTabs[0]?.id || 'full'];
 
@@ -73,7 +82,7 @@ export default function SkillPracticeView({
   const progressPercent = Math.min(Math.round((completedCount / (totalAvailableTests || 1)) * 100), 100);
 
   return (
-    <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-sans pb-24 pt-24">
+    <div key={`skill-view-${skillId}`} className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-sans pb-24 pt-24 animate-tab-fade-up">
       <main className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10">
         
         {/* 1. Hero Bento Grid Section (Stitch 7:5 Layout) */}
@@ -261,7 +270,7 @@ export default function SkillPracticeView({
           </aside>
 
           {/* Right Workspace Area (9/12 cols): Search Bar & Practice Test Cards */}
-          <div className="col-span-12 lg:col-span-9 space-y-6">
+          <div key={`right-workspace-${activePartTab}`} className="col-span-12 lg:col-span-9 space-y-6 animate-tab-fade-up">
             
             {/* Search Bar Container */}
             <div className="glass-panel rounded-3xl p-5 sm:p-6 border border-white/10 shadow-xl">
@@ -360,14 +369,14 @@ export default function SkillPracticeView({
       </main>
 
       {/* Skill Tips Modal (Ultra-Sleek Stitch Dark Glassmorphic Modal) */}
-      {showTipsModal && tipsContent && (
-        <div className="fixed inset-0 z-50 bg-[#060e20]/85 backdrop-blur-xl flex items-center justify-center p-4">
-          <div className="bg-[#131b2e] rounded-[32px] p-6 sm:p-8 max-w-3xl w-full space-y-6 shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-white/10 relative overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      {showTipsModal && tipsContent && typeof window !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[9999] bg-[#060e20]/85 backdrop-blur-xl flex items-center justify-center p-6 sm:p-10 my-auto">
+          <div className="bg-[#131b2e] rounded-[32px] p-6 sm:p-7 max-w-3xl w-full max-h-[78vh] flex flex-col justify-between space-y-5 shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-white/10 relative overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="absolute top-0 right-0 w-72 h-72 bg-[#4edea3]/5 blur-[90px] rounded-full pointer-events-none" />
 
-            <div className="flex items-center justify-between border-b border-white/10 pb-4 relative z-10">
+            <div className="flex items-center justify-between border-b border-white/10 pb-4 relative z-10 shrink-0">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-[#4edea3]/10 border border-[#4edea3]/20 flex items-center justify-center text-[#4edea3] text-2xl shadow-inner">
+                <div className="w-11 h-11 rounded-2xl bg-[#4edea3]/10 border border-[#4edea3]/20 flex items-center justify-center text-[#4edea3] text-xl shadow-inner">
                   💡
                 </div>
                 <div>
@@ -387,28 +396,28 @@ export default function SkillPracticeView({
               </button>
             </div>
 
-            <div className="space-y-6 text-sm text-[#dae2fd] leading-relaxed max-h-[65vh] overflow-y-auto pr-3 font-sans custom-scrollbar relative z-10">
+            <div className="space-y-5 text-sm text-[#dae2fd] leading-relaxed max-h-[48vh] overflow-y-auto pr-3 font-sans custom-scrollbar relative z-10 flex-1">
               {tipsContent}
             </div>
 
-            <div className="pt-3 flex justify-end border-t border-white/10 relative z-10">
+            <div className="pt-3 flex justify-end border-t border-white/10 relative z-10 shrink-0">
               <button
                 onClick={() => setShowTipsModal(false)}
                 className="bg-[#4edea3] text-[#003824] font-extrabold text-sm px-7 py-3 rounded-2xl hover:scale-105 transition-all shadow-[0_0_20px_rgba(78,222,163,0.35)] cursor-pointer"
               >
-                Đã hiểu chiến thuật
+                Đã hiểu
               </button>
             </div>
-
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Part Updating Notice Modal */}
-      {showUpdatingModalPart && (
+      {showUpdatingModalPart && typeof window !== 'undefined' && createPortal(
         <div
           onClick={() => setShowUpdatingModalPart(null)}
-          className="fixed inset-0 z-50 bg-[#060e20]/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200 cursor-pointer"
+          className="fixed inset-0 z-[9999] bg-[#060e20]/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200 cursor-pointer"
         >
           <div
             onClick={(e) => e.stopPropagation()}
@@ -452,7 +461,8 @@ export default function SkillPracticeView({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </div>

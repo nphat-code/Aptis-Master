@@ -1,13 +1,14 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function ExamStructureSection() {
+  const router = useRouter();
   const handleNavigate = (skillId: string) => {
-    if (typeof window !== 'undefined') {
-      window.location.href = `/${skillId}`;
-    }
+    router.push(`/${skillId}`);
   };
+
 
   return (
     <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-20">

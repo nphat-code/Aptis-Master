@@ -7,10 +7,11 @@ import WritingPart1Practice from './writing/WritingPart1Practice';
 
 interface WritingViewProps {
   onBackToHome?: () => void;
+  onExamStateChange?: (isExamActive: boolean) => void;
   data?: any;
 }
 
-export default function WritingView({ onBackToHome, data }: WritingViewProps) {
+export default function WritingView({ onBackToHome, onExamStateChange, data }: WritingViewProps) {
   const rawWritingTests = (scrapedData as any)?.writing || {};
   const totalTestSets = Object.keys(rawWritingTests).length || 40;
 
@@ -102,6 +103,7 @@ export default function WritingView({ onBackToHome, data }: WritingViewProps) {
       partTabContent={partTabContent}
       defaultPartTab="full"
       supportedPartIds={['full', 'part1', 'part2', 'part3', 'part4']}
+      onExamStateChange={onExamStateChange}
       tipsTitle="Mẹo thi Aptis Writing"
       tipsContent={tipsContent}
       getMarathonCardProps={(partId) => {
