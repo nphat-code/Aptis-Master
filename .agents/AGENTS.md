@@ -59,12 +59,6 @@
       5. `When you click on the 'Next' button, the test will begin.`
     - Total exam duration for Listening Full Exam is strictly 40 minutes (2400s), with 25 sub-questions (50 points max) and CEFR level thresholds: C1 ($\ge 42$), B2 ($\ge 34$), B1 ($\ge 24$), A2 ($\ge 16$), A1 ($\ge 8$).
     - Header part titles during test execution (`partTitles`) must remain clean without parenthetical question numbers (e.g. `Part 1 – Word recognition`).
-
-
-
-
-
-
-
-
-
+17. **No Workarounds, Hardcoding, or Ad-hoc Patching Standard**:
+    - Never write ad-hoc string checks, topic-specific hardcoded keywords (e.g. `món ăn`, `a painting`, `bức tranh`), or temporary quick-fix patches to satisfy a single test case.
+    - All business, evaluation, and component logic must be built using clean, robust, domain-general architecture that scales across all test topics, skills, and edge cases.

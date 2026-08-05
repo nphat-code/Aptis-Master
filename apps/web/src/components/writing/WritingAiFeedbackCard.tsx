@@ -62,7 +62,7 @@ export default function WritingAiFeedbackCard({
                   : 'bg-red-100 text-red-800'
               }`}
             >
-              {taskCompletion.status === 'success' ? 'Hoàn hảo' : taskCompletion.status === 'warning' ? 'Đạt' : 'Cần cải thiện'}
+              {taskCompletion.status === 'success' ? 'Hoàn hảo' : taskCompletion.status === 'warning' ? 'Cần cải thiện' : 'Chưa đạt'}
             </span>
           </div>
           <p className="text-[14px] text-slate-700 font-normal leading-relaxed">

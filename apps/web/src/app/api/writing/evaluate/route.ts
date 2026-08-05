@@ -45,24 +45,29 @@ export interface WritingAiFeedbackResponse {
 // Smart Local Fallback Evaluator when no API key is configured
 function generateLocalFallbackEvaluation(
   questions: QuestionSubmission[],
-  clubName?: string
+  clubName?: string,
+  partId: string = 'part1'
 ): WritingAiFeedbackResponse {
   let validCount = 0;
-  const total = questions.length || 5;
+  const isPart2 = partId.toLowerCase() === 'part2';
+  const total = questions.length || (isPart2 ? 1 : 5);
+  const minWords = isPart2 ? 20 : 1;
+  const maxWords = isPart2 ? 30 : 5;
+
   const corrections: RuleCorrection[] = [];
   const details: Array<{ questionIndex: number; isCorrect: boolean; note: string }> = [];
 
   questions.forEach((q, idx) => {
     const qNum = idx + 1;
     const ans = (q.userAnswer || '').trim();
-    const words = ans ? ans.split(/\s+/).length : 0;
+    const words = ans ? ans.split(/\s+/).filter(Boolean).length : 0;
 
-    if (words >= 1 && words <= 5) {
+    if (words >= minWords && words <= maxWords) {
       validCount++;
       details.push({
         questionIndex: qNum,
         isCorrect: true,
-        note: `Trả lời đúng trọng tâm (${words} từ).`,
+        note: 'Câu trả lời phù hợp với chủ đề và đạt độ dài yêu cầu.',
       });
     } else if (words === 0) {
       details.push({
@@ -74,13 +79,13 @@ function generateLocalFallbackEvaluation(
       details.push({
         questionIndex: qNum,
         isCorrect: false,
-        note: `Vượt quá giới hạn từ (${words} từ, quy định 1–5 từ).`,
+        note: words < minWords ? 'Câu trả lời chưa đủ từ theo yêu cầu (hơi ngắn).' : 'Câu trả lời vượt quá số lượng từ theo yêu cầu (hơi dài).',
       });
       corrections.push({
         questionIndex: qNum,
         original: ans,
-        correction: ans.split(/\s+/).slice(0, 5).join(' '),
-        explanation: 'Bài viết vượt quá giới hạn 5 từ quy định của Part 1.',
+        correction: ans,
+        explanation: words < minWords ? 'Bài viết chưa đạt số lượng từ quy định của Part 2.' : 'Bài viết vượt quá số lượng từ quy định của Part 2.',
       });
     }
   });
@@ -92,31 +97,37 @@ function generateLocalFallbackEvaluation(
   else if (scaledScore >= 18) cefr = 'B1';
   else if (scaledScore >= 12) cefr = 'A2';
 
+  const taskSummary = isPart2
+    ? (validCount === total
+      ? `Bạn đã hoàn thành 1/1 bài viết phù hợp với chủ đề ${clubName || ''}.`
+      : `Bài viết chưa đạt yêu cầu độ dài hoặc vi phạm quy định.`)
+    : `Bạn đã hoàn thành ${validCount}/${total} câu hỏi theo đúng quy định. ${clubName ? `Chủ đề bài làm: ${clubName}.` : ''}`;
+
   return {
     score: scaledScore,
     maxScore: 30,
     cefrLevel: cefr,
     taskCompletion: {
       status: validCount === total ? 'success' : validCount >= 3 ? 'warning' : 'danger',
-      summary: `Bạn đã hoàn thành ${validCount}/${total} câu hỏi theo đúng quy định độ dài (1–5 từ). ${
-        clubName ? `Chủ đề bài làm: ${clubName}.` : ''
-      }`,
+      summary: taskSummary,
       details,
     },
     grammarAndSpelling: {
       status: corrections.length === 0 ? 'success' : 'warning',
       summary:
         corrections.length === 0
-          ? 'Các câu trả lời cơ bản đúng cấu trúc ngữ pháp và chính tả.'
-          : `Có ${corrections.length} câu cần chú ý về giới hạn độ dài và ngữ pháp.`,
+          ? 'Bài làm cơ bản đúng cấu trúc ngữ pháp và chính tả.'
+          : `Có ${corrections.length} vị trí cần chú ý về giới hạn độ dài và ngữ pháp.`,
       corrections,
     },
     vocabulary: {
       status: 'info',
-      summary: 'Từ vựng đơn giản, rõ ràng, phù hợp với câu trả lời ngắn Part 1.',
-      suggestions: ['Nên sử dụng thêm các từ chỉ cảm xúc hoặc sở thích như: passionate, enjoy, favorite.'],
+      summary: isPart2
+        ? 'Từ vựng diễn đạt phù hợp với phản hồi mạng xã hội Part 2.'
+        : 'Từ vựng đơn giản, rõ ràng, phù hợp với câu trả lời ngắn Part 1.',
+      suggestions: ['Nên sử dụng thêm các từ chỉ cảm xúc hoặc mở rộng cấu trúc câu như: passionate, enjoy, inspired, breathtaking.'],
     },
-    keyTakeaway: `Hoàn thành ${validCount}/${total} câu hỏi Part 1 đạt điểm ${scaledScore}/30 (Trình độ CEFR ${cefr}).`,
+    keyTakeaway: `Hoàn thành bài làm ${isPart2 ? 'Part 2' : 'Part 1'} đạt điểm ${scaledScore}/30 (Trình độ CEFR ${cefr}).`,
   };
 }
 
@@ -130,8 +141,50 @@ function replaceThirdPersonPronouns(text: string): string {
 }
 
 // Programmatically enforce 100% exact mathematical score calculation based on detected errors
-function enforceExactScoreMath(data: WritingAiFeedbackResponse): WritingAiFeedbackResponse {
+function enforceExactScoreMath(
+  data: WritingAiFeedbackResponse,
+  totalQuestionsCount: number = 5,
+  userAnswers: string[] = []
+): WritingAiFeedbackResponse {
   if (!data) return data;
+  const isPart2 = totalQuestionsCount === 1;
+
+  // Compute exact word counts from actual candidate input strings
+  const wordCounts = userAnswers.map((ans) => (ans ? ans.trim().split(/\s+/).filter(Boolean).length : 0));
+  const totalWordCount = wordCounts.reduce((sum, count) => sum + count, 0);
+  const isEmptySubmission = totalWordCount === 0 || (userAnswers.length > 0 && userAnswers.every((ans) => !ans || !ans.trim()));
+
+  if (isEmptySubmission) {
+    return {
+      ...data,
+      score: 0,
+      maxScore: 30,
+      cefrLevel: 'A1',
+      keyTakeaway: `Bài làm chưa được thực hiện (Bỏ trống câu hỏi). Bạn cần nhập câu trả lời để hệ thống đánh giá bài viết.`,
+      taskCompletion: {
+        status: 'danger',
+        summary: isPart2
+          ? 'Bài viết chưa được thực hiện (Bỏ trống bài làm).'
+          : 'Bạn chưa hoàn thành các câu hỏi trong bài làm (Bỏ trống).',
+        details: (data.taskCompletion?.details || []).map((d, idx) => ({
+          ...d,
+          questionIndex: d.questionIndex || idx + 1,
+          isCorrect: false,
+          note: 'Bỏ trống câu hỏi.',
+        })),
+      },
+      grammarAndSpelling: {
+        status: 'warning',
+        summary: 'Không có câu trả lời để đánh giá ngữ pháp và chính tả.',
+        corrections: [],
+      },
+      vocabulary: {
+        status: 'info',
+        summary: 'Không có câu trả lời để đánh giá từ vựng.',
+        suggestions: [],
+      },
+    };
+  }
 
   // 1. Separate off-topic corrections from real grammar/spelling corrections
   const rawCorrections = data.grammarAndSpelling?.corrections || [];
@@ -149,30 +202,55 @@ function enforceExactScoreMath(data: WritingAiFeedbackResponse): WritingAiFeedba
     // Check if explanation/correction indicates an off-topic error instead of a spelling/grammar error
     const exp = (c.explanation || '').toLowerCase();
     const corr = (c.correction || '').toLowerCase();
-    if (
+    const isOffTopicCorrection =
       exp.includes('không liên quan') ||
       exp.includes('lạc đề') ||
       exp.includes('off-topic') ||
       exp.includes('unrelated') ||
+      exp.includes('chủ đề') ||
+      exp.includes('đề bài') ||
+      exp.includes('nội dung') ||
       corr.includes('không áp dụng') ||
-      corr.includes('không liên quan')
-    ) {
+      corr.includes('không liên quan');
+
+    const isStyleRewrite =
+      exp.includes('cụ thể hơn') ||
+      exp.includes('rõ ràng hơn') ||
+      exp.includes('mở rộng') ||
+      exp.includes('diễn đạt tốt hơn') ||
+      exp.includes('thêm vào') ||
+      exp.includes('nên viết');
+
+    if (isOffTopicCorrection) {
       offTopicQuestionIndices.add(c.questionIndex);
+    } else if (isStyleRewrite) {
+      // Exclude subjective style rewrites from grammar/spelling error count
+      continue;
     } else {
       realCorrections.push(c);
     }
   }
 
-  // 2. Build sanitized Task Details: mark off-topic questions as isCorrect = false, and spelling/grammar corrected questions as isCorrect = true!
+  // 2. Build sanitized Task Details: mark off-topic & length error questions as isCorrect = false, and spelling/grammar corrected questions as isCorrect = true!
   const realCorrectionQuestionIndices = new Set(realCorrections.map((c) => c.questionIndex));
   const rawTaskDetails = data.taskCompletion?.details || [];
 
   const sanitizedTaskDetails = rawTaskDetails.map((d) => {
-    if (offTopicQuestionIndices.has(d.questionIndex)) {
+    const noteLower = (d.note || '').toLowerCase();
+    const isLengthErrorNote =
+      noteLower.includes('không đủ từ') ||
+      noteLower.includes('chưa đủ từ') ||
+      noteLower.includes('thiếu từ') ||
+      noteLower.includes('quá ngắn') ||
+      noteLower.includes('hơi ngắn') ||
+      noteLower.includes('quá dài') ||
+      noteLower.includes('hơi dài') ||
+      noteLower.includes('vượt quá');
+
+    if (offTopicQuestionIndices.has(d.questionIndex) || isLengthErrorNote) {
       return {
         ...d,
         isCorrect: false,
-        note: 'Câu trả lời không liên quan đến câu hỏi (Lạc đề).',
       };
     }
     if (realCorrectionQuestionIndices.has(d.questionIndex)) {
@@ -188,33 +266,64 @@ function enforceExactScoreMath(data: WritingAiFeedbackResponse): WritingAiFeedba
   const taskErrors = sanitizedTaskDetails.filter((d) => d.isCorrect === false).length;
   const correctionsCount = realCorrections.length;
 
+  // Check off-topic or severe underlength for Part 2 from empirical word counts
+  let isOffTopic = offTopicQuestionIndices.size > 0;
+  let isSevereUnderlength = false;
+
+  if (isPart2) {
+    const wc = wordCounts[0] || 0;
+    if (wc > 0 && wc < 15) {
+      isSevereUnderlength = true;
+    }
+    for (const d of rawTaskDetails) {
+      const noteLower = (d.note || '').toLowerCase();
+      if (noteLower.includes('lạc đề') || noteLower.includes('không liên quan') || noteLower.includes('off-topic') || noteLower.includes('hoàn toàn không')) {
+        isOffTopic = true;
+      }
+    }
+  }
+
   const totalErrors = correctionsCount + taskErrors;
 
   let score = 30;
   let cefrLevel: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' = 'C1';
 
-  if (totalErrors === 0) {
+  if (isPart2 && isOffTopic) {
+    score = 12;
+    cefrLevel = 'A2';
+  } else if (totalErrors === 0) {
     score = 30;
     cefrLevel = 'C1';
   } else if (totalErrors === 1) {
-    score = 24;
-    cefrLevel = 'B2';
+    if (isPart2 && isSevereUnderlength) {
+      score = 18;
+      cefrLevel = 'B1';
+    } else {
+      score = 24;
+      cefrLevel = 'B2';
+    }
   } else if (totalErrors === 2) {
-    score = 18;
-    cefrLevel = 'B1';
-  } else if (totalErrors === 3) {
-    score = 12;
-    cefrLevel = 'A2';
-  } else {
+    if (isPart2 && isSevereUnderlength) {
+      score = 12;
+      cefrLevel = 'A2';
+    } else {
+      score = 18;
+      cefrLevel = 'B1';
+    }
+  } else if (totalErrors >= 3) {
     score = Math.max(0, 30 - totalErrors * 6);
     cefrLevel = score >= 18 ? 'B1' : score >= 12 ? 'A2' : 'A1';
   }
 
-  const correctTaskCount = Math.max(0, 5 - taskErrors);
-  const taskStatus = taskErrors === 0 ? 'success' : taskErrors === 1 ? 'warning' : 'danger';
-  const taskSummary = taskErrors === 0
-    ? 'Bạn đã trả lời đúng yêu cầu 5/5 câu hỏi, các câu trả lời ngắn gọn và phù hợp với chủ đề.'
-    : `Bạn đã trả lời đúng yêu cầu ${correctTaskCount}/5 câu hỏi. Có ${taskErrors} câu chưa phù hợp với chủ đề hoặc vi phạm độ dài.`;
+  const correctTaskCount = Math.max(0, totalQuestionsCount - taskErrors);
+  const taskStatus = taskErrors === 0 ? 'success' : (isOffTopic || isSevereUnderlength || taskErrors >= 2) ? 'danger' : 'warning';
+  const taskSummary = isPart2
+    ? (taskErrors === 0
+      ? 'Bạn đã hoàn thành 1/1 bài viết theo đúng quy định độ dài và phù hợp với chủ đề.'
+      : 'Bài viết chưa đạt quy định độ dài hoặc không phù hợp với chủ đề.')
+    : (taskErrors === 0
+      ? 'Bạn đã trả lời đúng yêu cầu tất cả các câu hỏi, các câu trả lời ngắn gọn và phù hợp với chủ đề.'
+      : `Bạn đã trả lời đúng yêu cầu ${correctTaskCount}/${totalQuestionsCount} câu hỏi. Có ${taskErrors} câu chưa phù hợp với chủ đề hoặc vi phạm độ dài.`);
 
   return {
     ...data,
@@ -233,7 +342,11 @@ function enforceExactScoreMath(data: WritingAiFeedbackResponse): WritingAiFeedba
     },
     grammarAndSpelling: {
       ...data.grammarAndSpelling,
-      summary: replaceThirdPersonPronouns(data.grammarAndSpelling?.summary || ''),
+      status: realCorrections.length === 0 ? 'success' : 'warning',
+      summary:
+        realCorrections.length === 0
+          ? 'Bạn đã viết câu đúng ngữ pháp và chính tả.'
+          : replaceThirdPersonPronouns(data.grammarAndSpelling?.summary || ''),
       corrections: realCorrections.map((c) => ({
         ...c,
         explanation: replaceThirdPersonPronouns(c.explanation),
@@ -265,7 +378,7 @@ export async function POST(request: Request) {
     // If no API key is provided in environment, use robust local rule fallback
     if (!apiKey) {
       console.warn('[Writing API] No API keys configured. Returning rule-based evaluation.');
-      const fallbackResult = generateLocalFallbackEvaluation(questions, clubName);
+      const fallbackResult = generateLocalFallbackEvaluation(questions, clubName, partId);
       return NextResponse.json(fallbackResult);
     }
 
@@ -278,6 +391,35 @@ export async function POST(request: Request) {
       })
       .join('\n\n');
 
+    const isPart2 = partId.toLowerCase() === 'part2' || questions.length === 1;
+
+    const partRulesText = isPart2
+      ? `CRITICAL RULES FOR APTIS WRITING PART 2 (Social media response):
+1. EXACT WORD COUNT RULE: Part 2 REQUIRES a response strictly between 20 and 30 words (inclusive).
+   - Any response between 20 words and 30 words (e.g. 21, 25, 26, 28, 30 words) IS OPTIMAL AND RECEIVES FULL TASK COMPLETION MARKS (28-30 points) with isCorrect = true.
+   - IF WORD COUNT IS LESS THAN 20 WORDS (e.g. 11 words): YOU MUST SET taskCompletion.details[0].isCorrect = false AND taskCompletion.status = "warning" or "danger". Write natural note: "Câu trả lời chưa đủ từ theo yêu cầu (hơi ngắn)." NEVER write raw numbers like "11 từ / quy định 20-30 từ"!
+   - IF WORD COUNT IS GREATER THAN 30 WORDS (e.g. 39 words): YOU MUST SET taskCompletion.details[0].isCorrect = false AND taskCompletion.status = "warning". Write natural note: "Câu trả lời vượt quá số lượng từ theo yêu cầu (hơi dài)." NEVER write raw numbers!
+   - STRICT NOTE FORMATTING RULE: NEVER output raw technical numbers or slash code formulas like "11 từ / quy định 20-30 từ" inside detail notes or summaries! Write clean natural Vietnamese notes only.
+2. TOTAL QUESTIONS: There is ONLY 1 question in Part 2. In taskCompletion.summary and details, evaluate ONLY 1 question (e.g. "1/1 bài viết"). NEVER mention "4/5 câu hỏi" or "5 câu hỏi"!
+3. MATHEMATICAL SCORE CALCULATION FOR PART 2 (Total scale: 30 points):
+   - 0 total errors (relevant answer, 20-30 words, correct grammar/spelling) ➔ score = 30 (Band C1).
+   - 1 total error (e.g. word count < 20 or > 30 OR 1 grammar/spelling error) ➔ score = 24 (Band B2) or 18 (Band B1 for under-length < 15 words).
+   - 2 total errors ➔ score = 18 (Band B1).
+   - 3 total errors ➔ score = 12 (Band A2).`
+      : `CRITICAL RULES FOR APTIS WRITING PART 1 (Short answers):
+1. EXACT WORD COUNT RULE: Part 1 allows ANY short answer from 1 to 5 words (inclusive).
+   - 1 word, 2 words, 3 words, 4 words, and 5 words ARE ALL 100% VALID AND COMPLIANT.
+   - NEVER say a 3-word, 4-word, or 5-word answer is "too long" or "quá dài"!
+   - ONLY penalize for length if word count exceeds 5 words (i.e. 6 or more words).
+2. ACCEPTED GREETING RESPONSES (e.g. to "How are you?"):
+   - Answers such as "I'm good.", "I am good.", "Good.", "I'm fine.", "Fine, thanks.", "Very well.", "Great!" ARE ALL 100% PERFECT.
+3. MATHEMATICAL SCORE CALCULATION FOR PART 1 (Total scale: 30 points):
+   - Part 1 has 5 questions. Maximum score is 30 points.
+   - 0 total errors ➔ score = 30 (Band C1)
+   - 1 total error ➔ score = 24 (Band B2)
+   - 2 total errors ➔ score = 18 (Band B1)
+   - 3 total errors ➔ score = 12 (Band A2)`;
+
     const promptText = `
 You are an expert official Aptis Writing examiner. Evaluate the candidate's answers for Aptis Writing ${partId.toUpperCase()} (Club Topic: "${
       clubName || 'General Club'
@@ -286,37 +428,22 @@ You are an expert official Aptis Writing examiner. Evaluate the candidate's answ
 CANDIDATE SUBMISSION:
 ${formattedQuestionsText}
 
-CRITICAL RULES FOR APTIS WRITING PART 1 (Short answers):
-1. EXACT WORD COUNT RULE: Part 1 allows ANY short answer from 1 to 5 words (inclusive).
-   - 1 word, 2 words, 3 words, 4 words, and 5 words ARE ALL 100% VALID AND COMPLIANT.
-   - NEVER say a 3-word, 4-word, or 5-word answer is "too long" or "quá dài"! 4-word and 5-word answers (e.g. "I enjoy reading books.", "My favorite food is pizza.") are PERFECT 100% valid English answers!
-   - ONLY penalize for length if word count exceeds 5 words (i.e. 6 or more words).
-2. ACCEPTED GREETING RESPONSES (e.g. to "How are you?"):
-   - Answers such as "I'm good.", "I am good.", "Good.", "I'm fine.", "Fine, thanks.", "Very well.", "Great!" ARE ALL 100% PERFECT, NATURAL, AND VALID ENGLISH RESPONSES for "How are you?".
-   - YOU MUST ACCEPT "I'm good." and "I am good." as 100% CORRECT for "How are you?". NEVER mark "I'm good." as wrong, incorrect, or inappropriate!
-3. MATHEMATICAL SCORE CALCULATION FOR PART 1 (Total scale: 30 points):
-   - Part 1 has 5 questions. Maximum score is 30 points.
-   - You MUST count the total number of errors (spelling mistakes + grammar errors + off-topic answers + empty answers):
-     * 0 total errors ➔ score = 30 (Band C1)
-     * EXACTLY 1 total error (e.g., 1 spelling error in the entire submission) ➔ score = 24 (Band B2)
-     * EXACTLY 2 total errors ➔ score = 18 (Band B1)
-     * EXACTLY 3 total errors (e.g. 2 spelling + 1 grammar) ➔ score = 12 (Band A2)
-     * 4 or 5 total errors / empty questions ➔ score = 6 or 0 (Band A1)
-   - CRITICAL REQUIREMENT: Match the score strictly to the number of items in grammarAndSpelling.corrections and off-topic questions. If there is ONLY 1 correction item and 0 off-topic questions, total errors = 1, so the score MUST BE 24! Do not output 12 when there is only 1 error!
-4. STRICT SEPARATION OF ASSESSMENT CRITERIA:
-   - "Task Completion": Evaluates ONLY topic relevance and word count (1-5 words).
-     * If candidate gives an OFF-TOPIC answer (e.g. asked "How are you?" but answered "My friend is good" instead of answering about oneself), mark that question's Task Completion note as off-topic, and set Task Completion status to "warning" or "danger".
-     * NEVER mention spelling or grammar mistakes in Task Completion summary or notes!
-   - "Grammar & Spelling": Carefully check EVERY word in candidate answers for spelling or grammar mistakes (e.g. "Tokoyo" -> "Tokyo", "Japn" -> "Japan", "Footbal" -> "Football", "autum" -> "autumn", "sumer" -> "summer", "Englis" -> "English").
-     * You MUST create a correction item for EVERY misspelled word or grammar mistake!
-     * NEVER put off-topic answers inside grammarAndSpelling.corrections! Corrections list is RESERVED STRICTLY for spelling and grammar errors.
-     * NEVER add non-error items where original === correction (e.g. "Autumn -> Autumn") to corrections! If an answer has no spelling/grammar error, DO NOT create a correction item for it!
-   - "Vocabulary": Evaluates vocabulary range and suggests alternative advanced ENGLISH words/phrases (e.g. "lush greenery", "relaxing", "picturesque", "favorite pastime").
-     * ALL ITEMS inside vocabulary.suggestions MUST BE ENGLISH WORDS/PHRASES (e.g. "Use 'lush greenery' to describe plants", "Use 'relaxing' for garden activities")! NEVER output pure Vietnamese words like 'xinh đẹp' or 'thư giãn' inside the suggestions array!
-5. FEEDBACK LANGUAGE & PRONOUN RULES: Write all summary feedback, detail notes, error explanations, and takeaways in natural, encouraging Vietnamese.
-   - ALWAYS address the candidate as "bạn" (e.g. "Bạn đã trả lời..."). NEVER use formal third-person terms like "ứng viên" or "thí sinh"!
-   - In taskCompletion.summary, ALWAYS state clearly how many questions were answered correctly (e.g. "Bạn đã trả lời đúng yêu cầu 4/5 câu hỏi.").
-   - All suggested vocabulary items in suggestions array MUST BE IN ENGLISH. NEVER tell candidate that a 3, 4, or 5-word English answer should be shortened or translated into Vietnamese.
+${partRulesText}
+
+STRICT SEPARATION OF ASSESSMENT CRITERIA:
+- "Task Completion": Evaluates ONLY topic relevance and word count (${isPart2 ? '20-30 words' : '1-5 words'}).
+  * If candidate gives an OFF-TOPIC answer, mark Task Completion status as "warning" or "danger".
+  * NEVER mention spelling or grammar mistakes in Task Completion summary or notes!
+- "Grammar & Spelling": Carefully check EVERY word in candidate answers for genuine spelling typos or grammatical errors.
+  * You MUST check EVERY word carefully. Create a separate correction item for EACH misspelled word or grammar typo (e.g. "lik" -> "like", "decoratin" -> "decorating", "want join" -> "want to join")!
+  * DO NOT create corrections for subjective style additions or sentence expansion (e.g. DO NOT report "my home very much" -> "my home very much, because I love decorating"). Style suggestions belong strictly under vocabulary.suggestions!
+  * NEVER put off-topic answers inside grammarAndSpelling.corrections!
+- "Vocabulary": Evaluates vocabulary range and suggests alternative advanced ENGLISH words/phrases (e.g. "breathtaking", "inspirational", "favorite pastime").
+  * ALL ITEMS inside vocabulary.suggestions MUST BE ENGLISH WORDS/PHRASES!
+
+FEEDBACK LANGUAGE & PRONOUN RULES: Write all summary feedback, detail notes, error explanations, and takeaways in natural, encouraging Vietnamese.
+- ALWAYS address the candidate as "bạn" (e.g. "Bạn đã trả lời..."). NEVER use formal third-person terms like "ứng viên" or "thí sinh"!
+- In taskCompletion.summary, ALWAYS state clearly how many questions were answered correctly (e.g. "${isPart2 ? 'Bạn đã hoàn thành 1/1 bài viết' : 'Bạn đã trả lời đúng yêu cầu 5/5 câu hỏi'}.").
 
 Respond ONLY in valid raw JSON matching this schema:
 {
@@ -381,7 +508,7 @@ Respond ONLY in valid raw JSON matching this schema:
               const rawJsonText = resData.choices?.[0]?.message?.content || '';
               if (rawJsonText) {
                 const parsedData: WritingAiFeedbackResponse = JSON.parse(rawJsonText);
-                return NextResponse.json(enforceExactScoreMath(parsedData));
+                return NextResponse.json(enforceExactScoreMath(parsedData, questions.length, questions.map((q) => (q.userAnswer || '').trim())));
               }
             } else if (response.status === 429) {
               console.warn(`[Groq API Rate Limit 429] Key (${groqKey.slice(0, 10)}...) TPD limit reached. Instantly swapping to next Groq Key!`);
@@ -420,7 +547,7 @@ Respond ONLY in valid raw JSON matching this schema:
           const rawJsonText = resData.choices?.[0]?.message?.content || '';
           if (rawJsonText) {
             const parsedData: WritingAiFeedbackResponse = JSON.parse(rawJsonText);
-            return NextResponse.json(enforceExactScoreMath(parsedData));
+            return NextResponse.json(enforceExactScoreMath(parsedData, questions.length, questions.map((q) => (q.userAnswer || '').trim())));
           }
         }
       } catch (orErr) {
@@ -460,7 +587,7 @@ Respond ONLY in valid raw JSON matching this schema:
             const rawJsonText = resData.candidates?.[0]?.content?.parts?.[0]?.text || '';
             if (rawJsonText) {
               const parsedData: WritingAiFeedbackResponse = JSON.parse(rawJsonText);
-              return NextResponse.json(enforceExactScoreMath(parsedData));
+              return NextResponse.json(enforceExactScoreMath(parsedData, questions.length, questions.map((q) => (q.userAnswer || '').trim())));
             }
           } else {
             const errText = await response.text();
@@ -494,7 +621,7 @@ Respond ONLY in valid raw JSON matching this schema:
           const rawJsonText = resData.choices?.[0]?.message?.content || '';
           if (rawJsonText) {
             const parsedData: WritingAiFeedbackResponse = JSON.parse(rawJsonText);
-            return NextResponse.json(enforceExactScoreMath(parsedData));
+            return NextResponse.json(enforceExactScoreMath(parsedData, questions.length, questions.map((q) => (q.userAnswer || '').trim())));
           }
         }
       } catch (oaiErr) {
@@ -502,7 +629,7 @@ Respond ONLY in valid raw JSON matching this schema:
       }
     }
 
-    return NextResponse.json(generateLocalFallbackEvaluation(questions, clubName));
+    return NextResponse.json(generateLocalFallbackEvaluation(questions, clubName, partId));
   } catch (error: any) {
     console.error('[Writing Evaluation Route Error]', error);
     return NextResponse.json(

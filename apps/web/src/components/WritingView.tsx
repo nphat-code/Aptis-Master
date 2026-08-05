@@ -4,6 +4,7 @@ import React from 'react';
 import SkillPracticeView, { PartTab, PartTabContent } from './SkillPracticeView';
 import scrapedData from '@/data/scraped_data.json';
 import WritingPart1Practice from './writing/WritingPart1Practice';
+import WritingPart2Practice from './writing/WritingPart2Practice';
 
 interface WritingViewProps {
   onBackToHome?: () => void;
@@ -163,7 +164,7 @@ export default function WritingView({ onBackToHome, onExamStateChange, data }: W
         if (partId === 'part2') {
           return {
             title: titleText,
-            subtitle: '✍️ Social media response (20-30 từ) • 7 phút',
+            subtitle: '✍️ Social media response (20-30 từ) • 12 phút',
             badge: 'P.2',
           };
         }
@@ -186,6 +187,9 @@ export default function WritingView({ onBackToHome, onExamStateChange, data }: W
       renderPracticeExam={({ partId, testIndex, onExit }) => {
         if (partId === 'part1') {
           return <WritingPart1Practice testIndex={testIndex} onExit={onExit} />;
+        }
+        if (partId === 'part2') {
+          return <WritingPart2Practice testIndex={testIndex} onExit={onExit} />;
         }
         return (
           <div className="max-w-xl mx-auto my-12 p-8 bg-white rounded-2xl border border-slate-200 text-center space-y-4 shadow-sm">
