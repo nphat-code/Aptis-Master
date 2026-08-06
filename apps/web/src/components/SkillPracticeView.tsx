@@ -58,6 +58,18 @@ export default function SkillPracticeView({
   const [searchTerm, setSearchTerm] = useState('');
   const [activePartTab, setActivePartTab] = useState(defaultPartTab || partTabs[0]?.id || 'full');
   const [activePracticeTestIndex, setActivePracticeTestIndex] = useState<number | null>(null);
+  const [completedTestKeys, setCompletedTestKeys] = useState<Set<string>>(new Set());
+
+  React.useEffect(() => {
+    try {
+      const saved = localStorage.getItem(`aptis_completed_${skillId}`);
+      if (saved) {
+        setCompletedTestKeys(new Set(JSON.parse(saved)));
+      }
+    } catch (e) {
+      console.error('Failed to load completed test state', e);
+    }
+  }, [skillId]);
 
   React.useEffect(() => {
     if (onExamStateChange) {
@@ -67,11 +79,28 @@ export default function SkillPracticeView({
 
   const currentTabInfo = partTabContent[activePartTab] || partTabContent[partTabs[0]?.id || 'full'];
 
+  const markTestCompleted = (partId: string, testIndex: number) => {
+    const key = `${partId}_${testIndex + 1}`;
+    setCompletedTestKeys((prev) => {
+      const next = new Set(prev);
+      next.add(key);
+      try {
+        localStorage.setItem(`aptis_completed_${skillId}`, JSON.stringify(Array.from(next)));
+      } catch (e) {
+        console.error('Failed to save completed test state', e);
+      }
+      return next;
+    });
+  };
+
   if (activePracticeTestIndex !== null && renderPracticeExam) {
     return renderPracticeExam({
       partId: activePartTab,
       testIndex: activePracticeTestIndex,
-      onExit: () => setActivePracticeTestIndex(null),
+      onExit: () => {
+        markTestCompleted(activePartTab, activePracticeTestIndex);
+        setActivePracticeTestIndex(null);
+      },
     });
   }
 
@@ -322,7 +351,7 @@ export default function SkillPracticeView({
                 const testNumberStr = testNum < 10 ? '0' + testNum : `${testNum}`;
 
                 const cardTitle = customProps?.title || `Đề ${testNumberStr} - ${currentTabInfo.badge}`;
-                const cardSubtitle = customProps?.subtitle || 'Đề thi mô phỏng cấu trúc chuẩn ESOL 2026';
+                const cardSubtitle = customProps?.subtitle || '';
                 const cardBadge = customProps?.badge || currentTabInfo.badge;
                 const cardDuration = (customProps as any)?.durationText;
 
@@ -338,6 +367,8 @@ export default function SkillPracticeView({
                 const cardStaggerIndex = hasMarathon ? index + 1 : index;
                 const delayMs = Math.min(cardStaggerIndex * 35, 450);
 
+                const isTestDone = completedTestKeys.has(`${activePartTab}_${testNum}`);
+
                 return (
                   <div
                     key={`card-${activePartTab}-${testNum}`}
@@ -350,6 +381,7 @@ export default function SkillPracticeView({
                       isMarathon={false}
                       subtitle={cardSubtitle}
                       durationText={cardDuration}
+                      isCompleted={isTestDone}
                       actionText={activePartTab === 'full' ? 'Bắt đầu luyện tập' : 'Luyện tập'}
                       onClick={() => {
                         if (isCurrentPartSupported) {

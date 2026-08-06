@@ -113,28 +113,28 @@ export default function WritingView({ onBackToHome, onExamStateChange, data }: W
         if (partId === 'part1') {
           return {
             title: 'Luyện tất cả đề Part 1',
-            subtitle: `Làm liên tục ${totalTestSets} bộ đề Part 1 — không giới hạn giờ`,
+            subtitle: '',
             totalCount: totalTestSets,
           };
         }
         if (partId === 'part2') {
           return {
             title: 'Luyện tất cả đề Part 2',
-            subtitle: `Làm liên tục ${totalTestSets} bộ đề Part 2 — không giới hạn giờ`,
+            subtitle: '',
             totalCount: totalTestSets,
           };
         }
         if (partId === 'part3') {
           return {
             title: 'Luyện tất cả đề Part 3',
-            subtitle: `Làm liên tục ${totalTestSets} bộ đề Part 3 — không giới hạn giờ`,
+            subtitle: '',
             totalCount: totalTestSets,
           };
         }
         if (partId === 'part4') {
           return {
             title: 'Luyện tất cả đề Part 4',
-            subtitle: `Làm liên tục ${totalTestSets} bộ đề Part 4 — không giới hạn giờ`,
+            subtitle: '',
             totalCount: totalTestSets,
           };
         }
@@ -151,7 +151,6 @@ export default function WritingView({ onBackToHome, onExamStateChange, data }: W
         if (partId === 'full') {
           return {
             title: titleText,
-            subtitle: '✍️ 4 Parts (5 bài viết)',
             badge: 'Full Part',
             durationText: '50 phút',
           };
@@ -159,7 +158,6 @@ export default function WritingView({ onBackToHome, onExamStateChange, data }: W
         if (partId === 'part1') {
           return {
             title: titleText,
-            subtitle: '✍️ Word-level writing (5 câu trả lời ngắn)',
             badge: 'Part 1',
             durationText: '3 phút',
           };
@@ -167,7 +165,6 @@ export default function WritingView({ onBackToHome, onExamStateChange, data }: W
         if (partId === 'part2') {
           return {
             title: titleText,
-            subtitle: '✍️ Short text writing (20-30 từ)',
             badge: 'Part 2',
             durationText: '7 phút',
           };
@@ -175,7 +172,6 @@ export default function WritingView({ onBackToHome, onExamStateChange, data }: W
         if (partId === 'part3') {
           return {
             title: titleText,
-            subtitle: '✍️ Three written responses to questions (3 tin nhắn 30-40 từ)',
             badge: 'Part 3',
             durationText: '10 phút',
           };
@@ -183,7 +179,6 @@ export default function WritingView({ onBackToHome, onExamStateChange, data }: W
         if (partId === 'part4') {
           return {
             title: titleText,
-            subtitle: '✍️ Formal and informal writing (2 bài)',
             badge: 'Part 4',
             durationText: '30 phút',
           };

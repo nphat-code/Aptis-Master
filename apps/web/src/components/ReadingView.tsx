@@ -135,28 +135,28 @@ export default function ReadingView({ onBackToHome, onExamStateChange, data }: R
         if (partId === 'part1') {
           return {
             title: 'Luyện tất cả đề Part 1',
-            subtitle: `Làm liên tục ${part1TotalCount} đề — không giới hạn giờ`,
+            subtitle: '',
             totalCount: part1TotalCount,
           };
         }
         if (partId === 'part23') {
           return {
             title: 'Luyện tất cả đề Part 2+3',
-            subtitle: `Làm liên tục ${part23TotalSets} bài đọc — không giới hạn giờ`,
+            subtitle: '',
             totalCount: part23TotalSets,
           };
         }
         if (partId === 'part4') {
           return {
             title: 'Luyện tất cả đề Part 4',
-            subtitle: `Làm liên tục ${part4TotalCount} đề (4 bài đọc) — không giới hạn giờ`,
+            subtitle: '',
             totalCount: part4TotalCount,
           };
         }
         if (partId === 'part5') {
           return {
             title: 'Luyện tất cả đề Part 5',
-            subtitle: `Làm liên tục ${part5TotalCount} bài đọc dài — không giới hạn giờ`,
+            subtitle: '',
             totalCount: part5TotalCount,
           };
         }
@@ -167,7 +167,6 @@ export default function ReadingView({ onBackToHome, onExamStateChange, data }: R
           const testNumberStr = testNum < 10 ? '0' + testNum : `${testNum}`;
           return {
             title: `Đề ${testNumberStr}`,
-            subtitle: '📖 Đầy đủ 5 Part (29 câu)',
             badge: 'Full Part',
             durationText: '35 phút',
           };
@@ -176,7 +175,6 @@ export default function ReadingView({ onBackToHome, onExamStateChange, data }: R
           const testNumberStr = testNum < 10 ? '0' + testNum : `${testNum}`;
           return {
             title: `Đề ${testNumberStr} - Reading Part 1`,
-            subtitle: '📖 Điền từ vào đoạn văn (5 câu)',
             badge: 'Part 1',
             durationText: '6 phút',
           };
@@ -187,7 +185,6 @@ export default function ReadingView({ onBackToHome, onExamStateChange, data }: R
           const testNumberStr = testNum < 10 ? '0' + testNum : `${testNum}`;
           return {
             title: `Đề ${testNumberStr}${topicTitle ? ` - ${topicTitle}` : ''}`,
-            subtitle: '📖 1 bài đọc (5 câu)',
             badge: 'Part 2+3',
             durationText: '7 phút',
           };
@@ -198,7 +195,6 @@ export default function ReadingView({ onBackToHome, onExamStateChange, data }: R
           const testNumberStr = testNum < 10 ? '0' + testNum : `${testNum}`;
           return {
             title: `Đề ${testNumberStr}${topicTitle ? ` - ${topicTitle}` : ''}`,
-            subtitle: '📖 4 đoạn văn (7 câu)',
             badge: 'Part 4',
             durationText: '7 phút',
           };
@@ -209,7 +205,6 @@ export default function ReadingView({ onBackToHome, onExamStateChange, data }: R
           const testNumberStr = testNum < 10 ? '0' + testNum : `${testNum}`;
           return {
             title: `Đề ${testNumberStr}${topicTitle ? ` - ${topicTitle}` : ''}`,
-            subtitle: '📖 1 bài đọc dài (7 đoạn văn)',
             badge: 'Part 5',
             durationText: '15 phút',
           };

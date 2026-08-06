@@ -118,14 +118,14 @@ export default function ListeningView({ onBackToHome, onExamStateChange, data }:
           const totalP1 = (scrapedData as any).listening?.listening_question1_13?.length || 210;
           return {
             title: 'Luyện tất cả đề Part 1',
-            subtitle: `Làm liên tục ${totalP1} câu hỏi Part 1 — không giới hạn giờ`,
+            subtitle: '',
             totalCount: totalP1,
           };
         }
         if (partId === 'part2') {
           return {
             title: 'Luyện tất cả đề Part 2',
-            subtitle: `Làm liên tục ${totalTestSets} bộ đề Part 2 — không giới hạn giờ`,
+            subtitle: '',
             totalCount: totalTestSets,
           };
         }
@@ -133,7 +133,7 @@ export default function ListeningView({ onBackToHome, onExamStateChange, data }:
           const totalP3 = (scrapedData as any).listening?.listening_question15?.length || totalTestSets;
           return {
             title: 'Luyện tất cả đề Part 3',
-            subtitle: `Làm liên tục ${totalP3} bộ đề Part 3 — không giới hạn giờ`,
+            subtitle: '',
             totalCount: totalP3,
           };
         }
@@ -141,7 +141,7 @@ export default function ListeningView({ onBackToHome, onExamStateChange, data }:
           const totalP4 = (scrapedData as any).listening?.listening_question16_17?.length || totalTestSets;
           return {
             title: 'Luyện tất cả đề Part 4',
-            subtitle: `Làm liên tục ${totalP4} bài Part 4 — không giới hạn giờ`,
+            subtitle: '',
             totalCount: totalP4,
           };
         }
@@ -152,7 +152,6 @@ export default function ListeningView({ onBackToHome, onExamStateChange, data }:
         if (partId === 'full') {
           return {
             title: `Đề ${testNumberStr} - Listening Full Part`,
-            subtitle: '🎧 4 Parts (17 đoạn ghi âm)',
             badge: 'Full Part',
             durationText: '40 phút',
           };
@@ -160,7 +159,6 @@ export default function ListeningView({ onBackToHome, onExamStateChange, data }:
         if (partId === 'part1') {
           return {
             title: `Đề ${testNumberStr} - Listening Part 1`,
-            subtitle: '🎧 Information recognition (13 câu)',
             badge: 'Part 1',
             durationText: '8 phút',
           };
@@ -175,7 +173,6 @@ export default function ListeningView({ onBackToHome, onExamStateChange, data }:
 
           return {
             title: titleText,
-            subtitle: '🎧 Information matching (4 người nói)',
             badge: 'Part 2',
             durationText: '10 phút',
           };
@@ -190,7 +187,6 @@ export default function ListeningView({ onBackToHome, onExamStateChange, data }:
 
           return {
             title: titleText,
-            subtitle: '🎧 Inference - discussion (Hội thoại Nam & Nữ)',
             badge: 'Part 3',
             durationText: '10 phút',
           };
@@ -206,7 +202,6 @@ export default function ListeningView({ onBackToHome, onExamStateChange, data }:
 
           return {
             title: titleText,
-            subtitle: '🎧 Inference - longer monologues (2 bài phát biểu)',
             badge: 'Part 4',
             durationText: '12 phút',
           };
