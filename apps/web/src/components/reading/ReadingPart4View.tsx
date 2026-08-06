@@ -73,7 +73,7 @@ export default function ReadingPart4View({
               className="flex items-center justify-between gap-4 border-b border-slate-100 last:border-none pb-3.5 last:pb-0"
             >
               <div className="flex items-start gap-2.5 flex-1 min-w-0">
-                <span className="font-extrabold text-[#24085A] text-[14px] min-w-[24px]">
+                <span className="font-bold text-slate-800 text-[14px] min-w-[20px]">
                   {qIdx + 1}.
                 </span>
                 <p className="text-[14px] font-medium text-slate-900 leading-snug">

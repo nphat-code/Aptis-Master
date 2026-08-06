@@ -73,7 +73,7 @@ export default function ReadingPart4Practice({
             return (
               <div key={idx} className="space-y-2 text-left pb-3 border-b border-slate-200/60 last:border-b-0 last:pb-0">
                 <div className="text-sm font-semibold text-slate-900 flex items-start gap-2">
-                  <span className="text-[#24085A] font-bold">{idx + 1}.</span>
+                  <span className="text-slate-800 font-bold">{idx + 1}.</span>
                   <p className="text-slate-800">{qItem.question}</p>
                 </div>
 

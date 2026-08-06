@@ -31,10 +31,10 @@ export default function ReadingPart5View({
   return (
     <>
       <QuestionInstructionHeader>
-        Read the text below and choose the correct heading for each paragraph from the options provided.
+        Read the passage quickly. Choose a heading for each numbered paragraph (1–7) from the drop-down box. There is one more heading than you need.
       </QuestionInstructionHeader>
 
-      <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/80 shadow-2xs space-y-6 text-left">
+      <div className="space-y-6 text-left mt-6">
         {paragraphs.map((pText, pIdx) => {
           const answerKey = baseAnswerKey + pIdx;
           const selectedVal = userAnswers[answerKey] || '';
@@ -43,9 +43,9 @@ export default function ReadingPart5View({
           const isCorr = selectedVal === correctVal;
 
           return (
-            <div key={pIdx} className="space-y-2.5 border-b border-slate-100 last:border-none pb-5 last:pb-0">
+            <div key={pIdx} className="space-y-2.5 border-b border-slate-200/60 last:border-none pb-5 last:pb-0">
               <div className="flex flex-wrap items-center gap-3">
-                <span className="font-extrabold text-[#24085A] text-[15px] min-w-[20px]">
+                <span className="font-bold text-slate-900 text-[14px] min-w-[20px]">
                   {pIdx + 1}.
                 </span>
 

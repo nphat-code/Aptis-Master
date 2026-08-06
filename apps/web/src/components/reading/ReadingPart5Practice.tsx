@@ -91,7 +91,7 @@ export default function ReadingPart5Practice({
         return (
           <DetailedAnswersCard
             title="Chi tiết bài làm"
-            subtitle="Read the text below and choose the correct heading for each paragraph."
+            subtitle="Read the passage quickly. Choose a heading for each numbered paragraph (1–7) from the drop-down box. There is one more heading than you need."
           >
             {paragraphs.map((pText, pIdx) => {
               const answerKey = isAllPractice ? pIdx : pIdx;
