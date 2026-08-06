@@ -132,7 +132,7 @@ export default function ReadingPart23Practice({
       renderDetailedAnswers={({ userAnswers }) => (
         <DetailedAnswersCard
           title="Chi tiết bài làm"
-          subtitle="The sentences below make a complete text. Put them in the correct order."
+          subtitle="Put the sentences in the right order."
         >
           {testQuestionSets.map((qData, qIdx) => {
             const baseKey = qIdx * 5;

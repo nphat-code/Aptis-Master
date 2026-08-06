@@ -50,9 +50,10 @@ function generateLocalFallbackEvaluation(
 ): WritingAiFeedbackResponse {
   let validCount = 0;
   const isPart2 = partId.toLowerCase() === 'part2';
-  const total = questions.length || (isPart2 ? 1 : 5);
-  const minWords = isPart2 ? 20 : 1;
-  const maxWords = isPart2 ? 30 : 5;
+  const isPart3 = partId.toLowerCase() === 'part3';
+  const total = questions.length || (isPart2 ? 1 : isPart3 ? 3 : 5);
+  const minWords = isPart3 ? 30 : isPart2 ? 20 : 1;
+  const maxWords = isPart3 ? 40 : isPart2 ? 30 : 5;
 
   const corrections: RuleCorrection[] = [];
   const details: Array<{ questionIndex: number; isCorrect: boolean; note: string }> = [];
@@ -85,7 +86,7 @@ function generateLocalFallbackEvaluation(
         questionIndex: qNum,
         original: ans,
         correction: ans,
-        explanation: words < minWords ? 'Bài viết chưa đạt số lượng từ quy định của Part 2.' : 'Bài viết vượt quá số lượng từ quy định của Part 2.',
+        explanation: words < minWords ? `Bài viết chưa đạt số lượng từ quy định của ${isPart3 ? 'Part 3 (30-40 từ)' : 'Part 2 (20-30 từ)'}.` : `Bài viết vượt quá số lượng từ quy định của ${isPart3 ? 'Part 3 (30-40 từ)' : 'Part 2 (20-30 từ)'}.`,
       });
     }
   });
@@ -96,6 +97,8 @@ function generateLocalFallbackEvaluation(
   else if (scaledScore >= 24) cefr = 'B2';
   else if (scaledScore >= 18) cefr = 'B1';
   else if (scaledScore >= 12) cefr = 'A2';
+
+  const partLabel = isPart3 ? 'Part 3' : isPart2 ? 'Part 2' : 'Part 1';
 
   const taskSummary = isPart2
     ? (validCount === total
@@ -108,7 +111,7 @@ function generateLocalFallbackEvaluation(
     maxScore: 30,
     cefrLevel: cefr,
     taskCompletion: {
-      status: validCount === total ? 'success' : validCount >= 3 ? 'warning' : 'danger',
+      status: validCount === total ? 'success' : validCount >= Math.ceil(total / 2) ? 'warning' : 'danger',
       summary: taskSummary,
       details,
     },
@@ -122,12 +125,14 @@ function generateLocalFallbackEvaluation(
     },
     vocabulary: {
       status: 'info',
-      summary: isPart2
+      summary: isPart3
+        ? 'Từ vựng diễn đạt linh hoạt, phù hợp với phản hồi phòng chat Part 3.'
+        : isPart2
         ? 'Từ vựng diễn đạt phù hợp với phản hồi mạng xã hội Part 2.'
         : 'Từ vựng đơn giản, rõ ràng, phù hợp với câu trả lời ngắn Part 1.',
       suggestions: ['Nên sử dụng thêm các từ chỉ cảm xúc hoặc mở rộng cấu trúc câu như: passionate, enjoy, inspired, breathtaking.'],
     },
-    keyTakeaway: `Hoàn thành bài làm ${isPart2 ? 'Part 2' : 'Part 1'} đạt điểm ${scaledScore}/30 (Trình độ CEFR ${cefr}).`,
+    keyTakeaway: `Hoàn thành bài làm ${partLabel} đạt điểm ${scaledScore}/30 (Trình độ CEFR ${cefr}).`,
   };
 }
 
@@ -219,7 +224,16 @@ function enforceExactScoreMath(
       exp.includes('mở rộng') ||
       exp.includes('diễn đạt tốt hơn') ||
       exp.includes('thêm vào') ||
-      exp.includes('nên viết');
+      exp.includes('nên viết') ||
+      exp.includes('thay vì') ||
+      exp.includes('để chỉ định') ||
+      exp.includes('tự nhiên hơn') ||
+      exp.includes('mô tả') ||
+      exp.includes('thay cho') ||
+      exp.includes('không có lỗi') ||
+      exp.includes('đã đúng') ||
+      exp.includes('không sai') ||
+      exp.includes('tính đa dạng');
 
     if (isOffTopicCorrection) {
       offTopicQuestionIndices.add(c.questionIndex);
@@ -283,7 +297,44 @@ function enforceExactScoreMath(
     }
   }
 
-  const totalErrors = correctionsCount + taskErrors;
+  // Deterministic grammar scanner for common typos if LLM missed them
+  userAnswers.forEach((ans, qIdx) => {
+    const qNum = qIdx + 1;
+    const hasExistingCorrection = realCorrections.some((c) => c.questionIndex === qNum);
+    if (!hasExistingCorrection && ans) {
+      // 1. Check adverb modification error e.g. "concentrate very good" -> "concentrate very well"
+      const advMatch = ans.match(/\b(concentrate|speak|listen|read|write|perform|work)\s+(very\s+)?good\b/i);
+      if (advMatch) {
+        const wrongPhrase = advMatch[0];
+        const correctPhrase = wrongPhrase.replace(/\bgood\b/i, 'well');
+        realCorrections.push({
+          questionIndex: qNum,
+          type: 'Ngữ pháp',
+          original: wrongPhrase,
+          correction: correctPhrase,
+          explanation: `Sử dụng phó từ '${correctPhrase}' thay cho tính từ '${wrongPhrase}' để bổ nghĩa cho động từ.`,
+        });
+      }
+
+      // 2. Check Subject-Verb agreement error e.g. "the owner always serve" -> "the owner always serves"
+      const svMatch = ans.match(/\b(the owner|the author|he|she|it|my friend)\s+(always\s+)?(serve|work|prefer|want|like|make|give|take|need|know|enjoy)\b/i);
+      if (svMatch) {
+        const wrongPhrase = svMatch[0];
+        const verb = svMatch[3];
+        const correctVerb = verb.endsWith('e') ? `${verb}s` : `${verb}es`;
+        const correctPhrase = wrongPhrase.replace(new RegExp(`\\b${verb}\\b`, 'i'), correctVerb);
+        realCorrections.push({
+          questionIndex: qNum,
+          type: 'Ngữ pháp',
+          original: wrongPhrase,
+          correction: correctPhrase,
+          explanation: `Chủ ngữ ngôi thứ ba số ít cần chia động từ số ít '${correctPhrase}' thay cho '${wrongPhrase}'.`,
+        });
+      }
+    }
+  });
+
+  const totalErrors = realCorrections.length + taskErrors;
 
   let score = 30;
   let cefrLevel: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' = 'C1';
@@ -325,12 +376,16 @@ function enforceExactScoreMath(
       ? 'Bạn đã trả lời đúng yêu cầu tất cả các câu hỏi, các câu trả lời ngắn gọn và phù hợp với chủ đề.'
       : `Bạn đã trả lời đúng yêu cầu ${correctTaskCount}/${totalQuestionsCount} câu hỏi. Có ${taskErrors} câu chưa phù hợp với chủ đề hoặc vi phạm độ dài.`);
 
+  const keyTakeawayText = totalErrors === 0
+    ? 'Bạn đã hoàn thành xuất sắc bài viết, trả lời đúng trọng tâm và đạt độ dài quy định.'
+    : `Bài làm đạt điểm ${score}/30 (Trình độ CEFR ${cefrLevel}). Bạn cần chú ý điều chỉnh các lỗi về ngữ pháp và độ dài để đạt điểm cao hơn.`;
+
   return {
     ...data,
     score,
     maxScore: 30,
     cefrLevel,
-    keyTakeaway: replaceThirdPersonPronouns(data.keyTakeaway || ''),
+    keyTakeaway: keyTakeawayText,
     taskCompletion: {
       ...data.taskCompletion,
       status: taskStatus,
@@ -346,7 +401,7 @@ function enforceExactScoreMath(
       summary:
         realCorrections.length === 0
           ? 'Bạn đã viết câu đúng ngữ pháp và chính tả.'
-          : replaceThirdPersonPronouns(data.grammarAndSpelling?.summary || ''),
+          : `Có ${realCorrections.length} vị trí cần chú ý về ngữ pháp và chính tả.`,
       corrections: realCorrections.map((c) => ({
         ...c,
         explanation: replaceThirdPersonPronouns(c.explanation),
@@ -355,8 +410,33 @@ function enforceExactScoreMath(
     vocabulary: {
       ...data.vocabulary,
       summary: replaceThirdPersonPronouns(data.vocabulary?.summary || ''),
+      suggestions: sanitizeVocabularySuggestions(data.vocabulary?.suggestions || []),
     },
   };
+}
+
+function sanitizeVocabularySuggestions(suggestions: string[]): string[] {
+  if (!suggestions || !Array.isArray(suggestions)) return [];
+  const vnDiacriticsRegex = /[àáảãạăắằẳẵặâấầẩẫậđèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵ]/i;
+
+  return suggestions
+    .map((s) => replaceThirdPersonPronouns(s || '').trim())
+    .filter((s) => {
+      if (!s) return false;
+
+      // Extract quoted phrases inside quotes e.g. '...' or "..." or “...”
+      const quotedMatches = s.match(/['"“‘]([^'"”’]+)['"”’]/g) || [];
+
+      for (const qm of quotedMatches) {
+        const rawContent = qm.replace(/['"“‘”’]/g, '').trim();
+        // If the target replacement phrase inside quotes is a Vietnamese phrase, filter it out!
+        if (vnDiacriticsRegex.test(rawContent)) {
+          return false;
+        }
+      }
+
+      return true;
+    });
 }
 
 export async function POST(request: Request) {
@@ -391,9 +471,22 @@ export async function POST(request: Request) {
       })
       .join('\n\n');
 
-    const isPart2 = partId.toLowerCase() === 'part2' || questions.length === 1;
+    const isPart3 = partId.toLowerCase() === 'part3';
+    const isPart2 = partId.toLowerCase() === 'part2' || (questions.length === 1 && !isPart3);
 
-    const partRulesText = isPart2
+    const partRulesText = isPart3
+      ? `CRITICAL RULES FOR APTIS WRITING PART 3 (Social media conversation):
+1. EXACT WORD COUNT RULE: Part 3 REQUIRES responses strictly between 30 and 40 words (inclusive) per question.
+   - Any response between 30 words and 40 words (e.g. 32, 35, 38, 40 words) IS OPTIMAL AND RECEIVES FULL TASK COMPLETION MARKS with isCorrect = true.
+   - IF WORD COUNT IS LESS THAN 30 WORDS (e.g. 18 words): YOU MUST SET detail.isCorrect = false AND taskCompletion.status = "warning" or "danger". Write natural note: "Câu trả lời chưa đủ từ theo yêu cầu (hơi ngắn)."
+   - IF WORD COUNT IS GREATER THAN 40 WORDS (e.g. 48 words): YOU MUST SET detail.isCorrect = false AND taskCompletion.status = "warning". Write natural note: "Câu trả lời vượt quá số lượng từ theo yêu cầu (hơi dài)."
+2. TOTAL QUESTIONS: There are 3 questions in Part 3. In taskCompletion.summary and details, evaluate all 3 questions (e.g. "3/3 câu hỏi").
+3. MATHEMATICAL SCORE CALCULATION FOR PART 3 (Total scale: 30 points, 10 points per sub-question):
+   - 0 total errors ➔ score = 30 (Band C1).
+   - 1 total error ➔ score = 24 (Band B2).
+   - 2 total errors ➔ score = 18 (Band B1).
+   - 3 total errors ➔ score = 12 (Band A2).`
+      : isPart2
       ? `CRITICAL RULES FOR APTIS WRITING PART 2 (Social media response):
 1. EXACT WORD COUNT RULE: Part 2 REQUIRES a response strictly between 20 and 30 words (inclusive).
    - Any response between 20 words and 30 words (e.g. 21, 25, 26, 28, 30 words) IS OPTIMAL AND RECEIVES FULL TASK COMPLETION MARKS (28-30 points) with isCorrect = true.
@@ -435,11 +528,15 @@ STRICT SEPARATION OF ASSESSMENT CRITERIA:
   * If candidate gives an OFF-TOPIC answer, mark Task Completion status as "warning" or "danger".
   * NEVER mention spelling or grammar mistakes in Task Completion summary or notes!
 - "Grammar & Spelling": Carefully check EVERY word in candidate answers for genuine spelling typos or grammatical errors.
-  * You MUST check EVERY word carefully. Create a separate correction item for EACH misspelled word or grammar typo (e.g. "lik" -> "like", "decoratin" -> "decorating", "want join" -> "want to join")!
-  * DO NOT create corrections for subjective style additions or sentence expansion (e.g. DO NOT report "my home very much" -> "my home very much, because I love decorating"). Style suggestions belong strictly under vocabulary.suggestions!
+  * You MUST check EVERY word carefully. Create a separate correction item ONLY for genuine misspelled words or real grammatical errors (e.g. "lik" -> "like", "have keep" -> "have kept", "concentrate good" -> "concentrate well")!
+  * STRICT PROHIBITION: NEVER report subjective style rewrites or optional clause rephrasing for sentences that are ALREADY 100% GRAMMATICALLY CORRECT! (For example, DO NOT report "...where the atmosphere is peaceful..." -> "...which has a peaceful atmosphere..."). If the candidate's original sentence is grammatically correct, DO NOT put it inside grammarAndSpelling.corrections!
   * NEVER put off-topic answers inside grammarAndSpelling.corrections!
-- "Vocabulary": Evaluates vocabulary range and suggests alternative advanced ENGLISH words/phrases (e.g. "breathtaking", "inspirational", "favorite pastime").
-  * ALL ITEMS inside vocabulary.suggestions MUST BE ENGLISH WORDS/PHRASES!
+- "Vocabulary": Evaluates vocabulary range and suggests alternative advanced ENGLISH words/phrases (e.g. "cutting-edge amenities", "inspirational", "favorite pastime", "urban aesthetics").
+  * CRITICAL RULE FOR vocabulary.suggestions: EVERY replacement or alternative word MUST BE AN ENGLISH WORD/PHRASE!
+  * CORRECT EXAMPLES:
+    - "Nên sử dụng cụm từ tiếng Anh 'cutting-edge amenities' hoặc 'modern conveniences' để thay cho 'modern facilities'."
+    - "Có thể dùng từ 'eco-friendly' hoặc 'sustainable' thay cho 'good for environment'."
+  * STRICT PROHIBITION: NEVER recommend candidate to replace an English phrase with a Vietnamese phrase (e.g., NEVER write "Thay thế 'state-of-the-art facilities' bằng 'các tiện ích hiện đại'"!). Both the original phrase AND the suggested alternative MUST BE IN ENGLISH!
 
 FEEDBACK LANGUAGE & PRONOUN RULES: Write all summary feedback, detail notes, error explanations, and takeaways in natural, encouraging Vietnamese.
 - ALWAYS address the candidate as "bạn" (e.g. "Bạn đã trả lời..."). NEVER use formal third-person terms like "ứng viên" or "thí sinh"!

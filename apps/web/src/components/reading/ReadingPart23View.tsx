@@ -55,10 +55,10 @@ export default function ReadingPart23View({
   return (
     <>
       <QuestionInstructionHeader>
-        The sentences below make a complete text. Put them in the correct order.
+        Put the sentences in the right order.
       </QuestionInstructionHeader>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-left">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-left mt-6">
         {/* Left Column: Target Slots */}
         <div className="bg-white rounded-xl border border-slate-300 p-4 space-y-3.5">
           {[0, 1, 2, 3, 4].map((slotIdx) => {

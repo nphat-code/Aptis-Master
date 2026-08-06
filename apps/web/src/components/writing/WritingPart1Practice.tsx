@@ -75,6 +75,15 @@ function WritingResultsView({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const cleanClub = (clubName || 'club').trim().toLowerCase();
+  const clubText = (cleanClub.startsWith('a ') || cleanClub.startsWith('an '))
+    ? cleanClub
+    : /^[aeiou]/i.test(cleanClub)
+    ? `an ${cleanClub}`
+    : `a ${cleanClub}`;
+
+  const instructionSubtitle = `You want to join ${clubText}. You have 5 messages from a member of the club. Write short answers (1–5 words) to each message. Recommended time: 3 minutes.`;
+
   if (!aiFeedback) {
     return null;
   }
@@ -90,7 +99,7 @@ function WritingResultsView({
       {/* Standard Answer Details Card */}
       <DetailedAnswersCard
         title="Chi tiết bài làm"
-        subtitle={`You are joining a ${clubName || 'Club'}. Fill out the form. Write short answers (1-5 words) for each message.`}
+        subtitle={instructionSubtitle}
       >
         <div className="space-y-4 text-left">
           {targetQuestions.map((q, idx) => {
@@ -101,18 +110,15 @@ function WritingResultsView({
             return (
               <div
                 key={idx}
-                className="rounded-2xl p-5 border border-slate-200/80 bg-white text-left space-y-3 shadow-2xs"
+                className="text-left space-y-2.5 pb-4 border-b border-slate-200/60 last:border-b-0 last:pb-0"
               >
                 {/* Question prompt */}
-                <div className="flex items-start gap-2 text-[14px]">
-                  <span className="font-normal text-slate-800">{idx + 1}.</span>
-                  <p className="font-normal text-slate-900 leading-relaxed">
-                    {q.questionText}
-                  </p>
-                </div>
+                <p className="font-normal text-slate-900 leading-relaxed text-[14px]">
+                  {q.questionText}
+                </p>
 
                 {/* User Answer */}
-                <div className="pl-6 space-y-1 text-[14px]">
+                <div className="space-y-1 text-[14px]">
                   <span className="text-xs font-semibold text-slate-600 block">Bài làm của bạn</span>
                   <p className={`font-normal p-3 rounded-xl border text-[14px] ${
                     userAns
@@ -125,7 +131,7 @@ function WritingResultsView({
 
                 {/* Model Sample Answer */}
                 {q.sampleAnswer && (
-                  <div className="pl-6 text-[14px]">
+                  <div className="text-[14px]">
                     <div className="p-3 bg-[#ecfdf5] border border-emerald-300/90 rounded-xl text-emerald-900 font-normal text-[14px] space-y-1">
                       <span className="text-xs font-bold text-emerald-800 block">💡 Bài viết mẫu</span>
                       <p className="font-normal text-emerald-950">{q.sampleAnswer}</p>
@@ -188,7 +194,7 @@ export default function WritingPart1Practice({
       testIndex={testIndex}
       totalSets={totalSets}
       topicTitle={clubName}
-      defaultTimeSeconds={360} // 6 mins for Writing Part 1
+      defaultTimeSeconds={180} // 3 mins for Writing Part 1
       subQuestionsPerSet={5}
       pointsPerSubQuestion={6} // Total max score 30
       customScore={aiScore}

@@ -34,15 +34,20 @@ export default function WritingPart1View({
   isReviewMode = false,
   showExplanation = false,
 }: WritingPart1ViewProps) {
-  const formattedClubName = clubName || 'Club';
+  const cleanClub = (clubName || 'club').trim().toLowerCase();
+  const clubText = (cleanClub.startsWith('a ') || cleanClub.startsWith('an '))
+    ? cleanClub
+    : /^[aeiou]/i.test(cleanClub)
+    ? `an ${cleanClub}`
+    : `a ${cleanClub}`;
 
   return (
     <>
       <QuestionInstructionHeader>
-        You are joining a {formattedClubName}. Fill out the form. Write short answers (1-5 words) for each message.
+        You want to join {clubText}. You have 5 messages from a member of the club. Write short answers (1–5 words) to each message. Recommended time: 3 minutes.
       </QuestionInstructionHeader>
 
-      <div className="space-y-6 text-[14px] font-normal text-slate-800 leading-relaxed text-left">
+      <div className="mt-6 space-y-6 text-[14px] font-normal text-slate-800 leading-relaxed text-left">
         {questions.map((q, idx) => {
           const answerKey = baseAnswerKey + idx;
           const selectedValue = userAnswers[answerKey] || '';
@@ -51,14 +56,11 @@ export default function WritingPart1View({
           const isAnswerChecked = isReviewMode || showExplanation;
 
           return (
-            <div key={idx} className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-2xs space-y-3">
-              {/* Question Header & Prompt */}
-              <div className="flex items-start gap-2 text-[14px]">
-                <span className="font-normal text-slate-800">{q.questionNum}.</span>
-                <p className="font-normal text-slate-900 leading-snug">
-                  {q.questionText}
-                </p>
-              </div>
+            <div key={idx} className="space-y-2">
+              {/* Question Prompt */}
+              <p className="font-normal text-slate-900 leading-snug text-[14px]">
+                {q.questionText}
+              </p>
 
               {/* Text Input Box */}
               <div className="space-y-1.5">
@@ -67,7 +69,7 @@ export default function WritingPart1View({
                   disabled={isReviewMode}
                   value={selectedValue}
                   onChange={(e) => onAnswer(answerKey, e.target.value)}
-                  placeholder="Type your answer"
+                  placeholder="Type your answer here"
                   className={`w-full px-4 py-2.5 rounded-xl text-[14px] font-normal transition-all disabled:opacity-100 resize-y min-h-[52px] ${
                     isAnswerChecked
                       ? isWordCountValid
@@ -99,13 +101,9 @@ export default function WritingPart1View({
 
               {/* Sample Model Answer Box in Review / Explanation Mode */}
               {isAnswerChecked && q.sampleAnswer && (
-                <div className="mt-3 bg-slate-50 border border-slate-200/90 rounded-xl p-3.5 space-y-1 text-left">
-                  <span className="text-xs font-bold text-slate-600 uppercase tracking-wider block">
-                    💡 Gợi ý bài mẫu (Sample Answer)
-                  </span>
-                  <p className="text-[14px] text-slate-800 font-medium italic">
-                    &ldquo;{q.sampleAnswer}&rdquo;
-                  </p>
+                <div className="mt-3 p-3 bg-[#ecfdf5] border border-emerald-300/90 rounded-xl text-emerald-900 font-normal text-[14px] space-y-1 text-left">
+                  <span className="text-xs font-bold text-emerald-800 block">💡 Bài viết mẫu</span>
+                  <p className="font-normal text-emerald-950 text-[14px]">{q.sampleAnswer}</p>
                 </div>
               )}
             </div>

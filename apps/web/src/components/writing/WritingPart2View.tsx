@@ -32,7 +32,10 @@ export default function WritingPart2View({
   isReviewMode = false,
   showExplanation = false,
 }: WritingPart2ViewProps) {
-  const formattedClubName = clubName ? clubName.replace(/^Topic:\s*/i, '').trim() : 'Club';
+  const cleanClub = clubName ? clubName.replace(/^Topic:\s*/i, '').trim() : 'Club';
+  const clubText = cleanClub.toLowerCase().startsWith('the ')
+    ? cleanClub
+    : `the ${cleanClub}`;
   const wordCount = countWords(userAnswer);
   const isWordCountValid = wordCount >= 20 && wordCount <= 30;
   const isAnswerChecked = isReviewMode || showExplanation;
@@ -40,10 +43,10 @@ export default function WritingPart2View({
   return (
     <>
       <QuestionInstructionHeader>
-        Now you&apos;ve become a new member of the {formattedClubName}. Fill in the form. Write in sentences. Use 20-30 words.
+        You are a new member of {clubText}. Fill in the form. Write in sentences. Use 20–30 words. Recommended time: 7 minutes.
       </QuestionInstructionHeader>
 
-      <div className="space-y-4 text-[14px] font-normal text-slate-800 leading-relaxed text-left">
+      <div className="space-y-4 mt-6 text-[14px] font-normal text-slate-800 leading-relaxed text-left">
         {/* Question Prompt */}
         <p className="font-normal text-slate-800 text-[14px]">
           {question.questionText}
@@ -94,13 +97,9 @@ export default function WritingPart2View({
 
         {/* Sample Answer in Review / Explanation Mode */}
         {isAnswerChecked && question.sampleAnswer && (
-          <div className="mt-3 bg-slate-50 border border-slate-200/90 rounded-xl p-3.5 space-y-1 text-left">
-            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider block">
-              💡 Gợi ý bài mẫu (Sample Answer)
-            </span>
-            <p className="text-[14px] text-slate-800 font-medium italic">
-              &ldquo;{question.sampleAnswer}&rdquo;
-            </p>
+          <div className="mt-3 p-3 bg-[#ecfdf5] border border-emerald-300/90 rounded-xl text-emerald-900 font-normal text-[14px] space-y-1 text-left">
+            <span className="text-xs font-bold text-emerald-800 block">💡 Bài viết mẫu</span>
+            <p className="font-normal text-emerald-950 text-[14px]">{question.sampleAnswer}</p>
           </div>
         )}
       </div>

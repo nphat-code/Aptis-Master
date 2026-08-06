@@ -34,18 +34,18 @@ export default function ReadingPart4View({
   return (
     <>
       <QuestionInstructionHeader>
-        Read the four texts below and answer the 7 questions.
+        Read the texts and then answer the questions below.
       </QuestionInstructionHeader>
 
       {/* 4 Passages Container */}
-      <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/80 shadow-2xs space-y-6 text-left">
+      <div className="space-y-6 text-left mt-6">
         {passages.slice(1, 5).map((text, pIdx) => {
           const personLetter = String.fromCharCode(65 + pIdx);
           const textStr = typeof text === 'string' ? text : (typeof text === 'object' && text !== null ? ((text as any).text || (text as any).question || '') : String(text || ''));
           const cleanContent = textStr.replace(/^<strong>[A-D]:<\/strong>\s*/i, '');
 
           return (
-            <div key={pIdx} className="space-y-1.5 border-b border-slate-100 last:border-none pb-5 last:pb-0">
+            <div key={pIdx} className="space-y-1.5 border-b border-slate-200/60 last:border-none pb-5 last:pb-0">
               <h4 className="font-extrabold text-[14px] text-slate-900">
                 {personLetter}
               </h4>
@@ -59,7 +59,7 @@ export default function ReadingPart4View({
       </div>
 
       {/* 7 Questions Container */}
-      <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/80 shadow-2xs space-y-4 text-left">
+      <div className="space-y-4 text-left mt-6">
         {questions.map((qItem, qIdx) => {
           const answerKey = baseAnswerKey + qIdx;
           const selectedVal = userAnswers[answerKey] || '';

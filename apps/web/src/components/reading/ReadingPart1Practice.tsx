@@ -64,7 +64,7 @@ export default function ReadingPart1Practice({
       renderDetailedAnswers={({ userAnswers }) => (
         <DetailedAnswersCard
           title="Chi tiết bài làm"
-          subtitle="Choose the word that fits in the gap."
+          subtitle="Choose one word from the list for each gap."
         >
           {allQuestionsList.map((q, idx) => {
             const userAns = userAnswers[idx] || '';

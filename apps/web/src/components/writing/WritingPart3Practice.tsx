@@ -4,28 +4,28 @@ import React, { useMemo, useState } from 'react';
 import scrapedData from '@/data/scraped_data.json';
 import BasePracticeExam from '../exam/BasePracticeExam';
 import DetailedAnswersCard from '../exam/DetailedAnswersCard';
-import WritingPart2View, { WritingPart2Item, countWords } from './WritingPart2View';
+import WritingPart3View, { WritingPart3Item, countWords } from './WritingPart3View';
 import WritingAiFeedbackCard from './WritingAiFeedbackCard';
 import { WritingAiFeedbackResponse } from '@/app/api/writing/evaluate/route';
 
-export interface WritingPart2PracticeProps {
+export interface WritingPart3PracticeProps {
   testIndex?: number;
   onExit: () => void;
 }
 
-interface WritingPart2ResultsViewProps {
+interface WritingPart3ResultsViewProps {
   userAnswers: Record<number, any>;
-  targetQuestions: WritingPart2Item[];
+  targetQuestions: WritingPart3Item[];
   clubName: string;
   onAiEvaluated?: (score: number | undefined, cefrLevel: string | undefined) => void;
 }
 
-function WritingPart2ResultsView({
+function WritingPart3ResultsView({
   userAnswers,
   targetQuestions,
   clubName,
   onAiEvaluated,
-}: WritingPart2ResultsViewProps) {
+}: WritingPart3ResultsViewProps) {
   const [aiFeedback, setAiFeedback] = useState<WritingAiFeedbackResponse | null>(null);
   const [isAiAnalyzing, setIsAiAnalyzing] = useState<boolean>(false);
   const [hasEvaluated, setHasEvaluated] = useState<boolean>(false);
@@ -48,7 +48,7 @@ function WritingPart2ResultsView({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          partId: 'part2',
+          partId: 'part3',
           clubName,
           questions: payloadQuestions,
         }),
@@ -79,15 +79,11 @@ function WritingPart2ResultsView({
     return null;
   }
 
-  const cleanClub = clubName ? clubName.replace(/^Topic:\s*/i, '').trim() : 'Club';
-  const clubText = cleanClub.toLowerCase().startsWith('the ')
-    ? cleanClub
-    : `the ${cleanClub}`;
-  const instructionSubtitle = `You are a new member of ${clubText}. Fill in the form. Write in sentences. Use 20–30 words. Recommended time: 7 minutes.`;
+  const formattedClubName = clubName ? clubName.replace(/^Topic:\s*/i, '').trim() : 'Club';
 
   return (
     <div className="space-y-6">
-      {/* AI Evaluation Card - Shared exact component across all writing parts */}
+      {/* AI Evaluation Card */}
       <WritingAiFeedbackCard
         feedback={aiFeedback}
         onReEvaluate={runAiEvaluation}
@@ -96,7 +92,7 @@ function WritingPart2ResultsView({
       {/* Standard Answer Details Card */}
       <DetailedAnswersCard
         title="Chi tiết bài làm"
-        subtitle={instructionSubtitle}
+        subtitle={`You are communicating online with other members of the ${formattedClubName}. Reply to their questions. Write in sentences. Use 30–40 words per answer. Recommended time: 10 minutes.`}
       >
         <div className="space-y-4 text-left">
           {targetQuestions.map((q, idx) => {
@@ -108,11 +104,9 @@ function WritingPart2ResultsView({
                 className="rounded-2xl p-5 border border-slate-200/80 bg-white text-left space-y-3 shadow-2xs"
               >
                 {/* Question prompt */}
-                <div className="flex items-start gap-2 text-[14px]">
-                  <p className="font-normal text-slate-900 leading-relaxed">
-                    {q.questionText}
-                  </p>
-                </div>
+                <p className="font-normal text-slate-900 leading-relaxed text-[14px]">
+                  {q.questionText}
+                </p>
 
                 {/* User Answer */}
                 <div className="space-y-1 text-[14px]">
@@ -144,10 +138,10 @@ function WritingPart2ResultsView({
   );
 }
 
-export default function WritingPart2Practice({
+export default function WritingPart3Practice({
   testIndex = 0,
   onExit,
-}: WritingPart2PracticeProps) {
+}: WritingPart3PracticeProps) {
   const isAllPractice = testIndex === -1;
   const rawWritingTests = (scrapedData as any)?.writing || {};
   const testKeys = useMemo(() => Object.keys(rawWritingTests), [rawWritingTests]);
@@ -157,18 +151,28 @@ export default function WritingPart2Practice({
 
   const safeTestIndex = isAllPractice ? 0 : (((testIndex % totalSets) + totalSets) % totalSets);
 
-  // Transform scrapedData writing questions2 into structured WritingPart2Item lists
-  const allTestQuestions: WritingPart2Item[][] = useMemo(() => {
+  // Transform scrapedData writing questions3 into structured WritingPart3Item lists
+  const allTestQuestions: WritingPart3Item[][] = useMemo(() => {
     return testKeys.map((tKey) => {
       const testObj = rawWritingTests[tKey] || {};
-      const qObj = testObj.questions2 || {};
-      const aObj = testObj.questions2_answer || {};
+      const qObj = testObj.questions3 || {};
+      const aObj = testObj.questions3_answer || {};
 
       return [
         {
-          id: `${tKey}_q2`,
-          questionText: qObj.question2 || `Tell me about your interest in ${testObj.club_name || 'this club'}.`,
-          sampleAnswer: aObj.question2 || '',
+          id: `${tKey}_q3_1`,
+          questionText: qObj.question3_1 || 'Tell me about your experience.',
+          sampleAnswer: aObj.question3_1_answer || aObj.question3_1 || '',
+        },
+        {
+          id: `${tKey}_q3_2`,
+          questionText: qObj.question3_2 || 'What is your opinion on this topic?',
+          sampleAnswer: aObj.question3_2_answer || aObj.question3_2 || '',
+        },
+        {
+          id: `${tKey}_q3_3`,
+          questionText: qObj.question3_3 || 'Please give me some advice or suggestions.',
+          sampleAnswer: aObj.question3_3_answer || aObj.question3_3 || '',
         },
       ];
     });
@@ -183,32 +187,41 @@ export default function WritingPart2Practice({
   return (
     <BasePracticeExam
       moduleName="Writing"
-      partTitle="Part 2 – Social media response"
+      partTitle="Part 3 – Social media conversation"
       testIndex={testIndex}
       totalSets={totalSets}
       topicTitle={clubName}
-      defaultTimeSeconds={420} // 7 mins for Writing Part 2
-      subQuestionsPerSet={1}
-      pointsPerSubQuestion={30} // Total max score 30
+      defaultTimeSeconds={600} // 10 mins for Writing Part 3
+      subQuestionsPerSet={3}
+      pointsPerSubQuestion={10} // Total max score 30 (10 points per sub-question)
       customScore={aiScore}
       isAnswerCorrect={(idx, val) => {
         const wc = countWords(val);
-        return wc >= 20 && wc <= 30;
+        return wc >= 30 && wc <= 40;
       }}
       onExit={onExit}
       renderQuestions={({ currentQuestionIndex, userAnswers, onAnswer, isReviewMode, showExplanation }) => {
-        const activeIdx = isAllPractice ? currentQuestionIndex : safeTestIndex;
+        const activeIdx = isAllPractice ? Math.floor(currentQuestionIndex / 3) : safeTestIndex;
         const currentQuestions = allTestQuestions[activeIdx] || allTestQuestions[0] || [];
-        const currentQuestion = currentQuestions[0] || { id: 'q2', questionText: 'Prompt', sampleAnswer: '' };
         const currentTestObj = rawWritingTests[testKeys[activeIdx]] || {};
         const activeClubName = currentTestObj.club_name ? currentTestObj.club_name.replace(/^Topic:\s*/i, '').trim() : 'Club';
 
+        // Map overall userAnswers map for the 3 subquestions of this set
+        const setAnswers: Record<number, string> = {
+          0: userAnswers[isAllPractice ? activeIdx * 3 : 0] || '',
+          1: userAnswers[isAllPractice ? activeIdx * 3 + 1 : 1] || '',
+          2: userAnswers[isAllPractice ? activeIdx * 3 + 2 : 2] || '',
+        };
+
         return (
-          <WritingPart2View
-            question={currentQuestion}
-            userAnswer={userAnswers[currentQuestionIndex] || ''}
+          <WritingPart3View
+            questions={currentQuestions}
+            userAnswers={setAnswers}
             clubName={activeClubName}
-            onAnswer={(val) => onAnswer(currentQuestionIndex, val)}
+            onAnswer={(subIdx, val) => {
+              const globalIdx = isAllPractice ? activeIdx * 3 + subIdx : subIdx;
+              onAnswer(globalIdx, val);
+            }}
             isReviewMode={isReviewMode}
             showExplanation={showExplanation}
           />
@@ -219,7 +232,7 @@ export default function WritingPart2Practice({
         const activeClubName = clubName || 'Club';
 
         return (
-          <WritingPart2ResultsView
+          <WritingPart3ResultsView
             userAnswers={userAnswers}
             targetQuestions={targetQuestions}
             clubName={activeClubName}

@@ -31,10 +31,10 @@ export default function ReadingPart1View({
   return (
     <>
       <QuestionInstructionHeader>
-        Choose the word that fits in the gap.
+        Choose one word from the list for each gap.
       </QuestionInstructionHeader>
 
-      <div className="space-y-4 text-[14px] font-normal text-slate-800 leading-relaxed text-left">
+      <div className="space-y-4 mt-6 text-[14px] font-normal text-slate-800 leading-relaxed text-left">
         {questions.map((q, idx) => {
           const answerKey = baseAnswerKey + idx;
           const selectedValue = userAnswers[answerKey] || '';

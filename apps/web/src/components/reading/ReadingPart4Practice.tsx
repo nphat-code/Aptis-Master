@@ -64,14 +64,14 @@ export default function ReadingPart4Practice({
       renderDetailedAnswers={({ userAnswers }) => (
         <DetailedAnswersCard
           title="Chi tiết bài làm"
-          subtitle="Read the four texts below and answer the 7 questions."
+          subtitle="Read the texts and then answer the questions below."
         >
           {(isAllPractice ? allQuestionsFlat : singleQuestions).map((qItem, idx) => {
             const userAns = userAnswers[idx] || '';
             const isCorr = userAns === qItem.answer;
 
             return (
-              <div key={idx} className="bg-white p-4 rounded-xl border border-slate-200/80 space-y-2 text-left shadow-2xs">
+              <div key={idx} className="space-y-2 text-left pb-3 border-b border-slate-200/60 last:border-b-0 last:pb-0">
                 <div className="text-sm font-semibold text-slate-900 flex items-start gap-2">
                   <span className="text-[#24085A] font-bold">{idx + 1}.</span>
                   <p className="text-slate-800">{qItem.question}</p>
