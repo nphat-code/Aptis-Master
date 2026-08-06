@@ -190,7 +190,7 @@ export default function WritingPart1Practice({
   return (
     <BasePracticeExam
       moduleName="Writing"
-      partTitle="Part 1 – Short answers"
+      partTitle="Part 1 – Word-level writing"
       testIndex={testIndex}
       totalSets={totalSets}
       topicTitle={clubName}

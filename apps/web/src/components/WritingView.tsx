@@ -19,10 +19,10 @@ export default function WritingView({ onBackToHome, onExamStateChange, data }: W
 
   const partTabs: PartTab[] = [
     { id: 'full', label: 'Full Part – Tất cả các Part' },
-    { id: 'part1', label: 'Part 1 – Short answers' },
-    { id: 'part2', label: 'Part 2 – Social media response' },
-    { id: 'part3', label: 'Part 3 – Three questions' },
-    { id: 'part4', label: 'Part 4 – Informal & Formal email' },
+    { id: 'part1', label: 'Part 1 – Word-level writing' },
+    { id: 'part2', label: 'Part 2 – Short text writing' },
+    { id: 'part3', label: 'Part 3 – Three written responses to questions' },
+    { id: 'part4', label: 'Part 4 – Formal and informal writing' },
   ];
 
   const partTabContent: Record<string, PartTabContent> = {
@@ -33,25 +33,25 @@ export default function WritingView({ onBackToHome, onExamStateChange, data }: W
       testCount: totalTestSets,
     },
     part1: {
-      title: 'Part 1 – Short answers',
+      title: 'Part 1 – Word-level writing',
       subtitle: `${totalTestSets} bộ đề luyện tập`,
       badge: 'Part 1',
       testCount: totalTestSets,
     },
     part2: {
-      title: 'Part 2 – Social media response',
+      title: 'Part 2 – Short text writing',
       subtitle: `${totalTestSets} bộ đề luyện tập`,
       badge: 'Part 2',
       testCount: totalTestSets,
     },
     part3: {
-      title: 'Part 3 – Three questions',
+      title: 'Part 3 – Three written responses to questions',
       subtitle: `${totalTestSets} bộ đề luyện tập`,
       badge: 'Part 3',
       testCount: totalTestSets,
     },
     part4: {
-      title: 'Part 4 – Informal & Formal email',
+      title: 'Part 4 – Formal and informal writing',
       subtitle: `${totalTestSets} bộ đề luyện tập`,
       badge: 'Part 4',
       testCount: totalTestSets,
@@ -158,28 +158,28 @@ export default function WritingView({ onBackToHome, onExamStateChange, data }: W
         if (partId === 'part1') {
           return {
             title: titleText,
-            subtitle: '✍️ Short answers (5 câu trả lời ngắn) • 3 phút',
+            subtitle: '✍️ Word-level writing (5 câu trả lời ngắn) • 3 phút',
             badge: 'Part 1',
           };
         }
         if (partId === 'part2') {
           return {
             title: titleText,
-            subtitle: '✍️ Social media response (20-30 từ) • 7 phút',
+            subtitle: '✍️ Short text writing (20-30 từ) • 7 phút',
             badge: 'Part 2',
           };
         }
         if (partId === 'part3') {
           return {
             title: titleText,
-            subtitle: '✍️ Three questions (3 tin nhắn 30-40 từ) • 10 phút',
+            subtitle: '✍️ Three written responses to questions (3 tin nhắn 30-40 từ) • 10 phút',
             badge: 'Part 3',
           };
         }
         if (partId === 'part4') {
           return {
             title: titleText,
-            subtitle: '✍️ Formal & Informal Email (2 bài) • 30 phút',
+            subtitle: '✍️ Formal and informal writing (2 bài) • 30 phút',
             badge: 'Part 4',
           };
         }

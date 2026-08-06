@@ -183,7 +183,7 @@ export default function WritingPart2Practice({
   return (
     <BasePracticeExam
       moduleName="Writing"
-      partTitle="Part 2 – Social media response"
+      partTitle="Part 2 – Short text writing"
       testIndex={testIndex}
       totalSets={totalSets}
       topicTitle={clubName}
