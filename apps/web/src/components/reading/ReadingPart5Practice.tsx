@@ -46,7 +46,7 @@ export default function ReadingPart5Practice({
   return (
     <BasePracticeExam
       moduleName="Reading"
-      partTitle="Part 5 – Long reading"
+      partTitle="Part 5 – Long text comprehension"
       testIndex={testIndex}
       totalSets={totalSets}
       topicTitle={topicTitle}

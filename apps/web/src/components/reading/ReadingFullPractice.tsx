@@ -101,7 +101,7 @@ export default function ReadingFullPractice({
     'Part 2 + 3 – Text Cohesion',
     'Part 2 + 3 – Text Cohesion',
     'Part 4 – Opinion matching',
-    'Part 5 – Long reading',
+    'Part 5 – Long text comprehension',
   ];
 
   // Answer validation helper for subquestions 0..28
@@ -286,7 +286,7 @@ export default function ReadingFullPractice({
           { name: 'Part 2 – Text cohesion', correct: p2Correct, total: 5, score: p2Score, maxScore: 5 },
           { name: 'Part 3 – Text cohesion', correct: p3Correct, total: 5, score: p3Score, maxScore: 5 },
           { name: 'Part 4 – Opinion matching', correct: p4Correct, total: 7, score: p4Score, maxScore: 16 },
-          { name: 'Part 5 – Long reading', correct: p5Correct, total: 7, score: p5Score, maxScore: 14 },
+          { name: 'Part 5 – Long text comprehension', correct: p5Correct, total: 7, score: p5Score, maxScore: 14 },
         ];
 
         return (

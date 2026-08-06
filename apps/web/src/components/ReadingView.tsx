@@ -28,7 +28,7 @@ export default function ReadingView({ onBackToHome, onExamStateChange, data }: R
     { id: 'part1', label: 'Part 1 – Sentence comprehension' },
     { id: 'part23', label: 'Part 2 + 3 – Text cohesion' },
     { id: 'part4', label: 'Part 4 – Opinion matching' },
-    { id: 'part5', label: 'Part 5 – Long reading' },
+    { id: 'part5', label: 'Part 5 – Long text comprehension' },
   ];
 
   const partTabContent: Record<string, PartTabContent> = {
@@ -57,7 +57,7 @@ export default function ReadingView({ onBackToHome, onExamStateChange, data }: R
       testCount: part4TotalCount,
     },
     part5: {
-      title: 'Part 5 – Long reading',
+      title: 'Part 5 – Long text comprehension',
       subtitle: `${part5TotalCount} bộ đề luyện tập`,
       badge: 'Part 5',
       testCount: part5TotalCount,

@@ -92,7 +92,7 @@ export default function ExamPracticeLayout({
         { title: 'Part 2 – Text cohesion', startIndex: 5, count: 5, targetPartIndex: 1 },
         { title: 'Part 3 – Text cohesion', startIndex: 10, count: 5, targetPartIndex: 2 },
         { title: 'Part 4 – Opinion matching', startIndex: 15, count: 7, targetPartIndex: 3 },
-        { title: 'Part 5 – Long reading', startIndex: 22, count: 7, targetPartIndex: 4 },
+        { title: 'Part 5 – Long text comprehension', startIndex: 22, count: 7, targetPartIndex: 4 },
       ];
     }
     if (customTotalSubQuestions === 25 && totalQuestions === 17) {
