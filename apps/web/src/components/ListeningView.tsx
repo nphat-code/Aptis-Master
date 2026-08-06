@@ -152,15 +152,17 @@ export default function ListeningView({ onBackToHome, onExamStateChange, data }:
         if (partId === 'full') {
           return {
             title: `Đề ${testNumberStr} - Listening Full Part`,
-            subtitle: '🎧 4 Parts (17 đoạn ghi âm) • 40 phút',
+            subtitle: '🎧 4 Parts (17 đoạn ghi âm)',
             badge: 'Full Part',
+            durationText: '40 phút',
           };
         }
         if (partId === 'part1') {
           return {
             title: `Đề ${testNumberStr} - Listening Part 1`,
-            subtitle: '🎧 Information recognition (13 câu) • 8 phút',
+            subtitle: '🎧 Information recognition (13 câu)',
             badge: 'Part 1',
+            durationText: '8 phút',
           };
         }
         if (partId === 'part2') {
@@ -173,8 +175,9 @@ export default function ListeningView({ onBackToHome, onExamStateChange, data }:
 
           return {
             title: titleText,
-            subtitle: '🎧 Information matching (4 người nói) • 10 phút',
+            subtitle: '🎧 Information matching (4 người nói)',
             badge: 'Part 2',
+            durationText: '10 phút',
           };
         }
         if (partId === 'part3') {
@@ -187,8 +190,9 @@ export default function ListeningView({ onBackToHome, onExamStateChange, data }:
 
           return {
             title: titleText,
-            subtitle: '🎧 Inference - discussion (Hội thoại Nam & Nữ) • 10 phút',
+            subtitle: '🎧 Inference - discussion (Hội thoại Nam & Nữ)',
             badge: 'Part 3',
+            durationText: '10 phút',
           };
         }
         if (partId === 'part4') {
@@ -202,8 +206,9 @@ export default function ListeningView({ onBackToHome, onExamStateChange, data }:
 
           return {
             title: titleText,
-            subtitle: '🎧 Inference - longer monologues (2 bài phát biểu) • 12 phút',
+            subtitle: '🎧 Inference - longer monologues (2 bài phát biểu)',
             badge: 'Part 4',
+            durationText: '12 phút',
           };
         }
         return null;

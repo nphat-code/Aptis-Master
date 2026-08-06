@@ -21,7 +21,7 @@ export function TestPracticeCard({
   subtitle = 'Đề thi mô phỏng cấu trúc chuẩn ESOL 2026',
   actionText = 'Luyện tập',
   durationText = '30 phút',
-  levelText = 'Chuẩn ESOL 2026',
+  levelText = '',
   onClick,
 }: TestPracticeCardProps) {
   return (
@@ -79,10 +79,11 @@ export function TestPracticeCard({
             <span className="material-symbols-outlined text-[17px] text-[#4edea3]">schedule</span>
             <span>{durationText}</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-[17px] text-[#4edea3]">verified</span>
-            <span>{levelText}</span>
-          </div>
+          {levelText && (
+            <div className="flex items-center gap-1.5">
+              <span>{levelText}</span>
+            </div>
+          )}
         </div>
 
         {/* CTA Action Button */}

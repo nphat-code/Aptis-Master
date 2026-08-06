@@ -151,36 +151,41 @@ export default function WritingView({ onBackToHome, onExamStateChange, data }: W
         if (partId === 'full') {
           return {
             title: titleText,
-            subtitle: '✍️ 4 Parts (5 bài viết) • 50 phút',
+            subtitle: '✍️ 4 Parts (5 bài viết)',
             badge: 'Full Part',
+            durationText: '50 phút',
           };
         }
         if (partId === 'part1') {
           return {
             title: titleText,
-            subtitle: '✍️ Word-level writing (5 câu trả lời ngắn) • 3 phút',
+            subtitle: '✍️ Word-level writing (5 câu trả lời ngắn)',
             badge: 'Part 1',
+            durationText: '3 phút',
           };
         }
         if (partId === 'part2') {
           return {
             title: titleText,
-            subtitle: '✍️ Short text writing (20-30 từ) • 7 phút',
+            subtitle: '✍️ Short text writing (20-30 từ)',
             badge: 'Part 2',
+            durationText: '7 phút',
           };
         }
         if (partId === 'part3') {
           return {
             title: titleText,
-            subtitle: '✍️ Three written responses to questions (3 tin nhắn 30-40 từ) • 10 phút',
+            subtitle: '✍️ Three written responses to questions (3 tin nhắn 30-40 từ)',
             badge: 'Part 3',
+            durationText: '10 phút',
           };
         }
         if (partId === 'part4') {
           return {
             title: titleText,
-            subtitle: '✍️ Formal and informal writing (2 bài) • 30 phút',
+            subtitle: '✍️ Formal and informal writing (2 bài)',
             badge: 'Part 4',
+            durationText: '30 phút',
           };
         }
         return null;

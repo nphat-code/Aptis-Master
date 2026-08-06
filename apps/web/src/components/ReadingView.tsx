@@ -167,16 +167,18 @@ export default function ReadingView({ onBackToHome, onExamStateChange, data }: R
           const testNumberStr = testNum < 10 ? '0' + testNum : `${testNum}`;
           return {
             title: `Đề ${testNumberStr}`,
-            subtitle: '📖 Đầy đủ 5 Part (29 câu) • 35 phút',
+            subtitle: '📖 Đầy đủ 5 Part (29 câu)',
             badge: 'Full Part',
+            durationText: '35 phút',
           };
         }
         if (partId === 'part1') {
           const testNumberStr = testNum < 10 ? '0' + testNum : `${testNum}`;
           return {
             title: `Đề ${testNumberStr} - Reading Part 1`,
-            subtitle: '📖 Điền từ vào đoạn văn (5 câu) • 6 phút',
+            subtitle: '📖 Điền từ vào đoạn văn (5 câu)',
             badge: 'Part 1',
+            durationText: '6 phút',
           };
         }
         if (partId === 'part23') {
@@ -185,8 +187,9 @@ export default function ReadingView({ onBackToHome, onExamStateChange, data }: R
           const testNumberStr = testNum < 10 ? '0' + testNum : `${testNum}`;
           return {
             title: `Đề ${testNumberStr}${topicTitle ? ` - ${topicTitle}` : ''}`,
-            subtitle: '📖 1 bài đọc (5 câu) • 7 phút',
+            subtitle: '📖 1 bài đọc (5 câu)',
             badge: 'Part 2+3',
+            durationText: '7 phút',
           };
         }
         if (partId === 'part4') {
@@ -195,8 +198,9 @@ export default function ReadingView({ onBackToHome, onExamStateChange, data }: R
           const testNumberStr = testNum < 10 ? '0' + testNum : `${testNum}`;
           return {
             title: `Đề ${testNumberStr}${topicTitle ? ` - ${topicTitle}` : ''}`,
-            subtitle: '📖 4 đoạn văn (7 câu) • 7 phút',
+            subtitle: '📖 4 đoạn văn (7 câu)',
             badge: 'Part 4',
+            durationText: '7 phút',
           };
         }
         if (partId === 'part5') {
@@ -205,8 +209,9 @@ export default function ReadingView({ onBackToHome, onExamStateChange, data }: R
           const testNumberStr = testNum < 10 ? '0' + testNum : `${testNum}`;
           return {
             title: `Đề ${testNumberStr}${topicTitle ? ` - ${topicTitle}` : ''}`,
-            subtitle: '📖 1 bài đọc dài (7 đoạn văn) • 15 phút',
+            subtitle: '📖 1 bài đọc dài (7 đoạn văn)',
             badge: 'Part 5',
+            durationText: '15 phút',
           };
         }
         return null;

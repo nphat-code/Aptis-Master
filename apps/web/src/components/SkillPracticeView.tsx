@@ -31,7 +31,7 @@ export interface SkillPracticeViewProps {
   supportedPartIds?: string[];
   onExamStateChange?: (isExamActive: boolean) => void;
   renderPracticeExam?: (props: { partId: string; testIndex: number; onExit: () => void }) => React.ReactNode;
-  getCustomCardProps?: (partId: string, testNum: number) => { title?: string; subtitle?: string; badge?: string } | null;
+  getCustomCardProps?: (partId: string, testNum: number) => { title?: string; subtitle?: string; badge?: string; durationText?: string } | null;
   getMarathonCardProps?: (partId: string) => { title: string; subtitle: string; totalCount: number } | null;
 }
 
@@ -324,6 +324,7 @@ export default function SkillPracticeView({
                 const cardTitle = customProps?.title || `Đề ${testNumberStr} - ${currentTabInfo.badge}`;
                 const cardSubtitle = customProps?.subtitle || 'Đề thi mô phỏng cấu trúc chuẩn ESOL 2026';
                 const cardBadge = customProps?.badge || currentTabInfo.badge;
+                const cardDuration = (customProps as any)?.durationText;
 
                 if (
                   searchTerm &&
@@ -348,6 +349,7 @@ export default function SkillPracticeView({
                       badge={cardBadge}
                       isMarathon={false}
                       subtitle={cardSubtitle}
+                      durationText={cardDuration}
                       actionText={activePartTab === 'full' ? 'Bắt đầu luyện tập' : 'Luyện tập'}
                       onClick={() => {
                         if (isCurrentPartSupported) {
