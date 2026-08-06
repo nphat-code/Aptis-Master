@@ -51,9 +51,8 @@ function generateLocalFallbackEvaluation(
   let validCount = 0;
   const isPart2 = partId.toLowerCase() === 'part2';
   const isPart3 = partId.toLowerCase() === 'part3';
-  const total = questions.length || (isPart2 ? 1 : isPart3 ? 3 : 5);
-  const minWords = isPart3 ? 30 : isPart2 ? 20 : 1;
-  const maxWords = isPart3 ? 40 : isPart2 ? 30 : 5;
+  const isPart4 = partId.toLowerCase() === 'part4';
+  const total = questions.length || (isPart2 ? 1 : isPart4 ? 2 : isPart3 ? 3 : 5);
 
   const corrections: RuleCorrection[] = [];
   const details: Array<{ questionIndex: number; isCorrect: boolean; note: string }> = [];
@@ -62,6 +61,8 @@ function generateLocalFallbackEvaluation(
     const qNum = idx + 1;
     const ans = (q.userAnswer || '').trim();
     const words = ans ? ans.split(/\s+/).filter(Boolean).length : 0;
+    const minWords = isPart4 ? (idx === 0 ? 40 : 120) : isPart3 ? 30 : isPart2 ? 20 : 1;
+    const maxWords = isPart4 ? (idx === 0 ? 60 : 150) : isPart3 ? 40 : isPart2 ? 30 : 5;
 
     if (words >= minWords && words <= maxWords) {
       validCount++;
@@ -86,7 +87,7 @@ function generateLocalFallbackEvaluation(
         questionIndex: qNum,
         original: ans,
         correction: ans,
-        explanation: words < minWords ? `Bài viết chưa đạt số lượng từ quy định của ${isPart3 ? 'Part 3 (30-40 từ)' : 'Part 2 (20-30 từ)'}.` : `Bài viết vượt quá số lượng từ quy định của ${isPart3 ? 'Part 3 (30-40 từ)' : 'Part 2 (20-30 từ)'}.`,
+        explanation: words < minWords ? `Bài viết chưa đạt số lượng từ quy định (${minWords}-${maxWords} từ).` : `Bài viết vượt quá số lượng từ quy định (${minWords}-${maxWords} từ).`,
       });
     }
   });

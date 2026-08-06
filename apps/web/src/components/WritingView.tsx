@@ -6,6 +6,7 @@ import scrapedData from '@/data/scraped_data.json';
 import WritingPart1Practice from './writing/WritingPart1Practice';
 import WritingPart2Practice from './writing/WritingPart2Practice';
 import WritingPart3Practice from './writing/WritingPart3Practice';
+import WritingPart4Practice from './writing/WritingPart4Practice';
 
 interface WritingViewProps {
   onBackToHome?: () => void;
@@ -194,6 +195,9 @@ export default function WritingView({ onBackToHome, onExamStateChange, data }: W
         }
         if (partId === 'part3') {
           return <WritingPart3Practice testIndex={testIndex} onExit={onExit} />;
+        }
+        if (partId === 'part4') {
+          return <WritingPart4Practice testIndex={testIndex} onExit={onExit} />;
         }
         return (
           <div className="max-w-xl mx-auto my-12 p-8 bg-white rounded-2xl border border-slate-200 text-center space-y-4 shadow-sm">
