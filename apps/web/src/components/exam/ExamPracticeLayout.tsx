@@ -97,10 +97,10 @@ export default function ExamPracticeLayout({
     }
     if (customTotalSubQuestions === 25 && totalQuestions === 17) {
       return [
-        { title: 'Part 1 – Word recognition', startIndex: 0, count: 13, targetPartIndex: 0 },
-        { title: 'Part 2 – Matching information', startIndex: 13, count: 4, targetPartIndex: 13 },
-        { title: 'Part 3 – Short conversations', startIndex: 17, count: 4, targetPartIndex: 14 },
-        { title: 'Part 4 – Monologues', startIndex: 21, count: 4, targetPartIndex: 15 },
+        { title: 'Part 1 – Information recognition', startIndex: 0, count: 13, targetPartIndex: 0 },
+        { title: 'Part 2 – Information matching', startIndex: 13, count: 4, targetPartIndex: 13 },
+        { title: 'Part 3 – Inference - discussion', startIndex: 17, count: 4, targetPartIndex: 14 },
+        { title: 'Part 4 – Inference - longer monologues', startIndex: 21, count: 4, targetPartIndex: 15 },
       ];
     }
     return [

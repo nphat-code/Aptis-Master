@@ -83,7 +83,7 @@ export default function ListeningPart4Practice({
   return (
     <BasePracticeExam
       moduleName="Listening"
-      partTitle="Part 4 – Monologues"
+      partTitle="Part 4 – Inference - longer monologues"
       testIndex={testIndex}
       totalSets={totalSetsCount}
       defaultTimeSeconds={720} // 12 mins
@@ -194,7 +194,7 @@ export default function ListeningPart4Practice({
                                       </div>
                                     )}
                                     <span className="font-bold text-slate-900">
-                                      {qItem.question}
+                                      {qItem.question.replace(/^(\d+\.\d+|\d+[\.\)])\s*/, '')}
                                     </span>
                                   </div>
 

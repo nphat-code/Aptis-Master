@@ -22,10 +22,10 @@ export default function ListeningView({ onBackToHome, onExamStateChange, data }:
 
   const partTabs: PartTab[] = [
     { id: 'full', label: 'Full Part – Tất cả các Part' },
-    { id: 'part1', label: 'P.1 – Word recognition (Câu 1 - 13)' },
-    { id: 'part2', label: 'P.2 – Matching information (Câu 14)' },
-    { id: 'part3', label: 'P.3 – Short conversations (Câu 15)' },
-    { id: 'part4', label: 'P.4 – Monologues (Câu 16 - 17)' },
+    { id: 'part1', label: 'Part 1 – Information recognition' },
+    { id: 'part2', label: 'Part 2 – Information matching' },
+    { id: 'part3', label: 'Part 3 – Inference - discussion' },
+    { id: 'part4', label: 'Part 4 – Inference - longer monologues' },
   ];
 
   const partTabContent: Record<string, PartTabContent> = {
@@ -36,27 +36,27 @@ export default function ListeningView({ onBackToHome, onExamStateChange, data }:
       testCount: totalTestSets,
     },
     part1: {
-      title: 'P.1 – Word recognition (Câu 1 - 13)',
+      title: 'Part 1 – Information recognition',
       subtitle: `${totalTestSets} bộ đề luyện tập`,
-      badge: 'P.1',
+      badge: 'Part 1',
       testCount: totalTestSets,
     },
     part2: {
-      title: 'P.2 – Matching information (Câu 14)',
+      title: 'Part 2 – Information matching',
       subtitle: `${totalTestSets} bộ đề luyện tập`,
-      badge: 'P.2',
+      badge: 'Part 2',
       testCount: totalTestSets,
     },
     part3: {
-      title: 'P.3 – Short conversations (Câu 15)',
+      title: 'Part 3 – Inference - discussion',
       subtitle: `${totalTestSets} bộ đề luyện tập`,
-      badge: 'P.3',
+      badge: 'Part 3',
       testCount: totalTestSets,
     },
     part4: {
-      title: 'P.4 – Monologues (Câu 16 - 17)',
+      title: 'Part 4 – Inference - longer monologues',
       subtitle: `${totalTestSets} bộ đề luyện tập`,
-      badge: 'P.4',
+      badge: 'Part 4',
       testCount: totalTestSets,
     },
   };
@@ -159,8 +159,8 @@ export default function ListeningView({ onBackToHome, onExamStateChange, data }:
         if (partId === 'part1') {
           return {
             title: `Đề ${testNumberStr} - Listening Part 1`,
-            subtitle: '🎧 Word recognition (13 câu) • 8 phút',
-            badge: 'P.1',
+            subtitle: '🎧 Information recognition (13 câu) • 8 phút',
+            badge: 'Part 1',
           };
         }
         if (partId === 'part2') {
@@ -173,8 +173,8 @@ export default function ListeningView({ onBackToHome, onExamStateChange, data }:
 
           return {
             title: titleText,
-            subtitle: '🎧 Matching information (4 người nói) • 10 phút',
-            badge: 'P.2',
+            subtitle: '🎧 Information matching (4 người nói) • 10 phút',
+            badge: 'Part 2',
           };
         }
         if (partId === 'part3') {
@@ -187,8 +187,8 @@ export default function ListeningView({ onBackToHome, onExamStateChange, data }:
 
           return {
             title: titleText,
-            subtitle: '🎧 Short conversations (Hội thoại Nam & Nữ) • 10 phút',
-            badge: 'P.3',
+            subtitle: '🎧 Inference - discussion (Hội thoại Nam & Nữ) • 10 phút',
+            badge: 'Part 3',
           };
         }
         if (partId === 'part4') {
@@ -202,8 +202,8 @@ export default function ListeningView({ onBackToHome, onExamStateChange, data }:
 
           return {
             title: titleText,
-            subtitle: '🎧 Monologues (2 bài phát biểu) • 12 phút',
-            badge: 'P.4',
+            subtitle: '🎧 Inference - longer monologues (2 bài phát biểu) • 12 phút',
+            badge: 'Part 4',
           };
         }
         return null;

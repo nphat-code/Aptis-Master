@@ -51,7 +51,7 @@ export default function ListeningPart1Practice({
   return (
     <BasePracticeExam
       moduleName="Listening"
-      partTitle="Part 1 – Word Recognition"
+      partTitle="Part 1 – Information recognition"
       testIndex={testIndex}
       totalSets={totalSets}
       defaultTimeSeconds={480} // 8 mins

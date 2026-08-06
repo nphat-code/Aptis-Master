@@ -310,10 +310,10 @@ export default function ListeningFullPractice({
         const totalScore = p1Score + p2Score + p3Score + p4Score;
 
         const partsData = [
-          { name: 'Part 1 – Word recognition', correct: p1Correct, total: 13, score: p1Score, maxScore: 26 },
-          { name: 'Part 2 – Matching information', correct: p2Correct, total: 4, score: p2Score, maxScore: 8 },
-          { name: 'Part 3 – Short conversations', correct: p3Correct, total: 4, score: p3Score, maxScore: 8 },
-          { name: 'Part 4 – Monologues', correct: p4Correct, total: 4, score: p4Score, maxScore: 8 },
+          { name: 'Part 1 – Information recognition', correct: p1Correct, total: 13, score: p1Score, maxScore: 26 },
+          { name: 'Part 2 – Information matching', correct: p2Correct, total: 4, score: p2Score, maxScore: 8 },
+          { name: 'Part 3 – Inference - discussion', correct: p3Correct, total: 4, score: p3Score, maxScore: 8 },
+          { name: 'Part 4 – Inference - longer monologues', correct: p4Correct, total: 4, score: p4Score, maxScore: 8 },
         ];
 
         const speakers = ['Speaker A', 'Speaker B', 'Speaker C', 'Speaker D'];
@@ -598,7 +598,7 @@ export default function ListeningFullPractice({
                                   {isCorr ? '✓' : '✕'}
                                 </div>
                                 <span className={`font-bold text-base ${isCorr ? 'text-emerald-950' : 'text-red-950'}`}>
-                                  Câu {qIdx + 1}: {q.question}
+                                  {q.question.replace(/^(\d+\.\d+|\d+[\.\)])\s*/, '')}
                                 </span>
                               </div>
 

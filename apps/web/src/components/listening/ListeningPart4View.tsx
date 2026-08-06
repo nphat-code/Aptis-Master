@@ -77,12 +77,9 @@ export function ListeningPart4View({
                 return (
                   <div key={qIdx} className="space-y-3">
                     {/* Question Text */}
-                    <div className="flex items-start gap-2 text-[14px]">
-                      <span className="font-bold text-[#24085A] shrink-0">
-                        {qIdx + 1}.
-                      </span>
+                    <div className="text-[14px]">
                       <p className="text-[14px] font-medium text-slate-900 leading-snug">
-                        {qItem.question}
+                        {qItem.question.replace(/^(\d+\.\d+|\d+[\.\)])\s*/, '')}
                       </p>
                     </div>
 

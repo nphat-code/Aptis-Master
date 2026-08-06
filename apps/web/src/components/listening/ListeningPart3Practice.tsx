@@ -63,7 +63,7 @@ export default function ListeningPart3Practice({
   return (
     <BasePracticeExam
       moduleName="Listening"
-      partTitle="Part 3 – Short Conversations"
+      partTitle="Part 3 – Inference - discussion"
       testIndex={testIndex}
       totalSets={totalSetsCount}
       defaultTimeSeconds={600} // 10 mins as requested

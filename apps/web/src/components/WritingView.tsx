@@ -35,25 +35,25 @@ export default function WritingView({ onBackToHome, onExamStateChange, data }: W
     part1: {
       title: 'Part 1 – Short answers',
       subtitle: `${totalTestSets} bộ đề luyện tập`,
-      badge: 'P.1',
+      badge: 'Part 1',
       testCount: totalTestSets,
     },
     part2: {
       title: 'Part 2 – Social media response',
       subtitle: `${totalTestSets} bộ đề luyện tập`,
-      badge: 'P.2',
+      badge: 'Part 2',
       testCount: totalTestSets,
     },
     part3: {
       title: 'Part 3 – Three questions',
       subtitle: `${totalTestSets} bộ đề luyện tập`,
-      badge: 'P.3',
+      badge: 'Part 3',
       testCount: totalTestSets,
     },
     part4: {
       title: 'Part 4 – Informal & Formal email',
       subtitle: `${totalTestSets} bộ đề luyện tập`,
-      badge: 'P.4',
+      badge: 'Part 4',
       testCount: totalTestSets,
     },
   };
@@ -159,28 +159,28 @@ export default function WritingView({ onBackToHome, onExamStateChange, data }: W
           return {
             title: titleText,
             subtitle: '✍️ Short answers (5 câu trả lời ngắn) • 3 phút',
-            badge: 'P.1',
+            badge: 'Part 1',
           };
         }
         if (partId === 'part2') {
           return {
             title: titleText,
             subtitle: '✍️ Social media response (20-30 từ) • 7 phút',
-            badge: 'P.2',
+            badge: 'Part 2',
           };
         }
         if (partId === 'part3') {
           return {
             title: titleText,
             subtitle: '✍️ Three questions (3 tin nhắn 30-40 từ) • 10 phút',
-            badge: 'P.3',
+            badge: 'Part 3',
           };
         }
         if (partId === 'part4') {
           return {
             title: titleText,
             subtitle: '✍️ Formal & Informal Email (2 bài) • 30 phút',
-            badge: 'P.4',
+            badge: 'Part 4',
           };
         }
         return null;
