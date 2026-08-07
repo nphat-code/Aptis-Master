@@ -17,6 +17,7 @@ interface WritingPart2ResultsViewProps {
   userAnswers: Record<number, any>;
   targetQuestions: WritingPart2Item[];
   clubName: string;
+  onRetake?: () => void;
   onAiEvaluated?: (score: number | undefined, cefrLevel: string | undefined) => void;
 }
 
@@ -24,6 +25,7 @@ function WritingPart2ResultsView({
   userAnswers,
   targetQuestions,
   clubName,
+  onRetake,
   onAiEvaluated,
 }: WritingPart2ResultsViewProps) {
   const [aiFeedback, setAiFeedback] = useState<WritingAiFeedbackResponse | null>(null);
@@ -90,12 +92,15 @@ function WritingPart2ResultsView({
       {/* AI Evaluation Card - Shared exact component across all writing parts */}
       <WritingAiFeedbackCard
         feedback={aiFeedback}
+        partTitle="Kết Quả Đánh Giá Writing - Part 2"
+        clubName={clubName}
         onReEvaluate={runAiEvaluation}
+        onRetake={onRetake}
       />
 
       {/* Standard Answer Details Card */}
       <DetailedAnswersCard
-        title="Chi tiết bài làm"
+        title="Đánh giá chi tiết từng câu"
         subtitle={instructionSubtitle}
       >
         <div className="space-y-4 text-left">
@@ -130,7 +135,10 @@ function WritingPart2ResultsView({
                 {q.sampleAnswer && (
                   <div className="text-[14px]">
                     <div className="p-3 bg-[#ecfdf5] border border-emerald-300/90 rounded-xl text-emerald-900 font-normal text-[14px] space-y-1">
-                      <span className="text-xs font-bold text-emerald-800 block">💡 Bài viết mẫu</span>
+                      <span className="text-xs font-bold text-[#064e3b] uppercase tracking-wider flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[16px]">lightbulb</span>
+                        <span>Bài mẫu tham khảo</span>
+                      </span>
                       <p className="font-normal text-emerald-950">{q.sampleAnswer}</p>
                     </div>
                   </div>
@@ -214,7 +222,7 @@ export default function WritingPart2Practice({
           />
         );
       }}
-      renderDetailedAnswers={({ userAnswers }) => {
+      renderDetailedAnswers={({ userAnswers, onRetake }) => {
         const targetQuestions = isAllPractice ? allQuestionsFlat : singleTestQuestions;
         const activeClubName = clubName || 'Club';
 
@@ -223,6 +231,7 @@ export default function WritingPart2Practice({
             userAnswers={userAnswers}
             targetQuestions={targetQuestions}
             clubName={activeClubName}
+            onRetake={onRetake}
             onAiEvaluated={(score) => {
               setAiScore(score);
             }}

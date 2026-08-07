@@ -17,6 +17,7 @@ interface WritingPart3ResultsViewProps {
   userAnswers: Record<number, any>;
   targetQuestions: WritingPart3Item[];
   clubName: string;
+  onRetake?: () => void;
   onAiEvaluated?: (score: number | undefined, cefrLevel: string | undefined) => void;
 }
 
@@ -24,6 +25,7 @@ function WritingPart3ResultsView({
   userAnswers,
   targetQuestions,
   clubName,
+  onRetake,
   onAiEvaluated,
 }: WritingPart3ResultsViewProps) {
   const [aiFeedback, setAiFeedback] = useState<WritingAiFeedbackResponse | null>(null);
@@ -86,12 +88,15 @@ function WritingPart3ResultsView({
       {/* AI Evaluation Card */}
       <WritingAiFeedbackCard
         feedback={aiFeedback}
+        partTitle="Kết Quả Đánh Giá Writing - Part 3"
+        clubName={clubName}
         onReEvaluate={runAiEvaluation}
+        onRetake={onRetake}
       />
 
       {/* Standard Answer Details Card */}
       <DetailedAnswersCard
-        title="Chi tiết bài làm"
+        title="Đánh giá chi tiết từng câu"
         subtitle={`You are communicating online with other members of the ${formattedClubName}. Reply to their questions. Write in sentences. Use 30–40 words per answer. Recommended time: 10 minutes.`}
       >
         <div className="space-y-4 text-left">
@@ -227,7 +232,7 @@ export default function WritingPart3Practice({
           />
         );
       }}
-      renderDetailedAnswers={({ userAnswers }) => {
+      renderDetailedAnswers={({ userAnswers, onRetake }) => {
         const targetQuestions = isAllPractice ? allQuestionsFlat : singleTestQuestions;
         const activeClubName = clubName || 'Club';
 
@@ -236,6 +241,7 @@ export default function WritingPart3Practice({
             userAnswers={userAnswers}
             targetQuestions={targetQuestions}
             clubName={activeClubName}
+            onRetake={onRetake}
             onAiEvaluated={(score) => {
               setAiScore(score);
             }}

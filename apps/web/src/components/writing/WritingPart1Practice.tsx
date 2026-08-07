@@ -17,6 +17,7 @@ interface WritingResultsViewProps {
   userAnswers: Record<number, any>;
   targetQuestions: WritingPart1Item[];
   clubName: string;
+  onRetake?: () => void;
   onAiEvaluated?: (score: number | undefined, cefrLevel: string | undefined) => void;
 }
 
@@ -24,6 +25,7 @@ function WritingResultsView({
   userAnswers,
   targetQuestions,
   clubName,
+  onRetake,
   onAiEvaluated,
 }: WritingResultsViewProps) {
   const [aiFeedback, setAiFeedback] = useState<WritingAiFeedbackResponse | null>(null);
@@ -93,12 +95,15 @@ function WritingResultsView({
       {/* AI Evaluation Card */}
       <WritingAiFeedbackCard
         feedback={aiFeedback}
+        partTitle="Kết Quả Đánh Giá Writing - Part 1"
+        clubName={clubName}
         onReEvaluate={runAiEvaluation}
+        onRetake={onRetake}
       />
 
       {/* Standard Answer Details Card */}
       <DetailedAnswersCard
-        title="Chi tiết bài làm"
+        title="Đánh giá chi tiết từng câu"
         subtitle={instructionSubtitle}
       >
         <div className="space-y-4 text-left">
@@ -110,34 +115,40 @@ function WritingResultsView({
             return (
               <div
                 key={idx}
-                className="text-left space-y-2.5 pb-4 border-b border-slate-200/60 last:border-b-0 last:pb-0"
+                className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs space-y-0 text-left"
               >
-                {/* Question prompt */}
-                <p className="font-normal text-slate-900 leading-relaxed text-[14px]">
-                  {q.questionText}
-                </p>
-
-                {/* User Answer */}
-                <div className="space-y-1 text-[14px]">
-                  <span className="text-xs font-semibold text-slate-600 block">Bài làm của bạn</span>
-                  <p className={`font-normal p-3 rounded-xl border text-[14px] ${
-                    userAns
-                      ? 'bg-slate-50 border-slate-200 text-slate-900'
-                      : 'bg-red-50/60 border-red-200 text-red-700'
-                  }`}>
-                    {userAns || <span className="italic text-slate-400">(Bỏ trống)</span>}
-                  </p>
+                {/* Question Header */}
+                <div className="bg-slate-50 p-3.5 px-4 border-b border-slate-200/80">
+                  <h4 className="font-bold text-slate-900 text-[14px]">
+                    Q{idx + 1}: {q.questionText}
+                  </h4>
                 </div>
 
-                {/* Model Sample Answer */}
-                {q.sampleAnswer && (
-                  <div className="text-[14px]">
-                    <div className="p-3 bg-[#ecfdf5] border border-emerald-300/90 rounded-xl text-emerald-900 font-normal text-[14px] space-y-1">
-                      <span className="text-xs font-bold text-emerald-800 block">💡 Bài viết mẫu</span>
-                      <p className="font-normal text-emerald-950">{q.sampleAnswer}</p>
-                    </div>
+                {/* 2-Column Grid: User Answer vs Model Answer */}
+                <div className="grid grid-cols-1 md:grid-cols-2 text-[14px]">
+                  {/* Left Column: User Answer */}
+                  <div className="p-4 bg-[#F8FAFC] border-b md:border-b-0 md:border-r border-slate-200/60 space-y-1.5">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wide block">
+                      Bài làm của bạn
+                    </span>
+                    <p className={`font-normal text-[14px] leading-relaxed ${
+                      userAns ? 'text-slate-900' : 'text-rose-600 italic'
+                    }`}>
+                      {userAns || '(Bỏ trống)'}
+                    </p>
                   </div>
-                )}
+
+                  {/* Right Column: Model Answer */}
+                  <div className="p-4 bg-[#ecfdf5] space-y-1.5">
+                    <span className="text-xs font-bold text-[#064e3b] uppercase tracking-wider flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[16px]">lightbulb</span>
+                      <span>Bài mẫu tham khảo</span>
+                    </span>
+                    <p className="font-normal text-emerald-950 text-[14px] leading-relaxed">
+                      {q.sampleAnswer || 'N/A'}
+                    </p>
+                  </div>
+                </div>
               </div>
             );
           })}
@@ -196,7 +207,7 @@ export default function WritingPart1Practice({
       topicTitle={clubName}
       defaultTimeSeconds={180} // 3 mins for Writing Part 1
       subQuestionsPerSet={5}
-      pointsPerSubQuestion={6} // Total max score 30
+      pointsPerSubQuestion={0.6} // Total max score 3 for Part 1 according to British Council scale
       customScore={aiScore}
       isAnswerCorrect={(idx, val) => {
         const wc = countWords(val);
@@ -222,7 +233,7 @@ export default function WritingPart1Practice({
           />
         );
       }}
-      renderDetailedAnswers={({ userAnswers }) => {
+      renderDetailedAnswers={({ userAnswers, onRetake }) => {
         const targetQuestions = isAllPractice ? allQuestionsFlat : singleTestQuestions;
         const activeClubName = clubName || 'Club';
 
@@ -231,6 +242,7 @@ export default function WritingPart1Practice({
             userAnswers={userAnswers}
             targetQuestions={targetQuestions}
             clubName={activeClubName}
+            onRetake={onRetake}
             onAiEvaluated={(score, cefr) => {
               setAiScore(score);
               setAiCefrLevel(cefr);

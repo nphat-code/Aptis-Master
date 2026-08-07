@@ -34,6 +34,7 @@ export interface ExamPracticeLayoutProps {
   // Optional custom detailed answers render prop for Card 2 in Results Page
   renderDetailedAnswers?: (props: {
     userAnswers: Record<number, any>;
+    onRetake?: () => void;
   }) => React.ReactNode;
 }
 
@@ -487,7 +488,7 @@ export default function ExamPracticeLayout({
 
       {/* STEP 4: DEDICATED RESULTS PAGE SCREEN */}
       {examStep === 'results' && (
-        <main className="max-w-3xl w-full mx-auto px-6 py-8 flex-1 space-y-6">
+        <main className="max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 flex-1 space-y-6">
           <style>{`
             @keyframes resultPageFadeUp {
               0% {
@@ -506,7 +507,7 @@ export default function ExamPracticeLayout({
 
           {/* Main Results View */}
           <div className="space-y-6">
-            {/* Card 1: Kết quả Reading/Writing Summary Card */}
+            {/* Card 1: Summary Card (Hidden for Writing module to avoid duplicate score headers) */}
             {moduleName === 'Writing' && customScore === undefined ? (
               <div className="bg-white rounded-3xl p-12 border border-slate-200/80 text-center space-y-5 shadow-sm my-2 animate-pulse max-w-2xl mx-auto">
                 <div className="w-16 h-16 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mx-auto text-3xl font-bold">
@@ -521,7 +522,7 @@ export default function ExamPracticeLayout({
                   </p>
                 </div>
               </div>
-            ) : (
+            ) : moduleName === 'Writing' ? null : (
               <div className="bg-[#FAFAFA] rounded-3xl p-8 text-center space-y-6 border border-slate-200/70 shadow-sm animate-result-appear">
                 <div className="space-y-1">
                   <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
@@ -626,7 +627,7 @@ export default function ExamPracticeLayout({
             )}
 
             {/* Card 2: Detailed Answers Component (Always rendered to mount useEffect) */}
-            {renderDetailedAnswers && renderDetailedAnswers({ userAnswers })}
+            {renderDetailedAnswers && renderDetailedAnswers({ userAnswers, onRetake: handleRetakeExam })}
           </div>
 
         </main>

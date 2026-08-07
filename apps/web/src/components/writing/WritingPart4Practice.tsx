@@ -17,6 +17,7 @@ interface WritingPart4ResultsViewProps {
   userAnswers: Record<number, any>;
   data: WritingPart4Data;
   clubName: string;
+  onRetake?: () => void;
   onAiEvaluated?: (score: number | undefined, cefrLevel: string | undefined) => void;
 }
 
@@ -24,6 +25,7 @@ function WritingPart4ResultsView({
   userAnswers,
   data,
   clubName,
+  onRetake,
   onAiEvaluated,
 }: WritingPart4ResultsViewProps) {
   const [aiFeedback, setAiFeedback] = useState<WritingAiFeedbackResponse | null>(null);
@@ -102,12 +104,15 @@ function WritingPart4ResultsView({
       {/* AI Evaluation Card */}
       <WritingAiFeedbackCard
         feedback={aiFeedback}
+        partTitle="Kết Quả Đánh Giá Writing - Part 4"
+        clubName={clubName}
         onReEvaluate={runAiEvaluation}
+        onRetake={onRetake}
       />
 
       {/* Standard Answer Details Card */}
       <DetailedAnswersCard
-        title="Chi tiết bài làm"
+        title="Đánh giá chi tiết từng câu"
         subtitle={`You are a member of ${clubText}. You have received this email from the club:`}
       >
         <div className="space-y-6 text-left">
@@ -246,7 +251,7 @@ export default function WritingPart4Practice({
           />
         );
       }}
-      renderDetailedAnswers={({ userAnswers }) => {
+      renderDetailedAnswers={({ userAnswers, onRetake }) => {
         const activeClubName = clubName || 'Club';
 
         return (
@@ -254,6 +259,7 @@ export default function WritingPart4Practice({
             userAnswers={userAnswers}
             data={activeData}
             clubName={activeClubName}
+            onRetake={onRetake}
             onAiEvaluated={(score) => {
               setAiScore(score);
             }}

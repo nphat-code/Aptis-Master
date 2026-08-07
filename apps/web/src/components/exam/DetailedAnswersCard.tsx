@@ -14,9 +14,12 @@ export function DetailedAnswersCard({
   children,
 }: DetailedAnswersCardProps) {
   return (
-    <div className="bg-[#FAFAFA] rounded-3xl p-6 sm:p-8 text-left space-y-4 border border-slate-200/70 shadow-sm">
+    <div className="bg-white rounded-2xl p-6 sm:p-7 text-left space-y-4 border border-slate-200/80 shadow-xs w-full">
       <div className="space-y-1">
-        <h3 className="text-[16px] font-bold text-slate-900">{title}</h3>
+        <h3 className="text-lg sm:text-xl font-bold text-[#24085A] flex items-center gap-2">
+          <span className="material-symbols-outlined text-[#24085A]">analytics</span>
+          <span>{title}</span>
+        </h3>
         {subtitle && (
           <p className="text-[12px] text-[#666666] font-normal">{subtitle}</p>
         )}

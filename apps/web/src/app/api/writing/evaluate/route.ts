@@ -92,24 +92,60 @@ function generateLocalFallbackEvaluation(
     }
   });
 
-  const scaledScore = Math.round((validCount / total) * 30);
+  let scaledScore = Math.round((validCount / total) * 30);
+  let maxScore = 30;
   let cefr: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' = 'A1';
-  if (scaledScore >= 28) cefr = 'C1';
-  else if (scaledScore >= 24) cefr = 'B2';
-  else if (scaledScore >= 18) cefr = 'B1';
-  else if (scaledScore >= 12) cefr = 'A2';
 
-  const partLabel = isPart3 ? 'Part 3' : isPart2 ? 'Part 2' : 'Part 1';
+  const isPart1 = partId.toLowerCase() === 'part1';
+
+  if (isPart1) {
+    maxScore = 3;
+    if (validCount === 5) {
+      scaledScore = 3;
+      cefr = 'A1';
+    } else if (validCount === 3 || validCount === 4) {
+      scaledScore = 2;
+      cefr = 'A1';
+    } else if (validCount === 1 || validCount === 2) {
+      scaledScore = 1;
+      cefr = 'A1';
+    } else {
+      scaledScore = 0;
+      cefr = 'A1';
+    }
+  } else {
+    // Scaled thresholds for 30-point single part corresponding to 50-point exam (C1 >= 46/50, B2 >= 40/50, B1 >= 26/50, A2 >= 18/50, A1 >= 6/50)
+    if (scaledScore >= 28) cefr = 'C1';
+    else if (scaledScore >= 24) cefr = 'B2';
+    else if (scaledScore >= 16) cefr = 'B1';
+    else if (scaledScore >= 11) cefr = 'A2';
+    else if (scaledScore >= 4) cefr = 'A1';
+    else cefr = 'A1';
+  }
+
+  const partLabel = isPart3 ? 'Part 3' : isPart2 ? 'Part 2' : isPart1 ? 'Part 1' : 'Part 4';
 
   const taskSummary = isPart2
     ? (validCount === total
       ? `Bạn đã hoàn thành 1/1 bài viết phù hợp với chủ đề ${clubName || ''}.`
       : `Bài viết chưa đạt yêu cầu độ dài hoặc vi phạm quy định.`)
+    : isPart1
+    ? `Bạn đã trả lời đúng quy định độ dài (1-5 từ/câu) ở ${validCount}/${total} câu hỏi. ${clubName ? `Chủ đề bài làm: ${clubName}.` : ''}`
     : `Bạn đã hoàn thành ${validCount}/${total} câu hỏi theo đúng quy định. ${clubName ? `Chủ đề bài làm: ${clubName}.` : ''}`;
+
+  const keyTakeaway = isPart1
+    ? (scaledScore === 3
+      ? `Hoàn thành xuất sắc bài làm Part 1 đạt điểm 3/3 (Trình độ Above A1 - Đạt tối đa nhiệm vụ).`
+      : scaledScore === 2
+      ? `Hoàn thành bài làm Part 1 đạt điểm 2/3 (Trình độ A1.2 - Đạt 3-4/5 câu hỏi).`
+      : scaledScore === 1
+      ? `Hoàn thành bài làm Part 1 đạt điểm 1/3 (Trình độ A1.1 - Đạt 1-2/5 câu hỏi).`
+      : `Bài làm Part 1 đạt điểm 0/3 (Trình độ A0 - Chưa có câu trả lời phù hợp).`)
+    : `Hoàn thành bài làm ${partLabel} đạt điểm ${scaledScore}/30 (Trình độ CEFR ${cefr}).`;
 
   return {
     score: scaledScore,
-    maxScore: 30,
+    maxScore,
     cefrLevel: cefr,
     taskCompletion: {
       status: validCount === total ? 'success' : validCount >= Math.ceil(total / 2) ? 'warning' : 'danger',
@@ -133,7 +169,7 @@ function generateLocalFallbackEvaluation(
         : 'Từ vựng đơn giản, rõ ràng, phù hợp với câu trả lời ngắn Part 1.',
       suggestions: ['Nên sử dụng thêm các từ chỉ cảm xúc hoặc mở rộng cấu trúc câu như: passionate, enjoy, inspired, breathtaking.'],
     },
-    keyTakeaway: `Hoàn thành bài làm ${partLabel} đạt điểm ${scaledScore}/30 (Trình độ CEFR ${cefr}).`,
+    keyTakeaway,
   };
 }
 
@@ -150,10 +186,12 @@ function replaceThirdPersonPronouns(text: string): string {
 function enforceExactScoreMath(
   data: WritingAiFeedbackResponse,
   totalQuestionsCount: number = 5,
-  userAnswers: string[] = []
+  userAnswers: string[] = [],
+  partId: string = 'part1'
 ): WritingAiFeedbackResponse {
   if (!data) return data;
-  const isPart2 = totalQuestionsCount === 1;
+  const isPart1 = partId.toLowerCase() === 'part1';
+  const isPart2 = partId.toLowerCase() === 'part2' || (totalQuestionsCount === 1 && !isPart1);
 
   // Compute exact word counts from actual candidate input strings
   const wordCounts = userAnswers.map((ans) => (ans ? ans.trim().split(/\s+/).filter(Boolean).length : 0));
@@ -164,9 +202,11 @@ function enforceExactScoreMath(
     return {
       ...data,
       score: 0,
-      maxScore: 30,
+      maxScore: isPart1 ? 3 : 30,
       cefrLevel: 'A1',
-      keyTakeaway: `Bài làm chưa được thực hiện (Bỏ trống câu hỏi). Bạn cần nhập câu trả lời để hệ thống đánh giá bài viết.`,
+      keyTakeaway: isPart1
+        ? 'Bài làm Part 1 chưa được thực hiện (Bỏ trống câu hỏi). Bạn đạt điểm 0/3 (Trình độ A0).'
+        : 'Bài làm chưa được thực hiện (Bỏ trống câu hỏi). Bạn cần nhập câu trả lời để hệ thống đánh giá bài viết.',
       taskCompletion: {
         status: 'danger',
         summary: isPart2
@@ -338,9 +378,26 @@ function enforceExactScoreMath(
   const totalErrors = realCorrections.length + taskErrors;
 
   let score = 30;
+  let maxScore = isPart1 ? 3 : 30;
   let cefrLevel: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' = 'C1';
 
-  if (isPart2 && isOffTopic) {
+  const correctTaskCount = Math.max(0, totalQuestionsCount - taskErrors);
+
+  if (isPart1) {
+    if (correctTaskCount === 5 && realCorrections.length === 0) {
+      score = 3;
+      cefrLevel = 'A1';
+    } else if (correctTaskCount >= 3) {
+      score = 2;
+      cefrLevel = 'A1';
+    } else if (correctTaskCount >= 1) {
+      score = 1;
+      cefrLevel = 'A1';
+    } else {
+      score = 0;
+      cefrLevel = 'A1';
+    }
+  } else if (isPart2 && isOffTopic) {
     score = 12;
     cefrLevel = 'A2';
   } else if (totalErrors === 0) {
@@ -367,24 +424,35 @@ function enforceExactScoreMath(
     cefrLevel = score >= 18 ? 'B1' : score >= 12 ? 'A2' : 'A1';
   }
 
-  const correctTaskCount = Math.max(0, totalQuestionsCount - taskErrors);
   const taskStatus = taskErrors === 0 ? 'success' : (isOffTopic || isSevereUnderlength || taskErrors >= 2) ? 'danger' : 'warning';
   const taskSummary = isPart2
     ? (taskErrors === 0
       ? 'Bạn đã hoàn thành 1/1 bài viết theo đúng quy định độ dài và phù hợp với chủ đề.'
       : 'Bài viết chưa đạt quy định độ dài hoặc không phù hợp với chủ đề.')
+    : isPart1
+    ? (taskErrors === 0
+      ? 'Bạn đã trả lời đúng quy định độ dài (1-5 từ/câu) và phù hợp với tất cả 5 câu hỏi.'
+      : `Bạn đã trả lời đúng yêu cầu ${correctTaskCount}/${totalQuestionsCount} câu hỏi. Có ${taskErrors} câu chưa phù hợp hoặc vi phạm số lượng từ.`)
     : (taskErrors === 0
       ? 'Bạn đã trả lời đúng yêu cầu tất cả các câu hỏi, các câu trả lời ngắn gọn và phù hợp với chủ đề.'
       : `Bạn đã trả lời đúng yêu cầu ${correctTaskCount}/${totalQuestionsCount} câu hỏi. Có ${taskErrors} câu chưa phù hợp với chủ đề hoặc vi phạm độ dài.`);
 
-  const keyTakeawayText = totalErrors === 0
-    ? 'Bạn đã hoàn thành xuất sắc bài viết, trả lời đúng trọng tâm và đạt độ dài quy định.'
-    : `Bài làm đạt điểm ${score}/30 (Trình độ CEFR ${cefrLevel}). Bạn cần chú ý điều chỉnh các lỗi về ngữ pháp và độ dài để đạt điểm cao hơn.`;
+  const keyTakeawayText = isPart1
+    ? (score === 3
+      ? 'Bạn đã hoàn thành xuất sắc bài viết Part 1 với điểm số 3/3 (Trình độ Above A1 - Đạt tối đa nhiệm vụ).'
+      : score === 2
+      ? 'Bài làm Part 1 đạt điểm 2/3 (Trình độ A1.2 - Trả lời tốt 3-4 câu hỏi). Bạn cần lưu ý điều chỉnh số từ (1-5 từ) và đúng trọng tâm ở các câu còn lại.'
+      : score === 1
+      ? 'Bài làm Part 1 đạt điểm 1/3 (Trình độ A1.1 - Trả lời được 1-2 câu hỏi). Bạn cần chú ý số lượng từ (1-5 từ) và trả lời rõ ý hơn.'
+      : 'Bài làm Part 1 đạt điểm 0/3 (Trình độ A0 - Chưa có câu trả lời phù hợp). Cần chú ý độ dài 1-5 từ cho cả 5 câu hỏi.')
+    : (totalErrors === 0
+      ? 'Bạn đã hoàn thành xuất sắc bài viết, trả lời đúng trọng tâm và đạt độ dài quy định.'
+      : `Bài làm đạt điểm ${score}/30 (Trình độ CEFR ${cefrLevel}). Bạn cần chú ý điều chỉnh các lỗi về ngữ pháp và độ dài để đạt điểm cao hơn.`);
 
   return {
     ...data,
     score,
-    maxScore: 30,
+    maxScore,
     cefrLevel,
     keyTakeaway: keyTakeawayText,
     taskCompletion: {
@@ -606,7 +674,7 @@ Respond ONLY in valid raw JSON matching this schema:
               const rawJsonText = resData.choices?.[0]?.message?.content || '';
               if (rawJsonText) {
                 const parsedData: WritingAiFeedbackResponse = JSON.parse(rawJsonText);
-                return NextResponse.json(enforceExactScoreMath(parsedData, questions.length, questions.map((q) => (q.userAnswer || '').trim())));
+                return NextResponse.json(enforceExactScoreMath(parsedData, questions.length, questions.map((q) => (q.userAnswer || '').trim()), partId));
               }
             } else if (response.status === 429) {
               console.warn(`[Groq API Rate Limit 429] Key (${groqKey.slice(0, 10)}...) TPD limit reached. Instantly swapping to next Groq Key!`);
@@ -645,7 +713,7 @@ Respond ONLY in valid raw JSON matching this schema:
           const rawJsonText = resData.choices?.[0]?.message?.content || '';
           if (rawJsonText) {
             const parsedData: WritingAiFeedbackResponse = JSON.parse(rawJsonText);
-            return NextResponse.json(enforceExactScoreMath(parsedData, questions.length, questions.map((q) => (q.userAnswer || '').trim())));
+            return NextResponse.json(enforceExactScoreMath(parsedData, questions.length, questions.map((q) => (q.userAnswer || '').trim()), partId));
           }
         }
       } catch (orErr) {
@@ -685,7 +753,7 @@ Respond ONLY in valid raw JSON matching this schema:
             const rawJsonText = resData.candidates?.[0]?.content?.parts?.[0]?.text || '';
             if (rawJsonText) {
               const parsedData: WritingAiFeedbackResponse = JSON.parse(rawJsonText);
-              return NextResponse.json(enforceExactScoreMath(parsedData, questions.length, questions.map((q) => (q.userAnswer || '').trim())));
+              return NextResponse.json(enforceExactScoreMath(parsedData, questions.length, questions.map((q) => (q.userAnswer || '').trim()), partId));
             }
           } else {
             const errText = await response.text();
@@ -719,7 +787,7 @@ Respond ONLY in valid raw JSON matching this schema:
           const rawJsonText = resData.choices?.[0]?.message?.content || '';
           if (rawJsonText) {
             const parsedData: WritingAiFeedbackResponse = JSON.parse(rawJsonText);
-            return NextResponse.json(enforceExactScoreMath(parsedData, questions.length, questions.map((q) => (q.userAnswer || '').trim())));
+            return NextResponse.json(enforceExactScoreMath(parsedData, questions.length, questions.map((q) => (q.userAnswer || '').trim()), partId));
           }
         }
       } catch (oaiErr) {

@@ -62,3 +62,8 @@
 17. **No Workarounds, Hardcoding, or Ad-hoc Patching Standard**:
     - Never write ad-hoc string checks, topic-specific hardcoded keywords (e.g. `món ăn`, `a painting`, `bức tranh`), or temporary quick-fix patches to satisfy a single test case.
     - All business, evaluation, and component logic must be built using clean, robust, domain-general architecture that scales across all test topics, skills, and edge cases.
+18. **Writing Scoring & CEFR Standard**:
+    - Writing Part 1 raw rating scale is strictly 0 to 3 points (5 valid answers $\rightarrow$ 3/3 Above A1, 3-4 $\rightarrow$ 2/3 A1.2, 1-2 $\rightarrow$ 1/3 A1.1, 0 $\rightarrow$ 0/3 A0).
+    - Total exam duration for Writing Full Exam is strictly 50 minutes (3000s) with 50 points total: Part 1 (5 pts), Part 2 (5 pts), Part 3 (15 pts), Part 4 (25 pts).
+    - Writing Full Exam CEFR level thresholds must strictly use: C1 ($\ge 46$), B2 ($\ge 40$), B1 ($\ge 26$), A2 ($\ge 18$), A1 ($\ge 6$), A0 ($< 6$).
+
