@@ -53,14 +53,34 @@ export default function WritingAiFeedbackCard({
             </span>
           </div>
 
-          {maxScore === 3 ? (
+          {maxScore === 10 ? (
             <span className="px-3.5 py-1 text-[13px] font-bold rounded-full bg-[#FEAD5D] text-white shadow-xs flex items-center gap-1.5">
-              <span>⭐</span>
+              <span className="material-symbols-outlined text-[16px]">star</span>
+              <span>{score >= 9 ? 'Excellent' : score >= 7 ? 'Good' : score >= 5 ? 'Pass' : score >= 3 ? 'Satisfactory' : 'Needs Work'}</span>
+            </span>
+          ) : maxScore === 3 ? (
+            <span className="px-3.5 py-1 text-[13px] font-bold rounded-full bg-[#FEAD5D] text-white shadow-xs flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[16px]">star</span>
               <span>{score === 3 ? 'Above A1 (Excellent)' : score === 2 ? 'A1.2 (Good)' : score === 1 ? 'A1.1 (Pass)' : 'A0 (Needs Work)'}</span>
+            </span>
+          ) : maxScore === 5 ? (
+            <span className="px-3.5 py-1 text-[13px] font-bold rounded-full bg-[#FEAD5D] text-white shadow-xs flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[16px]">star</span>
+              <span>{score === 5 ? 'Above A1.2 (Excellent)' : score === 4 ? 'A2.1 (Good)' : score === 3 ? 'A1.2 (Pass)' : score === 2 ? 'A1.1 (Satisfactory)' : 'A0 (Needs Work)'}</span>
+            </span>
+          ) : maxScore === 15 ? (
+            <span className="px-3.5 py-1 text-[13px] font-bold rounded-full bg-[#FEAD5D] text-white shadow-xs flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[16px]">star</span>
+              <span>{score >= 14 ? 'B2 (Excellent)' : score >= 11 ? 'B1.2 (Good)' : score >= 8 ? 'B1.1 (Pass)' : score >= 5 ? 'A2.2 (Satisfactory)' : 'A0 (Needs Work)'}</span>
+            </span>
+          ) : maxScore === 25 ? (
+            <span className="px-3.5 py-1 text-[13px] font-bold rounded-full bg-[#FEAD5D] text-white shadow-xs flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[16px]">star</span>
+              <span>{score >= 23 ? 'C1 (Advanced)' : score >= 19 ? 'B2 (Upper-Inter)' : score >= 14 ? 'B1.2 (Intermediate)' : score >= 9 ? 'B1.1 (Pass)' : 'A0 (Needs Work)'}</span>
             </span>
           ) : (
             <span className={`px-3.5 py-1 text-[13px] font-bold rounded-full ${badgeColor} shadow-xs flex items-center gap-1.5`}>
-              <span>🏆</span>
+              <span className="material-symbols-outlined text-[16px]">workspace_premium</span>
               <span>Trình độ: {cefrLevel}</span>
             </span>
           )}

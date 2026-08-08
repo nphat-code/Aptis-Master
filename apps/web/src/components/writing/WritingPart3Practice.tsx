@@ -198,7 +198,7 @@ export default function WritingPart3Practice({
       topicTitle={clubName}
       defaultTimeSeconds={600} // 10 mins for Writing Part 3
       subQuestionsPerSet={3}
-      pointsPerSubQuestion={10} // Total max score 30 (10 points per sub-question)
+      pointsPerSubQuestion={3.3333333333333335} // Total max score 10 for Part 3 (3.33 pts per sub-question)
       customScore={aiScore}
       isAnswerCorrect={(idx, val) => {
         const wc = countWords(val);

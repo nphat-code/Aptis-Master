@@ -207,7 +207,7 @@ export default function WritingPart1Practice({
       topicTitle={clubName}
       defaultTimeSeconds={180} // 3 mins for Writing Part 1
       subQuestionsPerSet={5}
-      pointsPerSubQuestion={0.6} // Total max score 3 for Part 1 according to British Council scale
+      pointsPerSubQuestion={2} // Total max score 10 for Part 1 (2 pts per sub-question)
       customScore={aiScore}
       isAnswerCorrect={(idx, val) => {
         const wc = countWords(val);

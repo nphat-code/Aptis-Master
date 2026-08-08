@@ -49,6 +49,7 @@ function generateLocalFallbackEvaluation(
   partId: string = 'part1'
 ): WritingAiFeedbackResponse {
   let validCount = 0;
+  const isPart1 = partId.toLowerCase() === 'part1';
   const isPart2 = partId.toLowerCase() === 'part2';
   const isPart3 = partId.toLowerCase() === 'part3';
   const isPart4 = partId.toLowerCase() === 'part4';
@@ -92,56 +93,13 @@ function generateLocalFallbackEvaluation(
     }
   });
 
-  let scaledScore = Math.round((validCount / total) * 30);
-  let maxScore = 30;
-  let cefr: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' = 'A1';
+  let maxScore = 10;
+  let scaledScore = isPart1 ? Math.max(0, 10 - (total - validCount)) : Math.round((validCount / total) * 10);
+  let cefr: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' = scaledScore >= 9 ? 'C1' : scaledScore >= 7 ? 'B2' : scaledScore >= 5 ? 'B1' : scaledScore >= 3 ? 'A2' : 'A1';
 
-  const isPart1 = partId.toLowerCase() === 'part1';
-
-  if (isPart1) {
-    maxScore = 3;
-    if (validCount === 5) {
-      scaledScore = 3;
-      cefr = 'A1';
-    } else if (validCount === 3 || validCount === 4) {
-      scaledScore = 2;
-      cefr = 'A1';
-    } else if (validCount === 1 || validCount === 2) {
-      scaledScore = 1;
-      cefr = 'A1';
-    } else {
-      scaledScore = 0;
-      cefr = 'A1';
-    }
-  } else {
-    // Scaled thresholds for 30-point single part corresponding to 50-point exam (C1 >= 46/50, B2 >= 40/50, B1 >= 26/50, A2 >= 18/50, A1 >= 6/50)
-    if (scaledScore >= 28) cefr = 'C1';
-    else if (scaledScore >= 24) cefr = 'B2';
-    else if (scaledScore >= 16) cefr = 'B1';
-    else if (scaledScore >= 11) cefr = 'A2';
-    else if (scaledScore >= 4) cefr = 'A1';
-    else cefr = 'A1';
-  }
-
-  const partLabel = isPart3 ? 'Part 3' : isPart2 ? 'Part 2' : isPart1 ? 'Part 1' : 'Part 4';
-
-  const taskSummary = isPart2
-    ? (validCount === total
-      ? `Bạn đã hoàn thành 1/1 bài viết phù hợp với chủ đề ${clubName || ''}.`
-      : `Bài viết chưa đạt yêu cầu độ dài hoặc vi phạm quy định.`)
-    : isPart1
-    ? `Bạn đã trả lời đúng quy định độ dài (1-5 từ/câu) ở ${validCount}/${total} câu hỏi. ${clubName ? `Chủ đề bài làm: ${clubName}.` : ''}`
-    : `Bạn đã hoàn thành ${validCount}/${total} câu hỏi theo đúng quy định. ${clubName ? `Chủ đề bài làm: ${clubName}.` : ''}`;
-
-  const keyTakeaway = isPart1
-    ? (scaledScore === 3
-      ? `Hoàn thành xuất sắc bài làm Part 1 đạt điểm 3/3 (Trình độ Above A1 - Đạt tối đa nhiệm vụ).`
-      : scaledScore === 2
-      ? `Hoàn thành bài làm Part 1 đạt điểm 2/3 (Trình độ A1.2 - Đạt 3-4/5 câu hỏi).`
-      : scaledScore === 1
-      ? `Hoàn thành bài làm Part 1 đạt điểm 1/3 (Trình độ A1.1 - Đạt 1-2/5 câu hỏi).`
-      : `Bài làm Part 1 đạt điểm 0/3 (Trình độ A0 - Chưa có câu trả lời phù hợp).`)
-    : `Hoàn thành bài làm ${partLabel} đạt điểm ${scaledScore}/30 (Trình độ CEFR ${cefr}).`;
+  const partLabel = partId.toUpperCase();
+  const taskSummary = `Bạn đã hoàn thành ${validCount}/${total} yêu cầu trong bài làm ${partLabel}. ${clubName ? `Chủ đề bài làm: ${clubName}.` : ''}`;
+  const keyTakeaway = `Bài làm ${partLabel} đạt điểm ${scaledScore}/10 (Trình độ CEFR ${cefr}).`;
 
   return {
     score: scaledScore,
@@ -191,7 +149,9 @@ function enforceExactScoreMath(
 ): WritingAiFeedbackResponse {
   if (!data) return data;
   const isPart1 = partId.toLowerCase() === 'part1';
-  const isPart2 = partId.toLowerCase() === 'part2' || (totalQuestionsCount === 1 && !isPart1);
+  const isPart2 = partId.toLowerCase() === 'part2';
+  const isPart3 = partId.toLowerCase() === 'part3';
+  const isPart4 = partId.toLowerCase() === 'part4';
 
   // Compute exact word counts from actual candidate input strings
   const wordCounts = userAnswers.map((ans) => (ans ? ans.trim().split(/\s+/).filter(Boolean).length : 0));
@@ -202,16 +162,12 @@ function enforceExactScoreMath(
     return {
       ...data,
       score: 0,
-      maxScore: isPart1 ? 3 : 30,
+      maxScore: 10,
       cefrLevel: 'A1',
-      keyTakeaway: isPart1
-        ? 'Bài làm Part 1 chưa được thực hiện (Bỏ trống câu hỏi). Bạn đạt điểm 0/3 (Trình độ A0).'
-        : 'Bài làm chưa được thực hiện (Bỏ trống câu hỏi). Bạn cần nhập câu trả lời để hệ thống đánh giá bài viết.',
+      keyTakeaway: `Bài làm ${partId.toUpperCase()} chưa được thực hiện (Bỏ trống bài làm). Bạn đạt điểm 0/10 (Trình độ A0).`,
       taskCompletion: {
         status: 'danger',
-        summary: isPart2
-          ? 'Bài viết chưa được thực hiện (Bỏ trống bài làm).'
-          : 'Bạn chưa hoàn thành các câu hỏi trong bài làm (Bỏ trống).',
+        summary: 'Bài viết chưa được thực hiện (Bỏ trống bài làm).',
         details: (data.taskCompletion?.details || []).map((d, idx) => ({
           ...d,
           questionIndex: d.questionIndex || idx + 1,
@@ -318,6 +274,41 @@ function enforceExactScoreMath(
     return d;
   });
 
+  let blankErrorsCount = 0;
+  let offTopicErrorsCount = 0;
+  let lengthErrorsCount = 0;
+
+  sanitizedTaskDetails.forEach((d) => {
+    if (!d.isCorrect) {
+      const qIdx = d.questionIndex - 1;
+      const ansText = (userAnswers[qIdx] || '').trim();
+      const ansWords = ansText ? ansText.split(/\s+/).filter(Boolean).length : 0;
+      const noteLower = (d.note || '').toLowerCase();
+
+      const isBlank =
+        ansWords === 0 ||
+        noteLower.includes('bỏ qua') ||
+        noteLower.includes('bỏ trống') ||
+        noteLower.includes('chưa trả lời') ||
+        noteLower.includes('không có câu trả lời');
+
+      const isOverLength =
+        ansWords > 5 ||
+        noteLower.includes('quá dài') ||
+        noteLower.includes('hơi dài') ||
+        noteLower.includes('vượt quá');
+
+      if (isBlank) {
+        blankErrorsCount++;
+      } else if (isOverLength) {
+        lengthErrorsCount++;
+      } else {
+        // Any incorrect non-blank question that is not over length is an off-topic error
+        offTopicErrorsCount++;
+      }
+    }
+  });
+
   const taskErrors = sanitizedTaskDetails.filter((d) => d.isCorrect === false).length;
   const correctionsCount = realCorrections.length;
 
@@ -377,77 +368,123 @@ function enforceExactScoreMath(
 
   const totalErrors = realCorrections.length + taskErrors;
 
-  let score = 30;
-  let maxScore = isPart1 ? 3 : 30;
+  let maxScore = 10;
+  let score = 10;
   let cefrLevel: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' = 'C1';
 
   const correctTaskCount = Math.max(0, totalQuestionsCount - taskErrors);
 
   if (isPart1) {
-    if (correctTaskCount === 5 && realCorrections.length === 0) {
-      score = 3;
-      cefrLevel = 'A1';
-    } else if (correctTaskCount >= 3) {
+    const blankPenalty = blankErrorsCount * 2;
+    const offTopicPenalty = offTopicErrorsCount * 2;
+    const lengthPenalty = lengthErrorsCount * 1;
+    const grammarPenalty = realCorrections.length * 1;
+    score = Math.max(0, 10 - blankPenalty - offTopicPenalty - lengthPenalty - grammarPenalty);
+    cefrLevel = 'A1';
+  } else if (isPart2) {
+    if (isOffTopic) {
       score = 2;
       cefrLevel = 'A1';
-    } else if (correctTaskCount >= 1) {
-      score = 1;
+    } else if (totalErrors === 0 && !isSevereUnderlength) {
+      score = 10;
+      cefrLevel = 'A2';
+    } else if (totalErrors === 1 || isSevereUnderlength) {
+      score = 8;
+      cefrLevel = 'A2';
+    } else if (totalErrors === 2) {
+      score = 6;
+      cefrLevel = 'A1';
+    } else if (totalErrors === 3) {
+      score = 4;
       cefrLevel = 'A1';
     } else {
-      score = 0;
+      score = 2;
       cefrLevel = 'A1';
     }
-  } else if (isPart2 && isOffTopic) {
-    score = 12;
-    cefrLevel = 'A2';
-  } else if (totalErrors === 0) {
-    score = 30;
-    cefrLevel = 'C1';
-  } else if (totalErrors === 1) {
-    if (isPart2 && isSevereUnderlength) {
-      score = 18;
-      cefrLevel = 'B1';
-    } else {
-      score = 24;
+  } else if (isPart3) {
+    if (isOffTopic) {
+      score = 2;
+      cefrLevel = 'A1';
+    } else if (totalErrors === 0) {
+      score = 10;
       cefrLevel = 'B2';
-    }
-  } else if (totalErrors === 2) {
-    if (isPart2 && isSevereUnderlength) {
-      score = 12;
+    } else if (totalErrors === 1) {
+      score = 9;
+      cefrLevel = 'B2';
+    } else if (totalErrors === 2) {
+      score = 7;
+      cefrLevel = 'B1';
+    } else if (totalErrors === 3) {
+      score = 5;
+      cefrLevel = 'B1';
+    } else if (totalErrors === 4) {
+      score = 4;
       cefrLevel = 'A2';
     } else {
-      score = 18;
-      cefrLevel = 'B1';
+      score = Math.max(0, 10 - totalErrors * 2);
+      cefrLevel = score >= 5 ? 'B1' : score >= 3 ? 'A2' : 'A1';
     }
-  } else if (totalErrors >= 3) {
-    score = Math.max(0, 30 - totalErrors * 6);
-    cefrLevel = score >= 18 ? 'B1' : score >= 12 ? 'A2' : 'A1';
+  } else if (isPart4) {
+    if (isOffTopic) {
+      score = 2;
+      cefrLevel = 'A1';
+    } else if (totalErrors === 0) {
+      score = 10;
+      cefrLevel = 'C1';
+    } else if (totalErrors === 1) {
+      score = 9;
+      cefrLevel = 'B2';
+    } else if (totalErrors === 2) {
+      score = 8;
+      cefrLevel = 'B2';
+    } else if (totalErrors === 3) {
+      score = 7;
+      cefrLevel = 'B1';
+    } else if (totalErrors === 4) {
+      score = 5;
+      cefrLevel = 'B1';
+    } else if (totalErrors === 5) {
+      score = 4;
+      cefrLevel = 'A2';
+    } else {
+      score = Math.max(0, 10 - totalErrors * 2);
+      cefrLevel = score >= 6 ? 'B1' : score >= 4 ? 'A2' : 'A1';
+    }
+  } else {
+    score = Math.max(0, 10 - totalErrors * 2);
+    cefrLevel = score >= 9 ? 'C1' : score >= 7 ? 'B2' : score >= 5 ? 'B1' : score >= 3 ? 'A2' : 'A1';
   }
 
   const taskStatus = taskErrors === 0 ? 'success' : (isOffTopic || isSevereUnderlength || taskErrors >= 2) ? 'danger' : 'warning';
   const taskSummary = isPart2
-    ? (taskErrors === 0
-      ? 'Bạn đã hoàn thành 1/1 bài viết theo đúng quy định độ dài và phù hợp với chủ đề.'
-      : 'Bài viết chưa đạt quy định độ dài hoặc không phù hợp với chủ đề.')
+    ? (taskErrors === 0 && !isSevereUnderlength
+      ? 'Bạn đã hoàn thành 1/1 bài viết theo đúng quy định độ dài (20-30 từ) và phù hợp với chủ đề.'
+      : 'Bài viết chưa đạt quy định độ dài (20-30 từ) hoặc nội dung chưa hoàn toàn phù hợp với chủ đề.')
     : isPart1
     ? (taskErrors === 0
       ? 'Bạn đã trả lời đúng quy định độ dài (1-5 từ/câu) và phù hợp với tất cả 5 câu hỏi.'
       : `Bạn đã trả lời đúng yêu cầu ${correctTaskCount}/${totalQuestionsCount} câu hỏi. Có ${taskErrors} câu chưa phù hợp hoặc vi phạm số lượng từ.`)
+    : isPart3
+    ? (taskErrors === 0
+      ? 'Bạn đã hoàn thành 3/3 phản hồi phòng chat theo đúng quy định độ dài (30-40 từ/câu) và đúng chủ đề.'
+      : `Bạn đã hoàn thành ${correctTaskCount}/3 phản hồi phòng chat. Có ${taskErrors} câu chưa đạt số lượng từ quy định hoặc vi phạm nội dung.`)
+    : isPart4
+    ? (taskErrors === 0
+      ? 'Bạn đã hoàn thành xuất sắc 2 bài viết email (Email 1: 40-60 từ, Email 2: 120-150 từ) theo đúng văn phong.'
+      : `Bài viết email chưa đạt quy định số lượng từ hoặc vi phạm văn phong yêu cầu.`)
     : (taskErrors === 0
       ? 'Bạn đã trả lời đúng yêu cầu tất cả các câu hỏi, các câu trả lời ngắn gọn và phù hợp với chủ đề.'
       : `Bạn đã trả lời đúng yêu cầu ${correctTaskCount}/${totalQuestionsCount} câu hỏi. Có ${taskErrors} câu chưa phù hợp với chủ đề hoặc vi phạm độ dài.`);
 
-  const keyTakeawayText = isPart1
-    ? (score === 3
-      ? 'Bạn đã hoàn thành xuất sắc bài viết Part 1 với điểm số 3/3 (Trình độ Above A1 - Đạt tối đa nhiệm vụ).'
-      : score === 2
-      ? 'Bài làm Part 1 đạt điểm 2/3 (Trình độ A1.2 - Trả lời tốt 3-4 câu hỏi). Bạn cần lưu ý điều chỉnh số từ (1-5 từ) và đúng trọng tâm ở các câu còn lại.'
-      : score === 1
-      ? 'Bài làm Part 1 đạt điểm 1/3 (Trình độ A1.1 - Trả lời được 1-2 câu hỏi). Bạn cần chú ý số lượng từ (1-5 từ) và trả lời rõ ý hơn.'
-      : 'Bài làm Part 1 đạt điểm 0/3 (Trình độ A0 - Chưa có câu trả lời phù hợp). Cần chú ý độ dài 1-5 từ cho cả 5 câu hỏi.')
-    : (totalErrors === 0
-      ? 'Bạn đã hoàn thành xuất sắc bài viết, trả lời đúng trọng tâm và đạt độ dài quy định.'
-      : `Bài làm đạt điểm ${score}/30 (Trình độ CEFR ${cefrLevel}). Bạn cần chú ý điều chỉnh các lỗi về ngữ pháp và độ dài để đạt điểm cao hơn.`);
+  const keyTakeawayText = `Bài làm ${partId.toUpperCase()} đạt điểm ${score}/10 (Trình độ CEFR ${cefrLevel}). ${
+    score >= 9
+      ? 'Bạn đã hoàn thành xuất sắc bài viết, đáp ứng đầy đủ tiêu chí yêu cầu.'
+      : score >= 7
+      ? 'Bài làm đạt kết quả tốt. Hãy tiếp tục chú ý hạn chế một số lỗi nhỏ để đạt điểm tối đa.'
+      : score >= 5
+      ? 'Bài làm đạt yêu cầu cơ bản. Bạn cần rèn luyện thêm về cấu trúc câu và từ vựng.'
+      : 'Bài làm gặp một số lỗi vi phạm độ dài hoặc ngữ pháp. Hãy chú ý chỉnh sửa để cải thiện điểm số.'
+  }`;
 
   return {
     ...data,
@@ -541,7 +578,7 @@ export async function POST(request: Request) {
       .join('\n\n');
 
     const isPart3 = partId.toLowerCase() === 'part3';
-    const isPart2 = partId.toLowerCase() === 'part2' || (questions.length === 1 && !isPart3);
+    const isPart2 = partId.toLowerCase() === 'part2';
 
     const partRulesText = isPart3
       ? `CRITICAL RULES FOR APTIS WRITING PART 3 (Social media conversation):
@@ -575,12 +612,12 @@ export async function POST(request: Request) {
    - ONLY penalize for length if word count exceeds 5 words (i.e. 6 or more words).
 2. ACCEPTED GREETING RESPONSES (e.g. to "How are you?"):
    - Answers such as "I'm good.", "I am good.", "Good.", "I'm fine.", "Fine, thanks.", "Very well.", "Great!" ARE ALL 100% PERFECT.
-3. MATHEMATICAL SCORE CALCULATION FOR PART 1 (Total scale: 30 points):
-   - Part 1 has 5 questions. Maximum score is 30 points.
-   - 0 total errors ➔ score = 30 (Band C1)
-   - 1 total error ➔ score = 24 (Band B2)
-   - 2 total errors ➔ score = 18 (Band B1)
-   - 3 total errors ➔ score = 12 (Band A2)`;
+3. MATHEMATICAL SCORE CALCULATION FOR PART 1 (Total scale: 10 points):
+   - Part 1 has 5 questions. Maximum score is 10 points.
+   - BLANK / MISSING ANSWER (e.g. "bỏ qua", "bỏ trống") OR OFF-TOPIC ANSWER (wrong topic / unrelated answer e.g. "không phù hợp với chủ đề"): Deduct EXACTLY 2 points per question (0/2 points for that question).
+   - WORD COUNT ERROR (> 5 words) OR GRAMMAR/SPELLING ERROR: Deduct EXACTLY 1 point per error.
+   - Example 1: 2 blank or off-topic errors ➔ score = 6/10.
+   - Example 2: 2 length errors (> 5 words) ➔ score = 8/10.`;
 
     const promptText = `
 You are an expert official Aptis Writing examiner. Evaluate the candidate's answers for Aptis Writing ${partId.toUpperCase()} (Club Topic: "${

@@ -216,7 +216,7 @@ export default function WritingPart4Practice({
       topicTitle={clubName}
       defaultTimeSeconds={1800}
       subQuestionsPerSet={2}
-      pointsPerSubQuestion={15}
+      pointsPerSubQuestion={5} // Total max score 10 for Part 4 (5 pts per email)
       customScore={aiScore}
       isAnswerCorrect={(idx, val) => {
         const wc = countWords(val);
