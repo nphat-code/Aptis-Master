@@ -247,7 +247,11 @@ function enforceExactScoreMath(
   const rawTaskDetails = data.taskCompletion?.details || [];
 
   const sanitizedTaskDetails = rawTaskDetails.map((d) => {
+    const qIdx = d.questionIndex - 1;
+    const ansText = (userAnswers[qIdx] || '').trim();
     const noteLower = (d.note || '').toLowerCase();
+    const isSingleChar = ansText.length === 1 && !/^[0-9]$/.test(ansText);
+
     const isLengthErrorNote =
       noteLower.includes('không đủ từ') ||
       noteLower.includes('chưa đủ từ') ||
@@ -258,13 +262,14 @@ function enforceExactScoreMath(
       noteLower.includes('hơi dài') ||
       noteLower.includes('vượt quá');
 
-    if (offTopicQuestionIndices.has(d.questionIndex) || isLengthErrorNote) {
+    if (offTopicQuestionIndices.has(d.questionIndex) || isLengthErrorNote || isSingleChar) {
       return {
         ...d,
         isCorrect: false,
+        note: isSingleChar ? 'Câu trả lời quá ngắn và không rõ nghĩa.' : d.note,
       };
     }
-    if (realCorrectionQuestionIndices.has(d.questionIndex)) {
+    if (realCorrectionQuestionIndices.has(d.questionIndex) && ansText.length >= 2) {
       return {
         ...d,
         isCorrect: true,
@@ -292,8 +297,10 @@ function enforceExactScoreMath(
         noteLower.includes('chưa trả lời') ||
         noteLower.includes('không có câu trả lời');
 
+      const maxAllowedWords = isPart4 ? (qIdx === 0 ? 60 : 150) : isPart3 ? 40 : isPart2 ? 30 : 5;
+
       const isOverLength =
-        ansWords > 5 ||
+        ansWords > maxAllowedWords ||
         noteLower.includes('quá dài') ||
         noteLower.includes('hơi dài') ||
         noteLower.includes('vượt quá');
@@ -310,7 +317,6 @@ function enforceExactScoreMath(
   });
 
   const taskErrors = sanitizedTaskDetails.filter((d) => d.isCorrect === false).length;
-  const correctionsCount = realCorrections.length;
 
   // Check off-topic or severe underlength for Part 2 from empirical word counts
   let isOffTopic = offTopicQuestionIndices.size > 0;
@@ -366,7 +372,8 @@ function enforceExactScoreMath(
     }
   });
 
-  const totalErrors = realCorrections.length + taskErrors;
+  const correctionsCount = realCorrections.length;
+  const totalErrors = correctionsCount + taskErrors;
 
   let maxScore = 10;
   let score = 10;
@@ -378,7 +385,7 @@ function enforceExactScoreMath(
     const blankPenalty = blankErrorsCount * 2;
     const offTopicPenalty = offTopicErrorsCount * 2;
     const lengthPenalty = lengthErrorsCount * 1;
-    const grammarPenalty = realCorrections.length * 1;
+    const grammarPenalty = correctionsCount * 1;
     score = Math.max(0, 10 - blankPenalty - offTopicPenalty - lengthPenalty - grammarPenalty);
     cefrLevel = 'A1';
   } else if (isPart2) {
@@ -633,10 +640,21 @@ STRICT SEPARATION OF ASSESSMENT CRITERIA:
 - "Task Completion": Evaluates ONLY topic relevance and word count (${isPart2 ? '20-30 words' : '1-5 words'}).
   * If candidate gives an OFF-TOPIC answer, mark Task Completion status as "warning" or "danger".
   * NEVER mention spelling or grammar mistakes in Task Completion summary or notes!
-- "Grammar & Spelling": Carefully check EVERY word in candidate answers for genuine spelling typos or grammatical errors.
-  * You MUST check EVERY word carefully. Create a separate correction item ONLY for genuine misspelled words or real grammatical errors (e.g. "lik" -> "like", "have keep" -> "have kept", "concentrate good" -> "concentrate well")!
-  * STRICT PROHIBITION: NEVER report subjective style rewrites or optional clause rephrasing for sentences that are ALREADY 100% GRAMMATICALLY CORRECT! (For example, DO NOT report "...where the atmosphere is peaceful..." -> "...which has a peaceful atmosphere..."). If the candidate's original sentence is grammatically correct, DO NOT put it inside grammarAndSpelling.corrections!
-  * NEVER put off-topic answers inside grammarAndSpelling.corrections!
+- "Grammar & Spelling": RIGOROUS WORD-BY-WORD PROOFREADING PROTOCOL:
+  You MUST proofread candidate answers word-by-word against this MANDATORY ERROR CHECKLIST:
+  1. Subject-Verb Agreement: Check if 3rd-person singular subjects (he, she, it, single noun, the owner, my friend) match singular verbs with 's'/'es' (e.g. "he work" -> "he works", "the owner serve" -> "the owner serves").
+  2. Adverb vs Adjective Misuse: Check if action verbs are modified by adverbs (well, fluently, quickly) instead of adjectives (good, fast) (e.g. "speak good" -> "speak well", "write good" -> "write well").
+  3. Prepositions & Collocations: Check for missing or incorrect prepositions (e.g. "listen music" -> "listen to music", "interested on" -> "interested in", "good in" -> "good at").
+  4. Verb Form / Tense Errors: Check verb patterns (e.g. "enjoy to play" -> "enjoy playing", "would like doing" -> "would like to do", "have keep" -> "have kept").
+  5. Plural vs Singular Nouns: Check countability (e.g. "many friend" -> "many friends", "two year" -> "two years").
+  6. Letter-level Spelling Typos: Check exact spelling of every single word (e.g. "favorate" -> "favorite", "beautifull" -> "beautiful").
+
+  FEW-SHOT CORRECTION EXAMPLES TO FOLLOW:
+  - Input: "I can speak English very good." -> Create correction: original: "speak English very good", correction: "speak English very well", explanation: "Sử dụng phó từ 'well' thay cho tính từ 'good' để bổ nghĩa cho động từ 'speak'."
+  - Input: "The owner always serve delicious food." -> Create correction: original: "The owner always serve", correction: "The owner always serves", explanation: "Chủ ngữ số ít 'The owner' cần chia động từ 'serves'."
+
+  STRICT PROHIBITION: NEVER report subjective style rewrites or optional clause rephrasing for sentences that are ALREADY 100% GRAMMATICALLY CORRECT! If the candidate's original sentence is grammatically correct, DO NOT put it inside grammarAndSpelling.corrections!
+  NEVER put off-topic answers inside grammarAndSpelling.corrections!
 - "Vocabulary": Evaluates vocabulary range and suggests alternative advanced ENGLISH words/phrases (e.g. "cutting-edge amenities", "inspirational", "favorite pastime", "urban aesthetics").
   * CRITICAL RULE FOR vocabulary.suggestions: EVERY replacement or alternative word MUST BE AN ENGLISH WORD/PHRASE!
   * CORRECT EXAMPLES:
