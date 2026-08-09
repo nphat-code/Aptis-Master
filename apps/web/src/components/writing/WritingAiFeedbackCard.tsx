@@ -110,10 +110,6 @@ export default function WritingAiFeedbackCard({
               <h3 className="font-bold text-base text-[#24085A]">Task Completion</h3>
             </div>
 
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-              Đánh giá độ dài (1-5 từ/câu):
-            </p>
-
             {/* Sub-question detail checklist */}
             {taskCompletion.details && taskCompletion.details.length > 0 ? (
               <ul className="flex flex-col gap-2 font-normal text-[14px] text-slate-800 mt-auto">
