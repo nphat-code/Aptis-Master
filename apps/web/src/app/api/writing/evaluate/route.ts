@@ -252,7 +252,20 @@ function enforceExactScoreMath(
       exp.includes('câu đã chuẩn') ||
       exp.includes('không sai') ||
       exp.includes('anh-anh') ||
-      exp.includes('anh-mỹ');
+      exp.includes('anh-mỹ') ||
+      exp.includes('consider') ||
+      exp.includes('chỉ rõ') ||
+      exp.includes('gợi ý') ||
+      exp.includes('ngắn gọn') ||
+      exp.includes('có thể viết') ||
+      exp.includes('có thể dùng') ||
+      exp.includes('bỏ từ') ||
+      exp.includes('mượt mà') ||
+      exp.includes('tự nhiên') ||
+      exp.includes('thay cho') ||
+      exp.includes('thay vì') ||
+      exp.includes('diễn đạt') ||
+      exp.includes('chính xác hơn');
 
     if (isOffTopicCorrection) {
       offTopicQuestionIndices.add(c.questionIndex);
@@ -441,11 +454,24 @@ function enforceExactScoreMath(
     const grammarPenalty = correctionsCount * 1;
     score = Math.max(0, 10 - blankPenalty - offTopicPenalty - lengthPenalty - grammarPenalty);
   } else if (isPart2) {
+    const wc = wordCounts[0] || 0;
     if (isOffTopic) {
-      score = 2;
-    } else if (totalErrors === 0 && !isSevereUnderlength) {
+      score = 0;
+    } else if (wc > 0 && wc < 15) {
+      // Severe underlength (<15 words): max 4 points (A2)
+      score = Math.max(0, 4 - correctionsCount * 1);
+    } else if (wc >= 15 && wc < 20) {
+      // Minor underlength (15-19 words): 7 points (B2)
+      score = Math.max(0, 7 - correctionsCount * 1);
+    } else if (wc > 30 && wc <= 40) {
+      // Minor overlength (31-40 words): 8 points (B2)
+      score = Math.max(0, 8 - correctionsCount * 1);
+    } else if (wc > 40) {
+      // Severe overlength (>40 words): 4 points (A2)
+      score = Math.max(0, 4 - correctionsCount * 1);
+    } else if (totalErrors === 0) {
       score = 10;
-    } else if (totalErrors === 1 || isSevereUnderlength) {
+    } else if (totalErrors === 1) {
       score = 8;
     } else if (totalErrors === 2) {
       score = 6;
@@ -456,7 +482,7 @@ function enforceExactScoreMath(
     }
   } else if (isPart3) {
     if (isOffTopic) {
-      score = 2;
+      score = 0;
     } else if (totalErrors === 0) {
       score = 10;
     } else if (totalErrors === 1) {
@@ -472,7 +498,7 @@ function enforceExactScoreMath(
     }
   } else if (isPart4) {
     if (isOffTopic) {
-      score = 2;
+      score = 0;
     } else if (totalErrors === 0) {
       score = 10;
     } else if (totalErrors === 1) {
@@ -555,10 +581,27 @@ function enforceExactScoreMath(
     },
     vocabulary: {
       ...data.vocabulary,
-      summary: replaceThirdPersonPronouns(data.vocabulary?.summary || ''),
+      summary: sanitizeVocabularySummary(data.vocabulary?.summary || ''),
       suggestions: sanitizeVocabularySuggestions(data.vocabulary?.suggestions || []),
     },
   };
+}
+
+function sanitizeVocabularySummary(summary: string): string {
+  if (!summary) return 'Từ vựng của bạn phù hợp với yêu cầu đề bài.';
+  const vnDiacriticsRegex = /[àáảãạăắằẳẵặâấầẩẫậđèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵ]/i;
+
+  let cleaned = replaceThirdPersonPronouns(summary);
+  const quotedMatches = cleaned.match(/['"“‘]([^'"”’]+)['"”’]/g) || [];
+  for (const qm of quotedMatches) {
+    const rawContent = qm.replace(/['"“‘”’]/g, '').trim();
+    if (vnDiacriticsRegex.test(rawContent)) {
+      cleaned = cleaned.replace(qm, '');
+    }
+  }
+
+  cleaned = cleaned.replace(/\s+/g, ' ').replace(/\s+([.,!?])/g, '$1').trim();
+  return cleaned || 'Bài viết sử dụng từ vựng phù hợp. Bạn có thể mở rộng thêm các từ vựng tiếng Anh nâng cao.';
 }
 
 function sanitizeVocabularySuggestions(suggestions: string[]): string[] {
