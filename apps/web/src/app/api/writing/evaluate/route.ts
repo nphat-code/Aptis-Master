@@ -249,10 +249,33 @@ function enforceExactScoreMath(
   const sanitizedTaskDetails = rawTaskDetails.map((d) => {
     const qIdx = d.questionIndex - 1;
     const ansText = (userAnswers[qIdx] || '').trim();
+    const ansWords = ansText ? ansText.split(/\s+/).filter(Boolean).length : 0;
     const noteLower = (d.note || '').toLowerCase();
     const isSingleChar = ansText.length === 1 && !/^[0-9]$/.test(ansText);
 
+    const minAllowedWords = isPart4 ? (qIdx === 0 ? 40 : 120) : isPart3 ? 30 : isPart2 ? 20 : 1;
+    const maxAllowedWords = isPart4 ? (qIdx === 0 ? 60 : 150) : isPart3 ? 40 : isPart2 ? 30 : 5;
+
+    const isLengthCompliant = ansWords >= minAllowedWords && ansWords <= maxAllowedWords;
+    const isOffTopicItem = offTopicQuestionIndices.has(d.questionIndex);
+
+    if (isLengthCompliant && !isOffTopicItem && !isSingleChar) {
+      return {
+        ...d,
+        isCorrect: true,
+        note: isPart2
+          ? 'Câu trả lời phù hợp với chủ đề và đạt độ dài quy định (20-30 từ).'
+          : isPart3
+          ? 'Câu trả lời phù hợp với chủ đề và đạt độ dài quy định (30-40 từ).'
+          : isPart4
+          ? `Câu trả lời phù hợp với chủ đề và đạt độ dài quy định (${minAllowedWords}-${maxAllowedWords} từ).`
+          : 'Câu trả lời phù hợp với chủ đề và đạt độ dài quy định (1-5 từ).',
+      };
+    }
+
     const isLengthErrorNote =
+      ansWords < minAllowedWords ||
+      ansWords > maxAllowedWords ||
       noteLower.includes('không đủ từ') ||
       noteLower.includes('chưa đủ từ') ||
       noteLower.includes('thiếu từ') ||
@@ -262,11 +285,18 @@ function enforceExactScoreMath(
       noteLower.includes('hơi dài') ||
       noteLower.includes('vượt quá');
 
-    if (offTopicQuestionIndices.has(d.questionIndex) || isLengthErrorNote || isSingleChar) {
+    if (isOffTopicItem || isLengthErrorNote || isSingleChar) {
+      const lengthNote =
+        ansWords < minAllowedWords
+          ? 'Câu trả lời chưa đủ từ theo yêu cầu (hơi ngắn).'
+          : ansWords > maxAllowedWords
+          ? 'Câu trả lời vượt quá số lượng từ theo yêu cầu (hơi dài).'
+          : d.note;
+
       return {
         ...d,
         isCorrect: false,
-        note: isSingleChar ? 'Câu trả lời quá ngắn và không rõ nghĩa.' : d.note,
+        note: isSingleChar ? 'Câu trả lời quá ngắn và không rõ nghĩa.' : lengthNote,
       };
     }
     if (realCorrectionQuestionIndices.has(d.questionIndex) && ansText.length >= 2) {
@@ -377,7 +407,6 @@ function enforceExactScoreMath(
 
   let maxScore = 10;
   let score = 10;
-  let cefrLevel: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' = 'C1';
 
   const correctTaskCount = Math.max(0, totalQuestionsCount - taskErrors);
 
@@ -387,80 +416,60 @@ function enforceExactScoreMath(
     const lengthPenalty = lengthErrorsCount * 1;
     const grammarPenalty = correctionsCount * 1;
     score = Math.max(0, 10 - blankPenalty - offTopicPenalty - lengthPenalty - grammarPenalty);
-    cefrLevel = 'A1';
   } else if (isPart2) {
     if (isOffTopic) {
       score = 2;
-      cefrLevel = 'A1';
     } else if (totalErrors === 0 && !isSevereUnderlength) {
       score = 10;
-      cefrLevel = 'A2';
     } else if (totalErrors === 1 || isSevereUnderlength) {
       score = 8;
-      cefrLevel = 'A2';
     } else if (totalErrors === 2) {
       score = 6;
-      cefrLevel = 'A1';
     } else if (totalErrors === 3) {
       score = 4;
-      cefrLevel = 'A1';
     } else {
       score = 2;
-      cefrLevel = 'A1';
     }
   } else if (isPart3) {
     if (isOffTopic) {
       score = 2;
-      cefrLevel = 'A1';
     } else if (totalErrors === 0) {
       score = 10;
-      cefrLevel = 'B2';
     } else if (totalErrors === 1) {
       score = 9;
-      cefrLevel = 'B2';
     } else if (totalErrors === 2) {
       score = 7;
-      cefrLevel = 'B1';
     } else if (totalErrors === 3) {
       score = 5;
-      cefrLevel = 'B1';
     } else if (totalErrors === 4) {
       score = 4;
-      cefrLevel = 'A2';
     } else {
       score = Math.max(0, 10 - totalErrors * 2);
-      cefrLevel = score >= 5 ? 'B1' : score >= 3 ? 'A2' : 'A1';
     }
   } else if (isPart4) {
     if (isOffTopic) {
       score = 2;
-      cefrLevel = 'A1';
     } else if (totalErrors === 0) {
       score = 10;
-      cefrLevel = 'C1';
     } else if (totalErrors === 1) {
       score = 9;
-      cefrLevel = 'B2';
     } else if (totalErrors === 2) {
       score = 8;
-      cefrLevel = 'B2';
     } else if (totalErrors === 3) {
       score = 7;
-      cefrLevel = 'B1';
     } else if (totalErrors === 4) {
       score = 5;
-      cefrLevel = 'B1';
     } else if (totalErrors === 5) {
       score = 4;
-      cefrLevel = 'A2';
     } else {
       score = Math.max(0, 10 - totalErrors * 2);
-      cefrLevel = score >= 6 ? 'B1' : score >= 4 ? 'A2' : 'A1';
     }
   } else {
     score = Math.max(0, 10 - totalErrors * 2);
-    cefrLevel = score >= 9 ? 'C1' : score >= 7 ? 'B2' : score >= 5 ? 'B1' : score >= 3 ? 'A2' : 'A1';
   }
+
+  const cefrLevel: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' =
+    score >= 9 ? 'C1' : score >= 7 ? 'B2' : score >= 5 ? 'B1' : score >= 3 ? 'A2' : 'A1';
 
   const taskStatus = taskErrors === 0 ? 'success' : (isOffTopic || isSevereUnderlength || taskErrors >= 2) ? 'danger' : 'warning';
   const taskSummary = isPart2
@@ -637,9 +646,10 @@ ${formattedQuestionsText}
 ${partRulesText}
 
 STRICT SEPARATION OF ASSESSMENT CRITERIA:
-- "Task Completion": Evaluates ONLY topic relevance and word count (${isPart2 ? '20-30 words' : '1-5 words'}).
+- "Task Completion": Evaluates ONLY topic relevance and word count (${isPart2 ? '20-30 words total' : isPart3 ? '30-40 words per response' : partId.toLowerCase() === 'part4' ? '40-60 words for Email 1 and 120-150 words for Email 2' : '1-5 words per answer'}).
   * If candidate gives an OFF-TOPIC answer, mark Task Completion status as "warning" or "danger".
   * NEVER mention spelling or grammar mistakes in Task Completion summary or notes!
+  * STRICT WORD COUNT RULE FOR PART 2: The limit is 20-30 TOTAL words for the whole response. Do NOT evaluate length on a per-sentence basis! A response of 24 words is 100% compliant with 20-30 words. Do NOT say "1-5 từ/câu"!
 - "Grammar & Spelling": RIGOROUS WORD-BY-WORD PROOFREADING PROTOCOL:
   You MUST proofread candidate answers word-by-word against this MANDATORY ERROR CHECKLIST:
   1. Subject-Verb Agreement: Check if 3rd-person singular subjects (he, she, it, single noun, the owner, my friend) match singular verbs with 's'/'es' (e.g. "he work" -> "he works", "the owner serve" -> "the owner serves").
