@@ -137,7 +137,9 @@ function replaceThirdPersonPronouns(text: string): string {
     .replace(/\bỨng viên\b/g, 'Bạn')
     .replace(/\bứng viên\b/g, 'bạn')
     .replace(/\bThí sinh\b/g, 'Bạn')
-    .replace(/\bthí sinh\b/g, 'bạn');
+    .replace(/\bthí sinh\b/g, 'bạn')
+    .replace(/冠\s*từ/g, 'mạo từ')
+    .replace(/冠/g, 'mạo từ ');
 }
 
 // Programmatically enforce 100% exact mathematical score calculation based on detected errors
@@ -196,41 +198,61 @@ function enforceExactScoreMath(
   for (const c of rawCorrections) {
     if (!c.original || !c.correction) continue;
 
+    const origRaw = c.original.trim().toLowerCase();
+    const corrRaw = c.correction.trim().toLowerCase();
+
     // Check if original === correction (hallucinated non-error item)
-    if (c.original.trim().toLowerCase() === c.correction.trim().toLowerCase()) {
+    if (origRaw === corrRaw) {
+      continue;
+    }
+
+    // Normalize US/UK spelling variants (colors vs colour, favorite vs favourite, etc.)
+    const origClean = origRaw
+      .replace(/colors/g, 'color')
+      .replace(/colours/g, 'color')
+      .replace(/colour/g, 'color')
+      .replace(/favourites/g, 'favorite')
+      .replace(/favourite/g, 'favorite')
+      .replace(/centres/g, 'center')
+      .replace(/centre/g, 'center')
+      .replace(/theatres/g, 'theater')
+      .replace(/theatre/g, 'theater');
+
+    const corrClean = corrRaw
+      .replace(/colors/g, 'color')
+      .replace(/colours/g, 'color')
+      .replace(/colour/g, 'color')
+      .replace(/favourites/g, 'favorite')
+      .replace(/favourite/g, 'favorite')
+      .replace(/centres/g, 'center')
+      .replace(/centre/g, 'center')
+      .replace(/theatres/g, 'theater')
+      .replace(/theatre/g, 'theater');
+
+    if (origClean === corrClean) {
       continue;
     }
 
     // Check if explanation/correction indicates an off-topic error instead of a spelling/grammar error
     const exp = (c.explanation || '').toLowerCase();
-    const corr = (c.correction || '').toLowerCase();
     const isOffTopicCorrection =
       exp.includes('không liên quan') ||
       exp.includes('lạc đề') ||
       exp.includes('off-topic') ||
       exp.includes('unrelated') ||
-      exp.includes('chủ đề') ||
-      exp.includes('đề bài') ||
-      exp.includes('nội dung') ||
-      corr.includes('không áp dụng') ||
-      corr.includes('không liên quan');
+      exp.includes('sai chủ đề') ||
+      exp.includes('không đúng chủ đề') ||
+      exp.includes('lệch đề') ||
+      corrRaw.includes('không áp dụng') ||
+      corrRaw.includes('không liên quan');
 
     const isStyleRewrite =
-      exp.includes('cụ thể hơn') ||
-      exp.includes('rõ ràng hơn') ||
-      exp.includes('mở rộng') ||
-      exp.includes('diễn đạt tốt hơn') ||
-      exp.includes('thêm vào') ||
-      exp.includes('nên viết') ||
-      exp.includes('thay vì') ||
-      exp.includes('để chỉ định') ||
-      exp.includes('tự nhiên hơn') ||
-      exp.includes('mô tả') ||
-      exp.includes('thay cho') ||
       exp.includes('không có lỗi') ||
       exp.includes('đã đúng') ||
+      exp.includes('câu đã chuẩn') ||
       exp.includes('không sai') ||
-      exp.includes('tính đa dạng');
+      exp.includes('anh-anh') ||
+      exp.includes('anh-mỹ');
 
     if (isOffTopicCorrection) {
       offTopicQuestionIndices.add(c.questionIndex);
@@ -368,37 +390,39 @@ function enforceExactScoreMath(
   // Deterministic grammar scanner for common typos if LLM missed them
   userAnswers.forEach((ans, qIdx) => {
     const qNum = qIdx + 1;
-    const hasExistingCorrection = realCorrections.some((c) => c.questionIndex === qNum);
-    if (!hasExistingCorrection && ans) {
-      // 1. Check adverb modification error e.g. "concentrate very good" -> "concentrate very well"
-      const advMatch = ans.match(/\b(concentrate|speak|listen|read|write|perform|work)\s+(very\s+)?good\b/i);
-      if (advMatch) {
-        const wrongPhrase = advMatch[0];
-        const correctPhrase = wrongPhrase.replace(/\bgood\b/i, 'well');
-        realCorrections.push({
-          questionIndex: qNum,
-          type: 'Ngữ pháp',
-          original: wrongPhrase,
-          correction: correctPhrase,
-          explanation: `Sử dụng phó từ '${correctPhrase}' thay cho tính từ '${wrongPhrase}' để bổ nghĩa cho động từ.`,
-        });
-      }
+    if (!ans) return;
 
-      // 2. Check Subject-Verb agreement error e.g. "the owner always serve" -> "the owner always serves"
-      const svMatch = ans.match(/\b(the owner|the author|he|she|it|my friend)\s+(always\s+)?(serve|work|prefer|want|like|make|give|take|need|know|enjoy)\b/i);
-      if (svMatch) {
-        const wrongPhrase = svMatch[0];
-        const verb = svMatch[3];
-        const correctVerb = verb.endsWith('e') ? `${verb}s` : `${verb}es`;
-        const correctPhrase = wrongPhrase.replace(new RegExp(`\\b${verb}\\b`, 'i'), correctVerb);
-        realCorrections.push({
-          questionIndex: qNum,
-          type: 'Ngữ pháp',
-          original: wrongPhrase,
-          correction: correctPhrase,
-          explanation: `Chủ ngữ ngôi thứ ba số ít cần chia động từ số ít '${correctPhrase}' thay cho '${wrongPhrase}'.`,
-        });
-      }
+    const isPhraseCovered = (phrase: string) =>
+      realCorrections.some((c) => c.questionIndex === qNum && c.original.toLowerCase().includes(phrase.toLowerCase()));
+
+    // 4. Check adverb modification error e.g. "concentrate very good" -> "concentrate very well"
+    const advMatch = ans.match(/\b(concentrate|speak|listen|read|write|perform|work)\s+(very\s+)?good\b/i);
+    if (advMatch && !isPhraseCovered(advMatch[0])) {
+      const wrongPhrase = advMatch[0];
+      const correctPhrase = wrongPhrase.replace(/\bgood\b/i, 'well');
+      realCorrections.push({
+        questionIndex: qNum,
+        type: 'Ngữ pháp',
+        original: wrongPhrase,
+        correction: correctPhrase,
+        explanation: `Sử dụng phó từ '${correctPhrase}' thay cho tính từ '${wrongPhrase}' để bổ nghĩa cho động từ.`,
+      });
+    }
+
+    // 5. Check Subject-Verb agreement error e.g. "the owner always serve" -> "the owner always serves"
+    const svMatch = ans.match(/\b(the owner|the author|he|she|it|my friend)\s+(always\s+)?(serve|work|prefer|want|like|make|give|take|need|know|enjoy)\b/i);
+    if (svMatch && !isPhraseCovered(svMatch[0])) {
+      const wrongPhrase = svMatch[0];
+      const verb = svMatch[3];
+      const correctVerb = verb.endsWith('e') ? `${verb}s` : `${verb}es`;
+      const correctPhrase = wrongPhrase.replace(new RegExp(`\\b${verb}\\b`, 'i'), correctVerb);
+      realCorrections.push({
+        questionIndex: qNum,
+        type: 'Ngữ pháp',
+        original: wrongPhrase,
+        correction: correctPhrase,
+        explanation: `Chủ ngữ ngôi thứ ba số ít cần chia động từ số ít '${correctPhrase}' thay cho '${wrongPhrase}'.`,
+      });
     }
   });
 
@@ -651,6 +675,7 @@ STRICT SEPARATION OF ASSESSMENT CRITERIA:
   * NEVER mention spelling or grammar mistakes in Task Completion summary or notes!
   * STRICT WORD COUNT RULE FOR PART 2: The limit is 20-30 TOTAL words for the whole response. Do NOT evaluate length on a per-sentence basis! A response of 24 words is 100% compliant with 20-30 words. Do NOT say "1-5 từ/câu"!
 - "Grammar & Spelling": RIGOROUS WORD-BY-WORD PROOFREADING PROTOCOL:
+  EXHAUSTIVE ERROR DETECTION REQUIREMENT: You MUST check EVERY SINGLE WORD in candidate responses. If a candidate answer contains MULTIPLE errors (such as missing prepositions e.g. "in beach" -> "on the beach", passive voice mistakes e.g. "was take" -> "was taken", and continuous verb errors e.g. "was laugh" -> "was laughing"), YOU MUST REPORT EACH ERROR OR CREATE DETAILED CORRECTIONS COVERING ALL ERRORS IN THAT ANSWER! DO NOT stop after finding just 1 error!
   You MUST proofread candidate answers word-by-word against this MANDATORY ERROR CHECKLIST:
   1. Subject-Verb Agreement: Check if 3rd-person singular subjects (he, she, it, single noun, the owner, my friend) match singular verbs with 's'/'es' (e.g. "he work" -> "he works", "the owner serve" -> "the owner serves").
   2. Adverb vs Adjective Misuse: Check if action verbs are modified by adverbs (well, fluently, quickly) instead of adjectives (good, fast) (e.g. "speak good" -> "speak well", "write good" -> "write well").
