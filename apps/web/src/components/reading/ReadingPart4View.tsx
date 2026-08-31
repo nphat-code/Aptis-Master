@@ -93,10 +93,10 @@ export default function ReadingPart4View({
                         : selectedVal
                         ? 'border-2 border-red-400 bg-[#fef2f2] text-red-700 disabled:bg-[#fef2f2] disabled:text-red-700 disabled:border-red-400'
                         : 'border border-slate-300 bg-slate-50 text-slate-600 disabled:bg-slate-50'
-                      : 'bg-white border border-slate-300 text-slate-800 focus:outline-none focus:ring-2 focus:border-[#24085A] focus:ring-[#24085A]/20 hover:border-slate-400'
+                      : 'bg-white border border-slate-300 text-slate-800 focus:outline-none focus:ring-2 focus:border-[#162544] focus:ring-[#162544]/20 hover:border-slate-400'
                   }`}
                 >
-                  <option value="">—</option>
+                  <option value="" disabled hidden></option>
                   <option value="A">A</option>
                   <option value="B">B</option>
                   <option value="C">C</option>

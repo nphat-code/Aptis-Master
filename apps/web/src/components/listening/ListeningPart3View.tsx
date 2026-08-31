@@ -102,8 +102,8 @@ export function ListeningPart3View({
                       : 'bg-white border border-slate-300 text-slate-800 focus:outline-none focus:border-slate-400 hover:border-slate-400'
                   }`}
                 >
-                  <option value=""></option>
-                  {optionsList.map((opt, oIdx) => (
+                  <option value="" disabled hidden></option>
+                  {(optionsList || []).filter((opt) => opt && opt.trim() !== '').map((opt, oIdx) => (
                     <option key={oIdx} value={opt}>
                       {opt}
                     </option>
