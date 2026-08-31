@@ -363,7 +363,6 @@ export default function ExamPracticeLayout({
                 }}
                 className="bg-[#162544] hover:bg-[#0f1a30] text-white text-sm font-medium px-7 py-3 rounded-xl transition-all shadow-sm cursor-pointer inline-flex items-center gap-2 border border-[#162544]"
               >
-                <span className="text-[#f59e0b]">★</span>
                 <span>{hasExamStarted ? 'Resume Test' : 'Start Assessment'}</span>
               </button>
             </div>

@@ -34,7 +34,6 @@ export default function HeroSection({ onStartMockTest, onStartPractice }: HeroSe
             onClick={onStartMockTest}
             className="bg-[#162544] hover:bg-[#0f1a30] active:bg-[#0a1122] text-white px-8 py-3.5 rounded-full font-medium text-sm sm:text-base flex items-center gap-2.5 transition-all shadow-sm cursor-pointer border border-[#162544]"
           >
-            <span className="text-[#f59e0b]">★</span>
             <span>Thử sức đề thi Full Test</span>
           </button>
           <button

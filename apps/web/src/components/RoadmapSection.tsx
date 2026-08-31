@@ -85,7 +85,6 @@ export default function RoadmapSection({ onSelectRoadmap }: RoadmapSectionProps)
               onClick={() => onSelectRoadmap?.('urgent')}
               className="w-full bg-[#162544] hover:bg-[#0f1a30] text-white font-medium text-xs sm:text-sm py-3 rounded-xl transition-all flex items-center justify-center gap-2 group cursor-pointer shadow-xs"
             >
-              <span className="text-[#f59e0b]">★</span>
               <span>Vào thi thử ngay</span>
               <span className="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform">
                 arrow_forward

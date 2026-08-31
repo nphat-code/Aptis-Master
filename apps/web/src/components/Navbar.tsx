@@ -133,7 +133,6 @@ export default function Navbar({ activeTab, setActiveTab, setSelectedSubPart }: 
             onClick={() => handleSkillSelect('mock-test')}
             className="bg-[#162544] hover:bg-[#0f1a30] text-white font-medium text-xs sm:text-sm px-5 sm:px-6 py-2 rounded-full transition-all shadow-xs cursor-pointer flex-shrink-0 flex items-center gap-1.5 border border-[#162544]"
           >
-            <span className="text-[#f59e0b]">★</span>
             <span>Vào thi ngay</span>
           </button>
 

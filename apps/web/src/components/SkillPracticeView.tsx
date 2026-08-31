@@ -146,7 +146,6 @@ export default function SkillPracticeView({
                   onClick={() => setActivePracticeTestIndex(0)}
                   className="bg-[#162544] hover:bg-[#0f1a30] active:bg-[#0a1122] text-white font-medium px-7 py-3 rounded-full transition-all text-sm cursor-pointer shadow-sm flex items-center gap-2 border border-[#162544]"
                 >
-                  <span className="text-[#f59e0b]">★</span>
                   <span>Luyện đề đầu tiên</span>
                 </button>
 
