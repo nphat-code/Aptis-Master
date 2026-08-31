@@ -77,11 +77,11 @@ export default function Navbar({ activeTab, setActiveTab, setSelectedSubPart }: 
 
   return (
     <>
-      <nav className="fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-6xl rounded-full border border-white/15 bg-slate-900/85 backdrop-blur-xl px-5 sm:px-8 py-2.5 shadow-2xl z-50 flex items-center justify-between transition-all duration-300 overflow-hidden">
+      <nav className="fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-6xl rounded-full border border-[#e6dfd8] bg-[#faf9f5]/90 backdrop-blur-xl px-5 sm:px-8 py-2.5 shadow-sm z-50 flex items-center justify-between transition-all duration-300 overflow-hidden">
         {/* Glowing Top Progress Loading Bar */}
         {(isLoading || isPending) && (
           <div
-            className="absolute top-0 left-0 h-[3px] bg-gradient-to-r from-[#4edea3] via-[#00f2fe] to-[#4edea3] shadow-[0_0_15px_#4edea3] transition-all duration-300 ease-out z-50"
+            className="absolute top-0 left-0 h-[3px] bg-[#cc785c] shadow-[0_0_10px_#cc785c] transition-all duration-300 ease-out z-50"
             style={{ width: `${loadingProgress || 80}%` }}
           />
         )}
@@ -92,45 +92,44 @@ export default function Navbar({ activeTab, setActiveTab, setSelectedSubPart }: 
           className="flex items-center gap-2 cursor-pointer group flex-shrink-0"
         >
           <span
-            className="material-symbols-outlined text-[#4edea3] text-2xl drop-shadow-[0_0_8px_rgba(78,222,163,0.6)] group-hover:scale-110 transition-transform"
+            className="material-symbols-outlined text-[#cc785c] text-2xl group-hover:scale-110 transition-transform"
             style={{ fontVariationSettings: "'FILL' 1" }}
           >
             school
           </span>
-          <span className="text-xl font-extrabold text-[#4edea3] tracking-tight">
+          <span className="text-xl font-bold font-serif text-[#141413] tracking-tight">
             AptisMaster
           </span>
         </div>
 
         {/* Desktop Center Links */}
-        <div className="hidden lg:flex items-center gap-1.5 sm:gap-2">
+        <div className="hidden lg:flex items-center gap-1 sm:gap-1.5">
           {navItems.map((item) => {
             const isActive = effectiveActiveTab === item.id;
             return (
               <button
                 key={item.id}
                 onClick={() => handleSkillSelect(item.id)}
-                className={`text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer px-3.5 py-1.5 rounded-full relative flex items-center gap-1.5 ${
+                className={`text-xs sm:text-sm font-medium transition-all duration-200 cursor-pointer px-3.5 py-1.5 rounded-full relative flex items-center gap-1.5 ${
                   isActive
-                    ? 'bg-[#4edea3]/15 text-[#4edea3] border border-[#4edea3]/30 shadow-[0_0_16px_rgba(78,222,163,0.25)] scale-[1.02]'
-                    : 'text-[#bbcabf] hover:text-[#4edea3] hover:bg-white/5 border border-transparent'
+                    ? 'bg-[#efe9de] text-[#141413] font-semibold shadow-xs'
+                    : 'text-[#6c6a64] hover:text-[#141413] hover:bg-[#f5f0e8]'
                 }`}
               >
                 <span>{item.label}</span>
                 {isActive && (
-                  <span className="w-1.5 h-1.5 bg-[#4edea3] rounded-full shadow-[0_0_8px_#4edea3] animate-pulse" />
+                  <span className="w-1.5 h-1.5 bg-[#cc785c] rounded-full" />
                 )}
               </button>
             );
           })}
         </div>
 
-
         {/* Right Actions & Mobile Toggle */}
         <div className="flex items-center gap-3">
           <button
             onClick={() => handleSkillSelect('mock-test')}
-            className="bg-[#4edea3] text-[#003824] font-extrabold text-xs sm:text-sm px-4 sm:px-6 py-2 sm:py-2.5 rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(78,222,163,0.3)] cursor-pointer flex-shrink-0"
+            className="bg-[#cc785c] hover:bg-[#a9583e] active:bg-[#8f4732] text-white font-medium text-xs sm:text-sm px-5 sm:px-6 py-2 sm:py-2 rounded-full transition-all shadow-xs cursor-pointer flex-shrink-0"
           >
             Vào thi ngay
           </button>
@@ -138,7 +137,7 @@ export default function Navbar({ activeTab, setActiveTab, setSelectedSubPart }: 
           {/* Mobile Menu Toggle Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 text-[#bbcabf] hover:text-[#4edea3] transition-colors rounded-full hover:bg-white/5 cursor-pointer flex items-center justify-center"
+            className="lg:hidden p-2 text-[#6c6a64] hover:text-[#141413] transition-colors rounded-full hover:bg-[#efe9de] cursor-pointer flex items-center justify-center"
             aria-label="Toggle menu"
           >
             <span className="material-symbols-outlined text-2xl">
@@ -150,9 +149,9 @@ export default function Navbar({ activeTab, setActiveTab, setSelectedSubPart }: 
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-[#060e20]/80 backdrop-blur-md lg:hidden pt-24 px-6 animate-fast-fade">
-          <div className="bg-[#131b2e] border border-white/10 rounded-3xl p-6 shadow-2xl space-y-3">
-            <p className="text-xs font-bold text-[#4edea3] uppercase tracking-wider px-3 mb-2">
+        <div className="fixed inset-0 z-40 bg-[#141413]/40 backdrop-blur-sm lg:hidden pt-24 px-6 animate-fast-fade">
+          <div className="bg-[#faf9f5] border border-[#e6dfd8] rounded-3xl p-6 shadow-xl space-y-2">
+            <p className="text-xs font-semibold text-[#cc785c] uppercase tracking-wider px-3 mb-2">
               Danh mục kỹ năng
             </p>
             {navItems.map((item) => {
@@ -161,14 +160,14 @@ export default function Navbar({ activeTab, setActiveTab, setSelectedSubPart }: 
                 <button
                   key={item.id}
                   onClick={() => handleSkillSelect(item.id)}
-                  className={`w-full text-left px-4 py-3 rounded-2xl text-sm font-semibold transition-all cursor-pointer flex items-center justify-between ${
+                  className={`w-full text-left px-4 py-3 rounded-2xl text-sm font-medium transition-all cursor-pointer flex items-center justify-between ${
                     isActive
-                      ? 'bg-[#4edea3]/15 text-[#4edea3] border border-[#4edea3]/30 font-bold'
-                      : 'text-[#bbcabf] hover:bg-white/5 hover:text-white'
+                      ? 'bg-[#efe9de] text-[#141413] font-semibold'
+                      : 'text-[#6c6a64] hover:bg-[#f5f0e8] hover:text-[#141413]'
                   }`}
                 >
                   <span>{item.label}</span>
-                  {isActive && <span className="material-symbols-outlined text-sm">check</span>}
+                  {isActive && <span className="material-symbols-outlined text-sm text-[#cc785c]">check</span>}
                 </button>
               );
             })}

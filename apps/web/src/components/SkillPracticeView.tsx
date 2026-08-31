@@ -111,47 +111,48 @@ export default function SkillPracticeView({
   const progressPercent = Math.min(Math.round((completedCount / (totalAvailableTests || 1)) * 100), 100);
 
   return (
-    <div key={`skill-view-${skillId}`} className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-sans pb-24 pt-24 animate-tab-fade-up">
+    <div key={`skill-view-${skillId}`} className="min-h-screen bg-[#faf9f5] text-[#141413] font-sans pb-24 pt-24 animate-tab-fade-up">
       <main className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10">
         
-        {/* 1. Hero Bento Grid Section (Stitch 7:5 Layout) */}
-        <section className="grid grid-cols-12 gap-6 mb-10">
+        {/* 1. Skill Header Section */}
+        <section className="grid grid-cols-12 gap-8 items-stretch pt-28 mb-12">
           
-          {/* Left Hero Banner (7 cols) */}
-          <div className="col-span-12 lg:col-span-7 relative overflow-hidden rounded-3xl min-h-[440px] glass-panel group flex flex-col justify-center p-8 sm:p-12">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#4edea3]/20 via-transparent to-[#c0c1ff]/20 pointer-events-none" />
-            
+          {/* Left Hero Card (7 cols) */}
+          <div className="col-span-12 lg:col-span-7 bg-[#efe9de] rounded-3xl p-8 sm:p-10 border border-[#e6dfd8] flex flex-col justify-between relative overflow-hidden min-h-[400px]">
             <div className="relative z-10">
-              <span className="inline-block px-4 py-1.5 rounded-full bg-[#4edea3]/10 border border-[#4edea3]/20 text-[#4edea3] font-bold text-xs uppercase tracking-wider mb-5">
-                UPDATE 2026
-              </span>
+              <div className="flex flex-wrap items-center gap-3 mb-5">
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-white text-[#cc785c] border border-[#e6dfd8]">
+                  <span>{icon || '🎯'}</span>
+                  <span>{skillTitle}</span>
+                </span>
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-white text-[#6c6a64] border border-[#e6dfd8]">
+                  <span className="material-symbols-outlined text-sm">schedule</span>
+                  <span>{durationText}</span>
+                </span>
+              </div>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#dae2fd] mb-4 leading-tight">
-                {skillTitle} <br />
-                <span className="text-[#4edea3]">Aptis ESOL 2026</span>
+              <h1 className="text-3xl sm:text-4xl font-serif font-normal text-[#141413] mb-4 leading-tight">
+                Luyện thi {skillTitle}
               </h1>
 
-              <p className="text-sm sm:text-base text-[#bbcabf] mb-8 max-w-lg leading-relaxed">
+              <p className="text-sm sm:text-base text-[#6c6a64] max-w-xl leading-relaxed mb-6">
                 {skillDescription}
               </p>
+            </div>
 
-              <div className="flex flex-wrap items-center gap-4">
+            <div className="relative z-10 pt-4 border-t border-[#e6dfd8]">
+              <div className="flex flex-wrap gap-4 items-center">
                 <button
-                  onClick={() => {
-                    if (supportedPartIds.length > 0) {
-                      setActivePracticeTestIndex(0);
-                    }
-                  }}
-                  className="bg-[#4edea3] text-[#003824] font-extrabold px-7 py-3.5 rounded-full flex items-center gap-2 hover:scale-105 transition-all shadow-[0_0_30px_rgba(78,222,163,0.4)] text-sm cursor-pointer"
+                  onClick={() => setActivePracticeTestIndex(0)}
+                  className="bg-[#cc785c] hover:bg-[#a9583e] text-white font-medium px-7 py-3 rounded-full transition-all text-sm cursor-pointer shadow-xs flex items-center gap-2"
                 >
-                  <span className="material-symbols-outlined text-lg">bolt</span>
-                  <span>Bắt đầu đề thi ngẫu nhiên</span>
+                  <span>⚡ Luyện đề đầu tiên</span>
                 </button>
 
                 {tipsContent && (
                   <button
                     onClick={() => setShowTipsModal(true)}
-                    className="bg-[#222a3d] text-[#dae2fd] font-bold px-6 py-3.5 rounded-full border border-[#3c4a42] hover:bg-[#2d3449] transition-all text-sm cursor-pointer flex items-center gap-1.5"
+                    className="bg-white text-[#141413] font-medium px-6 py-3 rounded-full border border-[#e6dfd8] hover:bg-[#faf9f5] transition-all text-sm cursor-pointer flex items-center gap-1.5 shadow-xs"
                   >
                     <span>💡</span>
                     <span>{tipsTitle || `Mẹo thi ${skillTitle}`}</span>
@@ -162,69 +163,61 @@ export default function SkillPracticeView({
           </div>
 
           {/* Right Widgets (5 cols) */}
-          <div className="col-span-12 lg:col-span-5 grid grid-rows-2 gap-6 min-h-[440px]">
+          <div className="col-span-12 lg:col-span-5 grid grid-rows-2 gap-6 min-h-[400px]">
             
             {/* Widget 1: Study Progress Card */}
-            <div className="glass-panel rounded-3xl p-7 sm:p-8 flex items-center justify-between group bento-card">
+            <div className="bg-[#efe9de] rounded-3xl p-6 sm:p-7 flex items-center justify-between border border-[#e6dfd8]">
               <div>
-                <h3 className="text-xl font-bold text-[#dae2fd] mb-1.5">Tiến độ học tập</h3>
-                <p className="text-xs sm:text-sm text-[#bbcabf]">
-                  Đã hoàn thành <strong className="text-[#4edea3]">{completedCount}</strong> bài luyện tập kỹ năng này.
+                <h3 className="text-lg font-serif font-semibold text-[#141413] mb-1">Tiến độ học tập</h3>
+                <p className="text-xs sm:text-sm text-[#6c6a64]">
+                  Đã hoàn thành <strong className="text-[#cc785c] font-semibold">{completedCount}</strong> bài luyện tập.
                 </p>
-                <div className="mt-5">
-                  <button className="text-[#4edea3] font-bold text-xs flex items-center gap-1 hover:gap-2 transition-all cursor-pointer">
-                    <span>Xem báo cáo chi tiết</span>
-                    <span className="material-symbols-outlined text-sm">arrow_forward</span>
-                  </button>
+                <div className="mt-4">
+                  <span className="text-[#cc785c] font-medium text-xs flex items-center gap-1">
+                    <span>Đang tiến bộ đều đặn</span>
+                    <span className="material-symbols-outlined text-sm">trending_up</span>
+                  </span>
                 </div>
               </div>
 
-              <div className="relative flex items-center justify-center w-28 h-28 flex-shrink-0">
+              <div className="relative flex items-center justify-center w-24 h-24 flex-shrink-0">
                 <svg className="w-full h-full transform -rotate-90">
-                  <circle className="text-[#2d3449]" cx="56" cy="56" fill="transparent" r="50" stroke="currentColor" strokeWidth="9" />
+                  <circle className="text-[#e6dfd8]" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" strokeWidth="8" />
                   <circle
-                    className="text-[#4edea3]"
-                    cx="56"
-                    cy="56"
+                    className="text-[#cc785c]"
+                    cx="48"
+                    cy="48"
                     fill="transparent"
-                    r="50"
+                    r="40"
                     stroke="currentColor"
-                    strokeWidth="9"
-                    strokeDasharray="314.15"
-                    strokeDashoffset={314.15 - (314.15 * progressPercent) / 100}
+                    strokeWidth="8"
+                    strokeDasharray="251.3"
+                    strokeDashoffset={251.3 - (251.3 * progressPercent) / 100}
                     strokeLinecap="round"
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-xl font-extrabold text-[#dae2fd]">{progressPercent}%</span>
-                  <span className="text-[9px] font-bold text-[#bbcabf] uppercase tracking-widest">Goal</span>
+                  <span className="text-lg font-semibold text-[#141413]">{progressPercent}%</span>
+                  <span className="text-[8px] font-medium text-[#6c6a64] uppercase tracking-wider">Goal</span>
                 </div>
               </div>
             </div>
 
             {/* Widget 2: Strategy Card */}
-            <div className="glass-panel rounded-3xl p-7 sm:p-8 group bento-card relative overflow-hidden flex flex-col justify-between">
-              <div className="absolute top-0 right-0 p-6 text-[#4edea3] opacity-15 transform translate-x-3 -translate-y-3 pointer-events-none">
-                <span className="material-symbols-outlined text-7xl" style={{ fontVariationSettings: "'FILL' 1" }}>
-                  lightbulb
-                </span>
-              </div>
+            <div className="bg-[#efe9de] rounded-3xl p-6 sm:p-7 border border-[#e6dfd8] flex flex-col justify-between">
               <div>
-                <h3 className="text-xl font-bold text-[#dae2fd] mb-2">Chiến thuật làm bài</h3>
-                <p className="text-xs sm:text-sm text-[#bbcabf] leading-relaxed line-clamp-2">
+                <h3 className="text-lg font-serif font-semibold text-[#141413] mb-1">Chiến thuật làm bài</h3>
+                <p className="text-xs sm:text-sm text-[#6c6a64] leading-relaxed line-clamp-2">
                   Luyện tập phân bổ thời gian hợp lý cho từng phần để tối đa hóa điểm số CEFR B2/C1.
                 </p>
               </div>
               <div className="flex items-center gap-3 pt-2">
-                <div className="flex -space-x-2">
-                  <div className="w-7 h-7 rounded-full border-2 border-[#0b1326] bg-[#171f33] flex items-center justify-center overflow-hidden">
-                    <img className="w-full h-full object-cover" alt="Student" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3TROKMpmRHONVzG4CPnwhUY-Kf5XKaYfOnWYmlYhBX7qKrIl9Ina8oDNo1vY2kqWIk3mNShBn9j4bUeS2Aef39Xr1YQw7PmCapUKprC1FNuH2VUGhIWo4qqNXRGuIo9mOku5iqtRVrHQNjxifwmjV7V1gzk9Dlm9ymZFm_Z8QgW4i_aDWF2CsC6OFE_aeAp1Q_HMLE3YT_Szt67-c6mRs-zOpB3UotOSoaajjcZDyQrDW-Oqkz7NuNg" />
-                  </div>
-                  <div className="w-7 h-7 rounded-full border-2 border-[#0b1326] bg-[#171f33] flex items-center justify-center overflow-hidden">
-                    <img className="w-full h-full object-cover" alt="Student" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVPOnryA--7A-OxIRfTzqUm89BaOFzjKx-qZi6oGxVO1Dswnw7NtGzAclDvjq2OVITf8KVAgTqQ0ZtP6_wfzLpVXqPJSMC3zAlfsd4K4vxVISsaU2TY7r0VSWwVcsu0WiaQxKC9mYoCXK-TRzOReaw-SEeKTKigormbjwEb5enUIgCspTSLuXxR2PbuKfsQWVwKwoqJlp-OzSXAFRfSsSfdbLEiN05jApkEdzKTh__kZhlf8eL9UmOlg" />
-                  </div>
+                <div className="flex -space-x-1.5">
+                  <div className="w-6 h-6 rounded-full border border-white bg-[#a9583e]" />
+                  <div className="w-6 h-6 rounded-full border border-white bg-[#d97706]" />
+                  <div className="w-6 h-6 rounded-full border border-white bg-[#e8a55a]" />
                 </div>
-                <span className="text-xs font-medium text-[#bbcabf]">+2.4k học viên đang học</span>
+                <span className="text-xs font-medium text-[#6c6a64]">+2.4k học viên đang luyện</span>
               </div>
             </div>
 
@@ -237,20 +230,20 @@ export default function SkillPracticeView({
           
           {/* Left Sticky Sidebar Menu (3/12 cols) */}
           <aside className="col-span-12 lg:col-span-3 sticky top-28 z-20 space-y-4">
-            <div className="glass-panel rounded-3xl p-5 border border-white/10 shadow-2xl space-y-4">
+            <div className="bg-white rounded-2xl p-5 border border-[#e6dfd8] shadow-xs space-y-4">
               
-              <div className="flex items-center justify-between border-b border-white/10 pb-3.5 px-1">
+              <div className="flex items-center justify-between border-b border-[#e6dfd8] pb-3 px-1">
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[#4edea3] text-xl">view_list</span>
-                  <h3 className="font-extrabold text-base text-white">Cấu trúc phần thi</h3>
+                  <span className="material-symbols-outlined text-[#cc785c] text-xl">view_list</span>
+                  <h3 className="font-serif font-semibold text-base text-[#141413]">Cấu trúc phần thi</h3>
                 </div>
-                <span className="text-[10px] font-bold bg-[#4edea3]/10 text-[#4edea3] px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                <span className="text-[10px] font-medium bg-[#efe9de] text-[#141413] px-2 py-0.5 rounded-full uppercase tracking-wider">
                   2026
                 </span>
               </div>
 
               {/* Vertical Part Cards Navigation */}
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1.5">
                 {partTabs.map((tab) => {
                   const isActive = activePartTab === tab.id;
 
@@ -262,8 +255,8 @@ export default function SkillPracticeView({
                   else if (tab.id.includes('5')) partIcon = 'filter_5';
 
                   const activeClass = isActive
-                    ? 'bg-[#10b981]/20 text-[#4edea3] border border-[#4edea3]/40 shadow-[0_0_20px_rgba(78,222,163,0.3)] scale-[1.02]'
-                    : 'text-[#666666] hover:text-[#dae2fd] hover:bg-white/5 border border-transparent';
+                    ? 'bg-[#FEAD5D] text-white shadow-sm font-bold'
+                    : 'text-[#666666] hover:text-[#141413] hover:bg-[#f5f0e8] border border-transparent';
 
                   const dashIndex = tab.label.search(/\s+[–—\-]\s+/);
                   const hasDash = dashIndex !== -1;
@@ -278,16 +271,16 @@ export default function SkillPracticeView({
                     <button
                       key={tab.id}
                       onClick={() => setActivePartTab(tab.id)}
-                      className={`w-full text-left p-3.5 rounded-2xl text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer flex items-center justify-between gap-3 ${activeClass}`}
+                      className={`w-full text-left p-3 rounded-xl text-xs sm:text-sm transition-all duration-200 cursor-pointer flex items-center justify-between gap-3 ${activeClass}`}
                     >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <span className="material-symbols-outlined text-xl shrink-0">{partIcon}</span>
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span className="material-symbols-outlined text-lg shrink-0">{partIcon}</span>
                         <div className="flex flex-col min-w-0">
                           <span className="font-bold tracking-tight truncate">{prefix}</span>
-                          {rest && <span className="font-normal text-[11px] opacity-80 truncate">{rest}</span>}
+                          {rest && <span className="font-normal text-[11px] opacity-90 truncate">{rest}</span>}
                         </div>
                       </div>
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${isActive ? 'bg-[#4edea3]/20 text-[#4edea3]' : 'bg-white/5 text-[#666666]'}`}>
+                      <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0 ${isActive ? 'bg-white/20 text-white' : 'bg-[#efe9de] text-[#666666]'}`}>
                         {testCount} đề
                       </span>
                     </button>
@@ -302,9 +295,9 @@ export default function SkillPracticeView({
           <div key={`right-workspace-${activePartTab}`} className="col-span-12 lg:col-span-9 space-y-6 animate-tab-fade-up">
             
             {/* Search Bar Container */}
-            <div className="glass-panel rounded-3xl p-5 sm:p-6 border border-white/10 shadow-xl">
+            <div className="bg-white rounded-2xl p-4 sm:p-5 border border-[#e6dfd8] shadow-xs">
               <div className="relative w-full">
-                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#4edea3] text-xl pointer-events-none">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#8e8b82] text-xl pointer-events-none">
                   search
                 </span>
                 <input
@@ -312,12 +305,12 @@ export default function SkillPracticeView({
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder={`Tìm kiếm bộ đề, chủ đề ${skillTitle.replace('Phần thi ', '')}...`}
-                  className="w-full bg-[#0b1326]/70 border border-white/15 rounded-2xl pl-12 pr-10 py-3.5 text-[#dae2fd] text-sm focus:border-[#4edea3] focus:ring-2 focus:ring-[#4edea3]/30 transition-all placeholder:text-[#bbcabf]/60 outline-none"
+                  className="w-full bg-[#faf9f5] border border-[#e6dfd8] rounded-xl pl-11 pr-10 py-2.5 text-[#141413] text-sm focus:border-[#cc785c] focus:ring-1 focus:ring-[#cc785c] transition-all placeholder:text-[#8e8b82] outline-none"
                 />
                 {searchTerm && (
                   <button
                     onClick={() => setSearchTerm('')}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#222a3d] text-[#bbcabf] hover:text-white flex items-center justify-center font-bold text-xs transition-colors cursor-pointer"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-[#efe9de] text-[#6c6a64] hover:text-[#141413] flex items-center justify-center font-bold text-xs transition-colors cursor-pointer"
                   >
                     ✕
                   </button>
@@ -402,42 +395,40 @@ export default function SkillPracticeView({
 
       </main>
 
-      {/* Skill Tips Modal (Ultra-Sleek Stitch Dark Glassmorphic Modal) */}
+      {/* Skill Tips Modal (Claude Warm Modal) */}
       {showTipsModal && tipsContent && typeof window !== 'undefined' && createPortal(
-        <div className="fixed inset-0 z-[9999] bg-[#060e20]/85 backdrop-blur-xl flex items-center justify-center p-6 sm:p-10 my-auto">
-          <div className="bg-[#131b2e] rounded-[32px] p-6 sm:p-7 max-w-3xl w-full max-h-[78vh] flex flex-col justify-between space-y-5 shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-white/10 relative overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="absolute top-0 right-0 w-72 h-72 bg-[#4edea3]/5 blur-[90px] rounded-full pointer-events-none" />
-
-            <div className="flex items-center justify-between border-b border-white/10 pb-4 relative z-10 shrink-0">
+        <div className="fixed inset-0 z-[9999] bg-[#141413]/50 backdrop-blur-sm flex items-center justify-center p-6 sm:p-10 my-auto">
+          <div className="bg-[#faf9f5] rounded-3xl p-6 sm:p-8 max-w-3xl w-full max-h-[78vh] flex flex-col justify-between space-y-5 shadow-2xl border border-[#e6dfd8] relative overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-[#e6dfd8] pb-4 relative z-10 shrink-0">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-2xl bg-[#4edea3]/10 border border-[#4edea3]/20 flex items-center justify-center text-[#4edea3] text-xl shadow-inner">
+                <div className="w-10 h-10 rounded-xl bg-[#efe9de] border border-[#e6dfd8] flex items-center justify-center text-[#cc785c] text-xl">
                   💡
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-xl sm:text-2xl text-white">
+                  <h3 className="font-serif font-semibold text-xl text-[#141413]">
                     {tipsTitle || `Mẹo học ${skillTitle}`}
                   </h3>
-                  <p className="text-xs text-[#bbcabf] font-medium">
+                  <p className="text-xs text-[#6c6a64] font-normal">
                     Chiến thuật ôn luyện từng Part để đạt điểm tối đa
                   </p>
                 </div>
               </div>
               <button 
                 onClick={() => setShowTipsModal(false)}
-                className="w-9 h-9 rounded-full bg-[#222a3d] text-[#bbcabf] hover:text-white hover:bg-white/10 flex items-center justify-center font-bold text-sm transition-colors cursor-pointer"
+                className="w-8 h-8 rounded-full bg-[#efe9de] text-[#6c6a64] hover:text-[#141413] flex items-center justify-center font-bold text-sm transition-colors cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            <div className="space-y-5 text-sm text-[#dae2fd] leading-relaxed max-h-[48vh] overflow-y-auto pr-3 font-sans custom-scrollbar relative z-10 flex-1">
+            <div className="space-y-4 text-sm text-[#3d3d3a] leading-relaxed max-h-[48vh] overflow-y-auto pr-3 font-sans custom-scrollbar relative z-10 flex-1">
               {tipsContent}
             </div>
 
-            <div className="pt-3 flex justify-end border-t border-white/10 relative z-10 shrink-0">
+            <div className="pt-3 flex justify-end border-t border-[#e6dfd8] relative z-10 shrink-0">
               <button
                 onClick={() => setShowTipsModal(false)}
-                className="bg-[#4edea3] text-[#003824] font-extrabold text-sm px-7 py-3 rounded-2xl hover:scale-105 transition-all shadow-[0_0_20px_rgba(78,222,163,0.35)] cursor-pointer"
+                className="bg-[#cc785c] hover:bg-[#a9583e] text-white font-medium text-sm px-6 py-2.5 rounded-full transition-all shadow-xs cursor-pointer"
               >
                 Đã hiểu
               </button>
@@ -451,31 +442,22 @@ export default function SkillPracticeView({
       {showUpdatingModalPart && typeof window !== 'undefined' && createPortal(
         <div
           onClick={() => setShowUpdatingModalPart(null)}
-          className="fixed inset-0 z-[9999] bg-[#060e20]/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200 cursor-pointer"
+          className="fixed inset-0 z-[9999] bg-[#141413]/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200 cursor-pointer"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-[#171f33] rounded-3xl p-7 sm:p-8 max-w-md w-full shadow-2xl border border-[#3c4a42] text-left space-y-4 cursor-default"
+            className="bg-[#faf9f5] border border-[#e6dfd8] rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl text-center space-y-4 cursor-default"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#ffb95f]/20 text-[#ffb95f] flex items-center justify-center text-xl font-black">
-                💡
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-[#dae2fd]">
-                  Bộ đề {showUpdatingModalPart} đang cập nhật
-                </h3>
-                <p className="text-xs text-[#bbcabf] font-medium">
-                  Tính năng đang được hoàn thiện
-                </p>
-              </div>
+            <div className="w-12 h-12 bg-[#efe9de] text-[#cc785c] rounded-2xl flex items-center justify-center mx-auto border border-[#e6dfd8]">
+              <span className="material-symbols-outlined text-2xl">construction</span>
             </div>
-
-            <p className="text-sm text-[#bbcabf] font-normal leading-relaxed">
-              Bộ đề làm bài dành riêng cho <strong>{showUpdatingModalPart}</strong> đang được hệ thống cập nhật nội dung. Vui lòng chọn các tab Part đang sẵn sàng để trải nghiệm bộ đề thi chuẩn nhé!
+            <h4 className="text-lg font-serif font-semibold text-[#141413]">
+              Bộ đề {showUpdatingModalPart} đang cập nhật
+            </h4>
+            <p className="text-xs sm:text-sm text-[#6c6a64] leading-relaxed">
+              Bộ đề làm bài dành riêng cho <strong>{showUpdatingModalPart}</strong> đang được cập nhật nội dung bám sát cấu trúc 2026. Vui lòng chọn các phần thi sẵn sàng khác để trải nghiệm!
             </p>
-
-            <div className="flex items-center justify-end gap-3 pt-2">
+            <div className="flex items-center justify-center gap-3 pt-2">
               <button
                 onClick={() => {
                   setShowUpdatingModalPart(null);
@@ -483,13 +465,13 @@ export default function SkillPracticeView({
                     setActivePartTab(supportedPartIds[0]);
                   }
                 }}
-                className="bg-[#4edea3] text-[#003824] font-bold text-sm px-5 py-2.5 rounded-xl transition-all shadow-md active:scale-95 cursor-pointer"
+                className="bg-[#cc785c] hover:bg-[#a9583e] text-white font-medium text-xs sm:text-sm px-5 py-2.5 rounded-xl transition-all shadow-xs cursor-pointer"
               >
                 Chuyển sang Part khả dụng
               </button>
               <button
                 onClick={() => setShowUpdatingModalPart(null)}
-                className="bg-[#222a3d] hover:bg-[#2d3449] text-[#dae2fd] font-semibold text-sm px-4 py-2.5 rounded-xl transition-all cursor-pointer"
+                className="bg-white hover:bg-[#efe9de] text-[#141413] font-medium text-xs sm:text-sm px-4 py-2.5 rounded-xl border border-[#e6dfd8] transition-all cursor-pointer"
               >
                 Đóng
               </button>

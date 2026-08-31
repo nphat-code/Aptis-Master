@@ -263,13 +263,13 @@ export default function ExamPracticeLayout({
   }, [getCefrLevel, calculatedScore, maxScore]);
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#F4F4F6] text-slate-900 font-sans flex flex-col justify-between selection:bg-[#CC1C01] selection:text-white">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#faf9f5] text-[#141413] font-sans flex flex-col justify-between selection:bg-[#cc785c]/20 selection:text-[#141413]">
       
-      {/* 1. Top Header Bar (Dark Purple Header rgb(36, 8, 90) - Compact Height & Size 14 Buttons) */}
-      <header className="bg-[#24085A] text-white px-6 sm:px-10 py-2 flex items-center justify-between shadow-sm sticky top-0 z-30">
+      {/* 1. Top Header Bar (Claude Dark Surface - Compact Height & Size 14 Buttons) */}
+      <header className="bg-[#181715] text-[#faf9f5] px-6 sm:px-10 py-2.5 flex items-center justify-between shadow-xs sticky top-0 z-30">
         <div className="flex flex-col leading-tight">
-          <span className="text-slate-400 text-xs font-normal">{moduleName}</span>
-          <span className="font-bold text-sm sm:text-base tracking-tight text-white mt-0.5">{activePartTitle}</span>
+          <span className="text-[#a09d96] text-xs font-normal">{moduleName}</span>
+          <span className="font-serif font-semibold text-sm sm:text-base tracking-tight text-[#faf9f5] mt-0.5">{activePartTitle}</span>
         </div>
 
         <div className="flex items-center gap-3">
@@ -277,7 +277,7 @@ export default function ExamPracticeLayout({
           {examStep !== 'results' && reviewMode && (
             <button
               onClick={() => setExamStep('results')}
-              className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all cursor-pointer border border-white/15 active:scale-95 shadow-2xs"
+              className="bg-[#252320] hover:bg-[#353330] text-[#faf9f5] px-4 py-1.5 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-2 transition-all cursor-pointer border border-[#353330] shadow-xs"
             >
               <span>←</span>
               <span>Quay lại kết quả</span>
@@ -286,7 +286,7 @@ export default function ExamPracticeLayout({
 
           <button
             onClick={() => setShowExitConfirm(true)}
-            className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all cursor-pointer border border-white/15 active:scale-95 shadow-2xs"
+            className="bg-[#252320] hover:bg-[#353330] text-[#faf9f5] px-4 py-1.5 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-2 transition-all cursor-pointer border border-[#353330] shadow-xs"
           >
             <span>[→</span>
             <span>Thoát</span>
@@ -296,16 +296,16 @@ export default function ExamPracticeLayout({
 
       {/* Top Right Timer Box (Visibly active across all screens once test has started) */}
       {!unlimitedTime && hasExamStarted && examStep !== 'results' && (
-        <div className="absolute right-6 sm:right-10 top-20 text-center min-w-[120px] z-20 animate-in fade-in duration-300">
-          <div className="text-2xl font-black text-slate-900 tracking-wider">
+        <div className="absolute right-6 sm:right-10 top-18 text-center min-w-[120px] z-20 animate-in fade-in duration-300">
+          <div className="text-2xl font-mono font-bold text-[#141413] tracking-wider">
             {formatTime(timeLeftSeconds)}
           </div>
-          <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider -mt-0.5">
+          <div className="text-[10px] font-medium text-[#6c6a64] uppercase tracking-wider -mt-0.5">
             Time remaining
           </div>
-          <div className="h-1 bg-slate-200/80 rounded-full mt-1.5 w-full overflow-hidden">
+          <div className="h-1 bg-[#e6dfd8] rounded-full mt-1.5 w-full overflow-hidden">
             <div
-              className="h-full bg-[#24085A] transition-all duration-1000 ease-linear rounded-full"
+              className="h-full bg-[#cc785c] transition-all duration-1000 ease-linear rounded-full"
               style={{ width: `${Math.max(0, Math.min(100, (timeLeftSeconds / timeAllowedSeconds) * 100))}%` }}
             />
           </div>
@@ -361,7 +361,7 @@ export default function ExamPracticeLayout({
                     setExamStep('instructions');
                   }
                 }}
-                className="bg-[#24085A] hover:bg-[#1a0642] text-white text-sm font-bold px-7 py-3 rounded-xl transition-all shadow-md active:scale-95 cursor-pointer inline-flex items-center gap-2"
+                className="bg-[#cc785c] hover:bg-[#a9583e] text-white text-sm font-medium px-7 py-3 rounded-xl transition-all shadow-xs cursor-pointer inline-flex items-center gap-2"
               >
                 <span>{hasExamStarted ? 'Resume Test' : 'Start Assessment'}</span>
               </button>
@@ -908,7 +908,7 @@ export default function ExamPracticeLayout({
             <div className="flex items-center justify-end gap-3 pt-4">
               <button
                 onClick={() => setShowSubmitConfirmModal(false)}
-                className="bg-white hover:bg-slate-50 border border-slate-300/80 text-slate-700 font-semibold text-sm px-6 py-2 rounded-xl transition-all shadow-2xs cursor-pointer"
+                className="bg-white hover:bg-[#efe9de] border border-[#e6dfd8] text-[#141413] font-medium text-sm px-5 py-2 rounded-xl transition-all shadow-xs cursor-pointer"
               >
                 Cancel
               </button>
@@ -917,7 +917,7 @@ export default function ExamPracticeLayout({
                   setShowSubmitConfirmModal(false);
                   handleSubmitExam();
                 }}
-                className="bg-[#24085A] hover:bg-[#1a0642] text-white font-semibold text-sm px-6 py-2 rounded-xl transition-all shadow-md active:scale-95 cursor-pointer"
+                className="bg-[#cc785c] hover:bg-[#a9583e] text-white font-medium text-sm px-6 py-2 rounded-xl transition-all shadow-xs cursor-pointer"
               >
                 Submit Test
               </button>

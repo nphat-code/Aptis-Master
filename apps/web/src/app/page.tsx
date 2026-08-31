@@ -47,9 +47,9 @@ export default function AptisPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] flex flex-col items-center justify-center font-sans">
-        <div className="w-12 h-12 border-4 border-[#4edea3] border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-[#4edea3] font-bold text-sm">Đang nạp dữ liệu AptisMaster...</p>
+      <div className="min-h-screen bg-[#faf9f5] text-[#141413] flex flex-col items-center justify-center font-sans">
+        <div className="w-10 h-10 border-3 border-[#cc785c] border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-[#cc785c] font-semibold text-sm">Đang nạp dữ liệu AptisMaster...</p>
       </div>
     );
   }
@@ -104,7 +104,7 @@ export default function AptisPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-sans flex flex-col">
+    <div className="min-h-screen bg-[#faf9f5] text-[#141413] font-sans flex flex-col">
       {/* 1. Header Navigation Bar (Navbar) - Hide during active exam */}
       {!isExamActive && <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />}
 
