@@ -38,35 +38,35 @@ export function TestPracticeCard({
       onClick={onClick}
       className={`bg-white rounded-2xl p-6 sm:p-7 flex flex-col justify-between group h-full cursor-pointer transition-all duration-200 border relative overflow-hidden shadow-xs hover:-translate-y-1 ${
         isMarathon
-          ? 'border-[#e8a55a] bg-[#fffaf5] hover:border-[#cc785c]'
+          ? 'border-[#fde68a] bg-[#fffdfa] hover:border-[#d97706] hover:shadow-md'
           : isCompleted
-          ? 'border-emerald-300 bg-[#f9fefb] hover:border-emerald-500'
-          : 'border-[#e6dfd8] hover:border-[#cc785c]'
+          ? 'border-[#a7f3d0] bg-[#f9fefb] hover:border-emerald-500 hover:shadow-md'
+          : 'border-[#e5ded3] hover:border-[#162544] hover:shadow-md'
       }`}
     >
       {/* Top Header Row: Badge & Icon */}
       <div className="flex items-center justify-between gap-3 mb-4 relative z-10">
         <span
-          className={`px-3 py-0.5 rounded-full text-[11px] font-medium tracking-wide border ${
+          className={`px-3 py-0.5 rounded-full text-[11px] font-semibold tracking-wide border ${
             isMarathon
-              ? 'bg-[#fff2e2] text-[#c26500] border-[#fddbb5]'
+              ? 'bg-[#fef3c7] text-[#92400e] border-[#fde68a]'
               : isCompleted
-              ? 'bg-[#ecfdf5] text-emerald-800 border-emerald-200'
-              : 'bg-[#efe9de] text-[#141413] border-[#e6dfd8]'
+              ? 'bg-[#ecfdf5] text-emerald-800 border-[#a7f3d0]'
+              : 'bg-[#f3efe6] text-[#162544] border-[#e5ded3]'
           }`}
         >
           {isMarathon ? '🔥 MARATHON FULL' : badge}
         </span>
 
         {isCompleted ? (
-          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#ecfdf5] text-emerald-800 border border-emerald-300 flex items-center gap-1.5 shadow-xs">
+          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#ecfdf5] text-emerald-800 border border-[#a7f3d0] flex items-center gap-1.5 shadow-xs">
             <span>✓</span>
             <span>{completedScoreText || 'Đã làm'}</span>
           </span>
         ) : (
           <span
             className={`material-symbols-outlined text-xl transition-colors ${
-              isMarathon ? 'text-[#e8a55a]' : 'text-[#8e8b82] group-hover:text-[#cc785c]'
+              isMarathon ? 'text-[#d97706]' : 'text-[#8e8b82] group-hover:text-[#162544]'
             }`}
           >
             {isMarathon ? 'bolt' : 'assignment'}
@@ -80,14 +80,14 @@ export function TestPracticeCard({
           <div className="space-y-1 mb-2">
             <span
               className={`inline-block text-xs font-semibold tracking-wide ${
-                isCompleted ? 'text-emerald-700' : 'text-[#cc785c]'
+                isCompleted ? 'text-emerald-700' : 'text-[#d97706]'
               }`}
             >
               {testNumPrefix}
             </span>
             <h4
-              className={`text-base sm:text-lg font-serif font-semibold text-[#141413] transition-colors leading-snug line-clamp-2 ${
-                isCompleted ? 'group-hover:text-emerald-800' : 'group-hover:text-[#cc785c]'
+              className={`text-base sm:text-lg font-serif font-semibold text-[#162544] transition-colors leading-snug line-clamp-2 ${
+                isCompleted ? 'group-hover:text-emerald-800' : 'group-hover:text-[#162544]'
               }`}
             >
               {topicTitle}
@@ -95,28 +95,28 @@ export function TestPracticeCard({
           </div>
         ) : (
           <h4
-            className={`text-lg font-serif font-semibold text-[#141413] mb-2 transition-colors leading-snug line-clamp-2 ${
-              isCompleted ? 'group-hover:text-emerald-800' : 'group-hover:text-[#cc785c]'
+            className={`text-lg font-serif font-semibold text-[#162544] mb-2 transition-colors leading-snug line-clamp-2 ${
+              isCompleted ? 'group-hover:text-emerald-800' : 'group-hover:text-[#162544]'
             }`}
           >
             {title}
           </h4>
         )}
         {subtitle && (
-          <p className="text-xs sm:text-sm text-[#6c6a64] line-clamp-2 leading-relaxed font-normal">
+          <p className="text-xs sm:text-sm text-[#6b6860] line-clamp-2 leading-relaxed font-normal">
             {subtitle}
           </p>
         )}
       </div>
 
       {/* Footer Area: Meta & CTA Button */}
-      <div className="mt-auto relative z-10 space-y-4 pt-4 border-t border-[#e6dfd8]">
+      <div className="mt-auto relative z-10 space-y-4 pt-4 border-t border-[#e5ded3]">
         {/* Meta badges */}
-        <div className="flex items-center justify-between text-xs text-[#6c6a64] font-medium">
+        <div className="flex items-center justify-between text-xs text-[#6b6860] font-medium">
           <div className="flex items-center gap-1.5">
             <span
               className={`material-symbols-outlined text-[17px] ${
-                isCompleted ? 'text-emerald-600' : 'text-[#cc785c]'
+                isCompleted ? 'text-emerald-600' : 'text-[#d97706]'
               }`}
             >
               schedule
@@ -138,10 +138,10 @@ export function TestPracticeCard({
           }}
           className={`w-full py-2.5 rounded-xl border font-medium text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-xs ${
             isMarathon
-              ? 'bg-[#fff2e2] border-[#fddbb5] text-[#c26500] hover:bg-[#cc785c] hover:text-white'
+              ? 'bg-[#fef3c7] border-[#fde68a] text-[#92400e] hover:bg-[#d97706] hover:text-white hover:border-[#d97706]'
               : isCompleted
-              ? 'bg-[#ecfdf5] border-emerald-300 text-emerald-800 hover:bg-emerald-700 hover:text-white'
-              : 'bg-white border-[#e6dfd8] text-[#141413] group-hover:bg-[#cc785c] group-hover:text-white group-hover:border-[#cc785c]'
+              ? 'bg-[#ecfdf5] border-[#a7f3d0] text-emerald-800 hover:bg-emerald-700 hover:text-white hover:border-emerald-700'
+              : 'bg-white border-[#e5ded3] text-[#162544] group-hover:bg-[#162544] group-hover:text-white group-hover:border-[#162544]'
           }`}
         >
           {isCompleted && <span className="text-base">↺</span>}

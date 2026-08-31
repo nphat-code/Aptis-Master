@@ -17,9 +17,9 @@ export default function StrengthsGridSection() {
         <div className="grid grid-cols-2 gap-5">
           
           {/* Card 1: Minh Anh */}
-          <div className="bg-white p-6 rounded-2xl border border-[#e6dfd8] shadow-xs">
+          <div className="bg-white p-6 rounded-2xl border border-[#e5ded3] shadow-xs">
             <div className="flex items-center gap-3 mb-3.5">
-              <div className="w-10 h-10 rounded-full overflow-hidden border border-[#cc785c]">
+              <div className="w-10 h-10 rounded-full overflow-hidden border border-[#d97706]">
                 <img
                   className="w-full h-full object-cover"
                   alt="Minh Anh"
@@ -27,19 +27,19 @@ export default function StrengthsGridSection() {
                 />
               </div>
               <div>
-                <h5 className="font-semibold text-[#141413] text-sm">Minh Anh</h5>
-                <span className="text-[11px] text-[#cc785c] font-medium">B2 Certified</span>
+                <h5 className="font-serif font-semibold text-[#162544] text-sm">Minh Anh</h5>
+                <span className="text-[11px] text-[#d97706] font-semibold">B2 Certified</span>
               </div>
             </div>
-            <p className="text-xs text-[#6c6a64] leading-relaxed">
-              &quot;AI Speaking Coach đã giúp mình tự tin hơn hẳn khi đi thi thực tế. Kết quả đạt B2 ngoài mong đợi!&quot;
+            <p className="text-xs text-[#6b6860] leading-relaxed">
+              &quot;AI Speaking Examiner đã giúp mình tự tin hơn hẳn khi đi thi thực tế. Kết quả đạt B2 ngoài mong đợi!&quot;
             </p>
           </div>
 
           {/* Card 2: Hoàng Nam */}
-          <div className="bg-white p-6 rounded-2xl border border-[#e6dfd8] shadow-xs translate-y-3">
+          <div className="bg-white p-6 rounded-2xl border border-[#e5ded3] shadow-xs translate-y-3">
             <div className="flex items-center gap-3 mb-3.5">
-              <div className="w-10 h-10 rounded-full overflow-hidden border border-[#cc785c]">
+              <div className="w-10 h-10 rounded-full overflow-hidden border border-[#d97706]">
                 <img
                   className="w-full h-full object-cover"
                   alt="Hoàng Nam"
@@ -47,54 +47,56 @@ export default function StrengthsGridSection() {
                 />
               </div>
               <div>
-                <h5 className="font-semibold text-[#141413] text-sm">Hoàng Nam</h5>
-                <span className="text-[11px] text-[#cc785c] font-medium">C1 Certified</span>
+                <h5 className="font-serif font-semibold text-[#162544] text-sm">Hoàng Nam</h5>
+                <span className="text-[11px] text-[#d97706] font-semibold">C1 Certified</span>
               </div>
             </div>
-            <p className="text-xs text-[#6c6a64] leading-relaxed">
+            <p className="text-xs text-[#6b6860] leading-relaxed">
               &quot;Giao diện mô phỏng 100% đề thi thật. Mình chỉ ôn luyện 10 ngày trước khi thi và đã đạt C1.&quot;
             </p>
           </div>
 
           {/* Metric Box */}
-          <div className="bg-[#efe9de] p-6 rounded-2xl border border-[#e6dfd8] col-span-2 mt-3">
+          <div className="bg-[#f3efe6] p-6 rounded-2xl border border-[#e5ded3] col-span-2 mt-3 shadow-xs">
             <div className="flex items-center gap-6">
               <div className="shrink-0 text-center">
-                <div className="text-3xl font-serif font-normal text-[#cc785c]">2.5k+</div>
-                <div className="text-[10px] uppercase font-medium text-[#141413] tracking-wider">Chứng chỉ B2/C1</div>
+                <div className="text-3xl font-serif font-bold text-[#d97706]">2.5k+</div>
+                <div className="text-[10px] uppercase font-semibold text-[#162544] tracking-wider">Chứng chỉ B2/C1</div>
               </div>
-              <div className="h-10 w-[1px] bg-[#e6dfd8]" />
-              <p className="text-xs text-[#6c6a64] leading-relaxed">
-                Hơn 2,500 học viên đã chinh phục thành công chứng chỉ Aptis ESOL trong năm 2024–2026 thông qua hệ thống AI của chúng tôi.
+              <div className="h-10 w-[1px] bg-[#e5ded3]" />
+              <p className="text-xs text-[#6b6860] leading-relaxed">
+                Hơn 2,500 học viên đã chinh phục thành công chứng chỉ Aptis ESOL trong năm 2024–2026 thông qua hệ thống học thuật của chúng tôi.
               </p>
             </div>
           </div>
 
         </div>
 
-        {/* Right Side: Claude Coral Callout CTA Banner */}
-        <div className="text-center md:text-left bg-[#cc785c] text-white p-10 sm:p-12 rounded-3xl shadow-sm space-y-6">
-          <h2 className="text-3xl sm:text-4xl font-serif font-normal text-white leading-tight">
+        {/* Right Side: Oxford Navy & Gold Callout CTA Banner */}
+        <div className="text-center md:text-left bg-[#162544] text-white p-10 sm:p-12 rounded-3xl shadow-lg space-y-6 border border-[#233760] relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#d97706]/10 rounded-full blur-3xl pointer-events-none" />
+
+          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-white leading-tight">
             Sẵn sàng đạt B2/C1 Aptis trong 14 ngày?
           </h2>
-          <p className="text-sm sm:text-base text-white/90 leading-relaxed max-w-lg">
-            Gia nhập cùng 50,000+ học viên đang ôn luyện mỗi ngày trên nền tảng AI thông minh và bám sát đề thi nhất.
+          <p className="text-sm sm:text-base text-[#a3b3d1] leading-relaxed max-w-lg">
+            Gia nhập cùng 50,000+ học viên đang ôn luyện mỗi ngày trên nền tảng học thuật bám sát cấu trúc đề thi nhất.
           </p>
 
           <div className="pt-2">
             <button
               onClick={handleStartMock}
-              className="bg-[#faf9f5] hover:bg-[#efe9de] text-[#141413] text-sm sm:text-base px-8 py-3.5 rounded-full font-medium transition-all shadow-xs cursor-pointer inline-flex items-center gap-2"
+              className="bg-[#d97706] hover:bg-[#b45309] active:bg-[#92400e] text-white text-sm sm:text-base px-8 py-3.5 rounded-full font-medium transition-all shadow-md cursor-pointer inline-flex items-center gap-2"
             >
               <span>⚡ Bắt đầu luyện thi ngay</span>
             </button>
           </div>
 
-          <div className="flex items-center justify-center md:justify-start gap-3 text-white/80 text-xs pt-1">
-            <div className="flex -space-x-2">
-              <div className="w-6 h-6 rounded-full border border-white bg-[#a9583e]" />
+          <div className="flex items-center justify-center md:justify-start gap-3 text-[#a3b3d1] text-xs pt-1">
+            <div className="flex -space-x-1.5">
               <div className="w-6 h-6 rounded-full border border-white bg-[#d97706]" />
-              <div className="w-6 h-6 rounded-full border border-white bg-[#e8a55a]" />
+              <div className="w-6 h-6 rounded-full border border-white bg-[#b45309]" />
+              <div className="w-6 h-6 rounded-full border border-white bg-[#f59e0b]" />
             </div>
             <span>50,000+ lượt luyện thi mỗi tháng</span>
           </div>

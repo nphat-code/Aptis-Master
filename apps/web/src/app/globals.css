@@ -21,30 +21,30 @@ html, body, button, input, select, textarea {
 
 body {
   min-height: 100vh;
-  background-color: #faf9f5;
+  background-color: #faf8f5;
   color: #141413;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Claude Design System Panels & Cards */
+/* British Academic Elite Panels & Cards */
 .glass-panel {
-  background: rgba(250, 249, 245, 0.85);
+  background: rgba(250, 248, 245, 0.88);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(230, 223, 216, 0.8);
+  border: 1px solid rgba(229, 222, 211, 0.9);
 }
 
-.claude-card {
-  background-color: #efe9de;
-  border: 1px solid #e6dfd8;
-  border-radius: 12px;
+.academic-card {
+  background-color: #ffffff;
+  border: 1px solid #e5ded3;
+  border-radius: 16px;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.claude-card:hover {
-  border-color: #cc785c;
+.academic-card:hover {
+  border-color: #d97706;
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px -4px rgba(20, 20, 19, 0.06);
+  box-shadow: 0 8px 24px -6px rgba(22, 37, 68, 0.08);
 }
 
 .bento-card {
@@ -53,7 +53,7 @@ body {
 
 .bento-card:hover {
   transform: translateY(-2px);
-  border-color: #cc785c;
+  border-color: #d97706;
 }
 
 .material-symbols-outlined {

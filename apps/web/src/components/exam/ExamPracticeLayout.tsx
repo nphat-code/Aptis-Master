@@ -263,13 +263,13 @@ export default function ExamPracticeLayout({
   }, [getCefrLevel, calculatedScore, maxScore]);
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#faf9f5] text-[#141413] font-sans flex flex-col justify-between selection:bg-[#cc785c]/20 selection:text-[#141413]">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#faf8f5] text-[#141413] font-sans flex flex-col justify-between selection:bg-[#fef3c7] selection:text-[#162544]">
       
-      {/* 1. Top Header Bar (Claude Dark Surface - Compact Height & Size 14 Buttons) */}
-      <header className="bg-[#181715] text-[#faf9f5] px-6 sm:px-10 py-2.5 flex items-center justify-between shadow-xs sticky top-0 z-30">
+      {/* 1. Top Header Bar (Oxford Navy Brand - Compact Height & Size 14 Buttons) */}
+      <header className="bg-[#162544] text-white px-6 sm:px-10 py-2.5 flex items-center justify-between shadow-sm sticky top-0 z-30 border-b border-[#233760]">
         <div className="flex flex-col leading-tight">
-          <span className="text-[#a09d96] text-xs font-normal">{moduleName}</span>
-          <span className="font-serif font-semibold text-sm sm:text-base tracking-tight text-[#faf9f5] mt-0.5">{activePartTitle}</span>
+          <span className="text-[#a3b3d1] text-xs font-normal">{moduleName}</span>
+          <span className="font-serif font-semibold text-sm sm:text-base tracking-tight text-white mt-0.5">{activePartTitle}</span>
         </div>
 
         <div className="flex items-center gap-3">
@@ -277,7 +277,7 @@ export default function ExamPracticeLayout({
           {examStep !== 'results' && reviewMode && (
             <button
               onClick={() => setExamStep('results')}
-              className="bg-[#252320] hover:bg-[#353330] text-[#faf9f5] px-4 py-1.5 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-2 transition-all cursor-pointer border border-[#353330] shadow-xs"
+              className="bg-[#233760] hover:bg-[#2d467a] text-white px-4 py-1.5 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-2 transition-all cursor-pointer border border-[#304d88] shadow-xs"
             >
               <span>←</span>
               <span>Quay lại kết quả</span>
@@ -286,7 +286,7 @@ export default function ExamPracticeLayout({
 
           <button
             onClick={() => setShowExitConfirm(true)}
-            className="bg-[#252320] hover:bg-[#353330] text-[#faf9f5] px-4 py-1.5 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-2 transition-all cursor-pointer border border-[#353330] shadow-xs"
+            className="bg-[#233760] hover:bg-[#2d467a] text-white px-4 py-1.5 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-2 transition-all cursor-pointer border border-[#304d88] shadow-xs"
           >
             <span>[→</span>
             <span>Thoát</span>
@@ -297,15 +297,15 @@ export default function ExamPracticeLayout({
       {/* Top Right Timer Box (Visibly active across all screens once test has started) */}
       {!unlimitedTime && hasExamStarted && examStep !== 'results' && (
         <div className="absolute right-6 sm:right-10 top-18 text-center min-w-[120px] z-20 animate-in fade-in duration-300">
-          <div className="text-2xl font-mono font-bold text-[#141413] tracking-wider">
+          <div className="text-2xl font-mono font-bold text-[#162544] tracking-wider">
             {formatTime(timeLeftSeconds)}
           </div>
-          <div className="text-[10px] font-medium text-[#6c6a64] uppercase tracking-wider -mt-0.5">
+          <div className="text-[10px] font-semibold text-[#6b6860] uppercase tracking-wider -mt-0.5">
             Time remaining
           </div>
-          <div className="h-1 bg-[#e6dfd8] rounded-full mt-1.5 w-full overflow-hidden">
+          <div className="h-1 bg-[#e5ded3] rounded-full mt-1.5 w-full overflow-hidden">
             <div
-              className="h-full bg-[#cc785c] transition-all duration-1000 ease-linear rounded-full"
+              className="h-full bg-[#d97706] transition-all duration-1000 ease-linear rounded-full"
               style={{ width: `${Math.max(0, Math.min(100, (timeLeftSeconds / timeAllowedSeconds) * 100))}%` }}
             />
           </div>
@@ -319,13 +319,13 @@ export default function ExamPracticeLayout({
           <div className="max-w-xl space-y-5">
             
             <div className="space-y-1">
-              <p className="text-slate-500 text-sm font-normal">
-                Aptis General Practice Test
+              <p className="text-[#6b6860] text-sm font-normal">
+                Aptis ESOL Practice Test
               </p>
-              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#162544] tracking-tight">
                 {moduleName} Practice Test
               </h1>
-              <p className="text-slate-500 text-sm font-normal">
+              <p className="text-[#6b6860] text-sm font-normal">
                 {testTitle}
               </p>
             </div>
@@ -333,19 +333,19 @@ export default function ExamPracticeLayout({
             {/* Stat Row */}
             <div className="flex items-center gap-14 py-2">
               <div>
-                <div className="text-slate-400 text-xs font-medium mb-1">
+                <div className="text-[#6b6860] text-xs font-medium mb-1">
                   Number of Questions
                 </div>
-                <div className="text-slate-900 text-base font-black">
+                <div className="text-[#162544] text-base font-bold">
                   {totalQuestions}
                 </div>
               </div>
 
               <div>
-                <div className="text-slate-400 text-xs font-medium mb-1">
+                <div className="text-[#6b6860] text-xs font-medium mb-1">
                   Time Allowed
                 </div>
-                <div className="text-slate-900 text-base font-black">
+                <div className="text-[#162544] text-base font-bold">
                   {Math.ceil(timeAllowedSeconds / 60)} min
                 </div>
               </div>
@@ -361,8 +361,9 @@ export default function ExamPracticeLayout({
                     setExamStep('instructions');
                   }
                 }}
-                className="bg-[#cc785c] hover:bg-[#a9583e] text-white text-sm font-medium px-7 py-3 rounded-xl transition-all shadow-xs cursor-pointer inline-flex items-center gap-2"
+                className="bg-[#162544] hover:bg-[#0f1a30] text-white text-sm font-medium px-7 py-3 rounded-xl transition-all shadow-sm cursor-pointer inline-flex items-center gap-2 border border-[#162544]"
               >
+                <span className="text-[#f59e0b]">★</span>
                 <span>{hasExamStarted ? 'Resume Test' : 'Start Assessment'}</span>
               </button>
             </div>

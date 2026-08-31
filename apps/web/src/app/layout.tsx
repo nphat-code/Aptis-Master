@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import { Cormorant_Garamond, Plus_Jakarta_Sans } from 'next/font/google';
+import { Playfair_Display, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 
-const cormorant = Cormorant_Garamond({
+const playfair = Playfair_Display({
   subsets: ['latin', 'vietnamese'],
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '500', '600', '700', '800'],
   variable: '--font-serif',
   display: 'swap',
 });
@@ -27,14 +27,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="vi" className={`${cormorant.variable} ${plusJakarta.variable}`}>
+    <html lang="vi" className={`${playfair.variable} ${plusJakarta.variable}`}>
       <head>
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
         />
       </head>
-      <body className="bg-[#faf9f5] text-[#141413] font-sans antialiased selection:bg-[#cc785c]/20 selection:text-[#141413] overflow-x-hidden custom-scrollbar">
+      <body className="bg-[#faf8f5] text-[#141413] font-sans antialiased selection:bg-[#fef3c7] selection:text-[#162544] overflow-x-hidden custom-scrollbar">
         {children}
       </body>
     </html>

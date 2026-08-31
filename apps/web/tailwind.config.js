@@ -8,36 +8,42 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        canvas: '#faf9f5',
+        canvas: '#faf8f5',
         ink: {
           DEFAULT: '#141413',
-          strong: '#252523',
-          body: '#3d3d3a',
-          muted: '#6c6a64',
+          strong: '#1f242e',
+          body: '#333842',
+          muted: '#6b6860',
           soft: '#8e8b82',
         },
-        surface: {
-          soft: '#f5f0e8',
-          card: '#efe9de',
-          cream: '#e8e0d2',
-          dark: '#181715',
-          darkElevated: '#252320',
-          darkSoft: '#1f1e1b',
+        navy: {
+          DEFAULT: '#162544',
+          dark: '#0f1a30',
+          deep: '#0a1122',
+          light: '#233760',
+          soft: '#eef2f9',
         },
-        coral: {
-          DEFAULT: '#cc785c',
-          active: '#a9583e',
-          disabled: '#e6dfd8',
-          light: '#f7ebe6',
+        gold: {
+          DEFAULT: '#d97706',
+          hover: '#b45309',
+          light: '#fef3c7',
+          warm: '#f59e0b',
+        },
+        surface: {
+          soft: '#f7f4ec',
+          card: '#f3efe6',
+          cream: '#ede7db',
+          dark: '#0f1a30',
+          darkElevated: '#182848',
         },
         hairline: {
-          DEFAULT: '#e6dfd8',
-          soft: '#ebe6df',
+          DEFAULT: '#e5ded3',
+          soft: '#ede8df',
         },
       },
       fontFamily: {
         sans: ['var(--font-plus-jakarta)', 'Plus Jakarta Sans', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        serif: ['var(--font-serif)', 'Cormorant Garamond', 'Georgia', 'serif'],
+        serif: ['var(--font-serif)', 'Playfair Display', 'Georgia', 'serif'],
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
       },
     },
