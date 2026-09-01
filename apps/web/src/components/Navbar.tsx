@@ -66,7 +66,7 @@ export default function Navbar({ activeTab, setActiveTab, setSelectedSubPart }: 
   }, [pathname, activeTab]);
 
   const navItems = [
-    { id: 'dashboard', label: 'Trang chủ' },
+    { id: 'dashboard', label: 'Dashboard' },
     { id: 'reading', label: 'Reading' },
     { id: 'listening', label: 'Listening' },
     { id: 'writing', label: 'Writing' },

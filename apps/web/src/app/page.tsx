@@ -2,13 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
-import HeroSection from '@/components/HeroSection';
-import StatsAndFeaturesSection from '@/components/StatsAndFeaturesSection';
-import RoadmapSection from '@/components/RoadmapSection';
-import FeaturesGridSection from '@/components/FeaturesGridSection';
-import ExamStructureSection from '@/components/ExamStructureSection';
-import StrengthsGridSection from '@/components/StrengthsGridSection';
-import ScrollReveal from '@/components/ScrollReveal';
+import DashboardView from '@/components/dashboard/DashboardView';
 import ReadingView from '@/components/ReadingView';
 import ListeningView from '@/components/ListeningView';
 import SpeakingView from '@/components/SpeakingView';
@@ -47,9 +41,9 @@ export default function AptisPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#faf9f5] text-[#141413] flex flex-col items-center justify-center font-sans">
-        <div className="w-10 h-10 border-3 border-[#cc785c] border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-[#cc785c] font-semibold text-sm">Đang nạp dữ liệu AptisMaster...</p>
+      <div className="min-h-screen bg-[#faf8f5] text-[#141413] flex flex-col items-center justify-center font-sans">
+        <div className="w-10 h-10 border-3 border-[#162544] border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-[#162544] font-semibold text-sm">Đang nạp dữ liệu AptisMaster...</p>
       </div>
     );
   }
@@ -71,35 +65,10 @@ export default function AptisPage() {
       return <GrammarView onBackToHome={() => setActiveTab('dashboard')} onExamStateChange={setIsExamActive} />;
     }
     return (
-      <>
-        {/* 2. Hero Section - Stitch Bento Grid Style */}
-        <ScrollReveal delayMs={0}>
-          <HeroSection 
-            onStartMockTest={() => setActiveTab('mock-test')} 
-            onStartPractice={() => setActiveTab('reading')} 
-          />
-        </ScrollReveal>
-
-        {/* 3. Stats & Benefits Highlights */}
-        <ScrollReveal delayMs={100}>
-          <StatsAndFeaturesSection />
-        </ScrollReveal>
-
-        {/* 5. Main Features Showcase */}
-        <ScrollReveal delayMs={100}>
-          <FeaturesGridSection />
-        </ScrollReveal>
-
-        {/* 6. Exam Structure 5 Skills */}
-        <ScrollReveal delayMs={100}>
-          <ExamStructureSection />
-        </ScrollReveal>
-
-        {/* 7. Why Choose Us / Strengths Grid */}
-        <ScrollReveal delayMs={100}>
-          <StrengthsGridSection />
-        </ScrollReveal>
-      </>
+      <DashboardView
+        onSelectSkill={(skillId) => setActiveTab(skillId)}
+        onStartMockTest={() => setActiveTab('mock-test')}
+      />
     );
   };
 
