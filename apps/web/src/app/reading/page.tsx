@@ -2,9 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Navbar from '@/components/Navbar';
+import Sidebar from '@/components/Sidebar';
 import ReadingView from '@/components/ReadingView';
-import Footer from '@/components/Footer';
 
 export default function ReadingPage() {
   const router = useRouter();
@@ -28,12 +27,16 @@ export default function ReadingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-sans flex flex-col">
-      {!isExamActive && <Navbar activeTab="reading" setActiveTab={handleTabChange} />}
-      <div key="reading-content" className="animate-tab-fade-up flex-1 flex flex-col">
+    <div className="min-h-screen bg-[#faf8f5] text-[#141413] font-sans flex flex-col lg:flex-row">
+      {!isExamActive && <Sidebar activeTab="reading" setActiveTab={handleTabChange} />}
+      <div
+        key="reading-content"
+        className={`flex-1 flex flex-col min-h-screen animate-tab-fade-up ${
+          !isExamActive ? 'lg:pl-64 pt-14 lg:pt-0' : ''
+        }`}
+      >
         <ReadingView onBackToHome={() => handleTabChange('dashboard')} onExamStateChange={setIsExamActive} data={data} />
       </div>
-      {!isExamActive && <Footer />}
     </div>
   );
 }

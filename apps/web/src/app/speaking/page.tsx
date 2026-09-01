@@ -1,22 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Navbar from '@/components/Navbar';
+import Sidebar from '@/components/Sidebar';
 import SpeakingView from '@/components/SpeakingView';
-import Footer from '@/components/Footer';
 
 export default function SpeakingPage() {
   const router = useRouter();
-  const [data, setData] = useState<any>(null);
   const [isExamActive, setIsExamActive] = useState(false);
-
-  useEffect(() => {
-    fetch('/scraped_data.json')
-      .then((res) => res.json())
-      .then((d) => setData(d))
-      .catch((err) => console.error('Lỗi nạp scraped_data.json:', err));
-  }, []);
 
   const handleTabChange = (tab: string) => {
     if (typeof window !== 'undefined') {
@@ -28,12 +19,16 @@ export default function SpeakingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b1326] text-[#dae2fd] font-sans flex flex-col">
-      {!isExamActive && <Navbar activeTab="speaking" setActiveTab={handleTabChange} />}
-      <div key="speaking-content" className="animate-tab-fade-up flex-1 flex flex-col">
+    <div className="min-h-screen bg-[#faf8f5] text-[#141413] font-sans flex flex-col lg:flex-row">
+      {!isExamActive && <Sidebar activeTab="speaking" setActiveTab={handleTabChange} />}
+      <div
+        key="speaking-content"
+        className={`flex-1 flex flex-col min-h-screen animate-tab-fade-up ${
+          !isExamActive ? 'lg:pl-64 pt-14 lg:pt-0' : ''
+        }`}
+      >
         <SpeakingView onBackToHome={() => handleTabChange('dashboard')} onExamStateChange={setIsExamActive} />
       </div>
-      {!isExamActive && <Footer />}
     </div>
   );
 }

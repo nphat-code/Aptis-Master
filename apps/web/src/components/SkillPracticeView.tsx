@@ -206,18 +206,14 @@ export default function SkillPracticeView({
             {/* Widget 2: Strategy Card */}
             <div className="bg-[#f3efe6] rounded-3xl p-6 sm:p-7 border border-[#e5ded3] flex flex-col justify-between shadow-xs">
               <div>
-                <h3 className="text-lg font-serif font-semibold text-[#162544] mb-1">Chiến thuật làm bài</h3>
+                <h3 className="text-lg font-serif font-semibold text-[#162544] mb-1">Chuẩn đánh giá CEFR</h3>
                 <p className="text-xs sm:text-sm text-[#6b6860] leading-relaxed line-clamp-2">
-                  Luyện tập phân bổ thời gian hợp lý cho từng phần để tối đa hóa điểm số CEFR B2/C1.
+                  Hệ thống chấm điểm chuẩn format Aptis ESOL 2026 với thang đánh giá năng lực từ A1 đến C1.
                 </p>
               </div>
-              <div className="flex items-center gap-3 pt-2">
-                <div className="flex -space-x-1.5">
-                  <div className="w-6 h-6 rounded-full border border-white bg-[#162544]" />
-                  <div className="w-6 h-6 rounded-full border border-white bg-[#d97706]" />
-                  <div className="w-6 h-6 rounded-full border border-white bg-[#f59e0b]" />
-                </div>
-                <span className="text-xs font-medium text-[#6b6860]">+2.4k học viên đang luyện</span>
+              <div className="flex items-center gap-2 pt-2">
+                <span className="w-2 h-2 rounded-full bg-[#059669]" />
+                <span className="text-xs font-semibold text-[#162544]">Thang điểm 50 • Dự đoán CEFR tự động</span>
               </div>
             </div>
 
@@ -229,7 +225,7 @@ export default function SkillPracticeView({
         <section className="grid grid-cols-12 gap-8 items-start mb-16">
           
           {/* Left Sticky Sidebar Menu (3/12 cols) */}
-          <aside className="col-span-12 lg:col-span-3 sticky top-28 z-20 space-y-4">
+          <aside className="col-span-12 lg:col-span-3 sticky top-6 z-20 space-y-4">
             <div className="bg-white rounded-2xl p-5 border border-[#e5ded3] shadow-xs space-y-4">
               
               <div className="flex items-center justify-between border-b border-[#e5ded3] pb-3 px-1">
