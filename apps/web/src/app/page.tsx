@@ -1,14 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Navbar from '@/components/Navbar';
+import Sidebar from '@/components/Sidebar';
 import DashboardView from '@/components/dashboard/DashboardView';
 import ReadingView from '@/components/ReadingView';
 import ListeningView from '@/components/ListeningView';
 import SpeakingView from '@/components/SpeakingView';
 import WritingView from '@/components/WritingView';
 import GrammarView from '@/components/GrammarView';
-import Footer from '@/components/Footer';
 
 export default function AptisPage() {
   const [data, setData] = useState<any>(null);
@@ -73,17 +72,19 @@ export default function AptisPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#faf9f5] text-[#141413] font-sans flex flex-col">
-      {/* 1. Header Navigation Bar (Navbar) - Hide during active exam */}
-      {!isExamActive && <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />}
+    <div className="min-h-screen bg-[#faf8f5] text-[#141413] font-sans flex flex-col lg:flex-row">
+      {/* 1. Left Sidebar Navigation - Hidden during active exam room */}
+      {!isExamActive && <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />}
 
-      {/* 2. Main Workspace Content Area - Animates from bottom to top on tab switch */}
-      <div key={`page-content-${activeTab}`} className="animate-tab-fade-up flex-1 flex flex-col">
+      {/* 2. Main Workspace Content Area */}
+      <div
+        key={`page-content-${activeTab}`}
+        className={`flex-1 flex flex-col min-h-screen animate-tab-fade-up ${
+          !isExamActive ? 'lg:pl-64 pt-14 lg:pt-0' : ''
+        }`}
+      >
         {renderContent()}
       </div>
-
-      {/* 3. Footer - Hide during active exam */}
-      {!isExamActive && <Footer />}
     </div>
   );
 }

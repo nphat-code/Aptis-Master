@@ -111,11 +111,11 @@ export default function SkillPracticeView({
   const progressPercent = Math.min(Math.round((completedCount / (totalAvailableTests || 1)) * 100), 100);
 
   return (
-    <div key={`skill-view-${skillId}`} className="min-h-screen bg-[#faf9f5] text-[#141413] font-sans pb-24 pt-24 animate-tab-fade-up">
-      <main className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10">
+    <div key={`skill-view-${skillId}`} className="min-h-screen bg-[#faf8f5] text-[#141413] font-sans pb-16 pt-4 sm:pt-6 animate-tab-fade-up">
+      <main className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* 1. Skill Header Section */}
-        <section className="grid grid-cols-12 gap-8 items-stretch pt-28 mb-12">
+        <section className="grid grid-cols-12 gap-6 items-stretch mb-8">
           
           {/* Left Hero Card (7 cols) */}
           <div className="col-span-12 lg:col-span-7 bg-[#f3efe6] rounded-3xl p-8 sm:p-10 border border-[#e5ded3] flex flex-col justify-between relative overflow-hidden min-h-[400px]">

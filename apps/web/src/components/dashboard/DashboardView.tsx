@@ -149,11 +149,11 @@ export default function DashboardView({
   const recommendedSkill = sortedSkillsByProgress[0] || SKILLS_LIST[0];
 
   return (
-    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 pt-24 pb-12 space-y-6 animate-in fade-in duration-300">
+    <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-5 animate-in fade-in duration-300">
       
       {/* 1. Compact Header Bar: CEFR Target & Live Stats */}
-      <section className="bg-[#f3efe6] rounded-2xl p-5 sm:p-6 border border-[#e5ded3] shadow-xs">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+      <section className="bg-[#f3efe6] rounded-2xl p-4 sm:p-5 border border-[#e5ded3] shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
