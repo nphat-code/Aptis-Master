@@ -83,6 +83,9 @@ export default function DashboardView({
     speaking: 0,
     grammar: 0,
   });
+  const [recentActivities, setRecentActivities] = useState<
+    Array<{ skillId: string; skillName: string; keyName: string; color: string }>
+  >([]);
   const [studyStreak, setStudyStreak] = useState<number>(1);
 
   useEffect(() => {
@@ -95,8 +98,10 @@ export default function DashboardView({
       const savedStreak = localStorage.getItem('aptis_study_streak');
       if (savedStreak) setStudyStreak(parseInt(savedStreak, 10) || 1);
 
-      // 3. Load completed tests per skill
+      // 3. Load completed tests per skill & collect recent activities
       const stats: Record<string, number> = {};
+      const activities: Array<{ skillId: string; skillName: string; keyName: string; color: string }> = [];
+
       SKILLS_LIST.forEach((s) => {
         try {
           const raw = localStorage.getItem(`aptis_completed_${s.id}`);
@@ -104,13 +109,23 @@ export default function DashboardView({
             const parsed = JSON.parse(raw);
             if (Array.isArray(parsed)) {
               stats[s.id] = parsed.length;
+              parsed.slice(-3).forEach((itemKey: string) => {
+                activities.push({
+                  skillId: s.id,
+                  skillName: s.name,
+                  keyName: itemKey.replace('_', ' – Đề '),
+                  color: s.stripeColor,
+                });
+              });
             }
           }
         } catch {
           stats[s.id] = 0;
         }
       });
+
       setCompletedStats(stats);
+      setRecentActivities(activities.reverse().slice(0, 5));
     }
   }, []);
 
@@ -125,7 +140,7 @@ export default function DashboardView({
   const totalCompleted = Object.values(completedStats).reduce((acc, val) => acc + (val || 0), 0);
   const overallProgressPercent = Math.min(100, Math.round((totalCompleted / totalAllSets) * 100));
 
-  // Determine which skill needs the most attention (lowest % completed)
+  // Determine recommended skill (lowest % completed)
   const sortedSkillsByProgress = [...SKILLS_LIST].sort((a, b) => {
     const aDone = completedStats[a.id] || 0;
     const bDone = completedStats[b.id] || 0;
@@ -134,40 +149,34 @@ export default function DashboardView({
   const recommendedSkill = sortedSkillsByProgress[0] || SKILLS_LIST[0];
 
   return (
-    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 pt-28 pb-16 space-y-8 animate-in fade-in duration-300">
+    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 pt-24 pb-12 space-y-6 animate-in fade-in duration-300">
       
-      {/* 1. Welcome & Target CEFR Header Card */}
-      <section className="bg-[#f3efe6] rounded-3xl p-6 sm:p-8 border border-[#e5ded3] shadow-xs relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-[#162544]/5 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[11px] font-semibold text-[#162544] uppercase tracking-wider bg-white px-2.5 py-0.5 rounded-full border border-[#e5ded3]">
-                Bảng điều khiển cá nhân • Aptis ESOL 2026
+      {/* 1. Compact Header Bar: CEFR Target & Live Stats */}
+      <section className="bg-[#f3efe6] rounded-2xl p-5 sm:p-6 border border-[#e5ded3] shadow-xs">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[10px] font-bold text-[#162544] uppercase tracking-wider bg-white px-2 py-0.5 rounded-full border border-[#e5ded3]">
+                Aptis ESOL 2026
               </span>
             </div>
-
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-[#162544] tracking-tight">
-              Trung tâm Luyện thi Cá nhân
+            <h1 className="text-xl sm:text-2xl font-serif font-bold text-[#162544] tracking-tight">
+              Bảng điều khiển học tập
             </h1>
-            <p className="text-xs sm:text-sm text-[#6b6860] max-w-xl">
-              Hệ thống theo dõi tiến độ, lưu vết bài làm và tối ưu hoá kỹ năng để đạt chuẩn CEFR theo đúng lộ trình của bạn.
-            </p>
           </div>
 
-          {/* Quick Metrics & CEFR Target Switcher */}
+          {/* Quick Metrics & Target Switcher */}
           <div className="flex flex-wrap items-center gap-3">
             {/* Target CEFR Selector */}
-            <div className="bg-white p-2.5 rounded-2xl border border-[#e5ded3] shadow-2xs flex items-center gap-2.5">
-              <span className="text-xs text-[#6b6860] font-medium pl-1">Mục tiêu:</span>
+            <div className="bg-white px-3 py-1.5 rounded-xl border border-[#e5ded3] shadow-2xs flex items-center gap-2">
+              <span className="text-xs text-[#6b6860] font-medium">Mục tiêu:</span>
               <div className="flex items-center gap-1">
                 {['B1', 'B2', 'C1'].map((lvl) => (
                   <button
                     key={lvl}
                     onClick={() => handleSetTargetCefr(lvl)}
-                    className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    className={`px-2.5 py-0.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                       targetCefr === lvl
                         ? 'bg-[#162544] text-white shadow-xs'
                         : 'bg-[#faf8f5] text-[#6b6860] hover:text-[#162544] hover:bg-[#f3efe6]'
@@ -180,32 +189,22 @@ export default function DashboardView({
             </div>
 
             {/* Streak Counter */}
-            <div className="bg-white px-4 py-2.5 rounded-2xl border border-[#e5ded3] shadow-2xs flex items-center gap-2">
-              <span className="text-base">🔥</span>
-              <div>
-                <div className="text-[10px] uppercase font-semibold text-[#6b6860] tracking-wider">Chuỗi học</div>
-                <div className="text-xs font-bold text-[#162544]">{studyStreak} ngày liên tiếp</div>
-              </div>
+            <div className="bg-white px-3 py-1.5 rounded-xl border border-[#e5ded3] shadow-2xs flex items-center gap-2">
+              <span className="text-sm">🔥</span>
+              <span className="text-xs font-bold text-[#162544]">{studyStreak} ngày streak</span>
             </div>
 
             {/* Overall Sets Completed */}
-            <div className="bg-white px-4 py-2.5 rounded-2xl border border-[#e5ded3] shadow-2xs flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#d97706] text-xl">assignment_turned_in</span>
-              <div>
-                <div className="text-[10px] uppercase font-semibold text-[#6b6860] tracking-wider">Đã hoàn thành</div>
-                <div className="text-xs font-bold text-[#162544]">{totalCompleted}/{totalAllSets} bộ đề</div>
-              </div>
+            <div className="bg-white px-3 py-1.5 rounded-xl border border-[#e5ded3] shadow-2xs flex items-center gap-2">
+              <span className="material-symbols-outlined text-[#d97706] text-base">assignment_turned_in</span>
+              <span className="text-xs font-bold text-[#162544]">{totalCompleted}/{totalAllSets} đề ({overallProgressPercent}%)</span>
             </div>
           </div>
         </div>
 
         {/* Global Progress Bar */}
-        <div className="mt-6 pt-5 border-t border-[#e5ded3] relative z-10">
-          <div className="flex items-center justify-between text-xs font-semibold text-[#162544] mb-2">
-            <span>Tiến độ tổng thể hướng đến mục tiêu CEFR {targetCefr}</span>
-            <span className="text-[#d97706] font-bold">{overallProgressPercent}% hoàn thành</span>
-          </div>
-          <div className="h-2.5 bg-white rounded-full overflow-hidden border border-[#e5ded3]">
+        <div className="mt-4 pt-3 border-t border-[#e5ded3]">
+          <div className="h-2 bg-white rounded-full overflow-hidden border border-[#e5ded3]">
             <div
               className="h-full bg-gradient-to-r from-[#162544] via-[#233760] to-[#d97706] transition-all duration-500 rounded-full"
               style={{ width: `${overallProgressPercent}%` }}
@@ -214,103 +213,77 @@ export default function DashboardView({
         </div>
       </section>
 
-      {/* 2. Top Action Row: Quick Resume & Full Mock Exam Hub */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+      {/* 2. Top Action Row: Quick Resume & Full Mock Room */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
         
         {/* Card A: Quick Resume / Next Study Step (7 cols) */}
-        <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-7 border border-[#e5ded3] shadow-xs flex flex-col justify-between space-y-5 relative overflow-hidden">
-          <div className="flex items-center justify-between border-b border-[#e5ded3] pb-3">
+        <div className="lg:col-span-7 bg-white rounded-2xl p-5 sm:p-6 border border-[#e5ded3] shadow-xs flex flex-col justify-between space-y-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#d97706] text-xl">bolt</span>
-              <h2 className="font-serif font-bold text-lg text-[#162544]">Gợi ý ôn tập tiếp theo</h2>
+              <span className="material-symbols-outlined text-[#d97706] text-lg">bolt</span>
+              <h2 className="font-serif font-bold text-base text-[#162544]">Đề xuất ôn tập tiếp theo</h2>
             </div>
-            <span className="text-[11px] font-semibold text-[#059669] bg-[#ecfdf5] border border-[#a7f3d0] px-2.5 py-0.5 rounded-full">
-              Đề xuất thông minh
+            <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#fef3c7] text-[#92400e] border border-[#fde68a]">
+              Ưu tiên {recommendedSkill.name}
             </span>
           </div>
 
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#fef3c7] text-[#92400e] border border-[#fde68a]">
-                Kỹ năng: {recommendedSkill.name}
-              </span>
-              <span className="text-xs text-[#6b6860]">• Thời gian: {recommendedSkill.durationText}</span>
+          <div className="space-y-1">
+            <div className="text-base font-serif font-bold text-[#162544]">
+              Luyện tiếp {recommendedSkill.name} (Đã làm {completedStats[recommendedSkill.id] || 0}/{recommendedSkill.totalSets} bộ đề)
             </div>
-            <h3 className="text-xl font-serif font-bold text-[#162544]">
-              Luyện tiếp bộ đề {recommendedSkill.name} (Đã làm {completedStats[recommendedSkill.id] || 0}/{recommendedSkill.totalSets} đề)
-            </h3>
-            <p className="text-xs sm:text-sm text-[#6b6860] leading-relaxed">
-              {recommendedSkill.description}
+            <p className="text-xs text-[#6b6860]">
+              Thời gian tiêu chuẩn: {recommendedSkill.durationText} • Cấu trúc chuẩn Aptis ESOL 2026
             </p>
           </div>
 
-          <div className="pt-2 flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-3 pt-1">
             <button
               onClick={() => onSelectSkill(recommendedSkill.id)}
-              className="bg-[#162544] hover:bg-[#0f1a30] text-white font-medium px-6 py-3 rounded-xl text-xs sm:text-sm transition-all shadow-sm cursor-pointer inline-flex items-center gap-2 border border-[#162544]"
+              className="bg-[#162544] hover:bg-[#0f1a30] text-white font-medium px-5 py-2.5 rounded-xl text-xs sm:text-sm transition-all shadow-sm cursor-pointer inline-flex items-center gap-2 border border-[#162544]"
             >
               <span>Vào làm ngay {recommendedSkill.name}</span>
-              <span className="material-symbols-outlined text-base">arrow_forward</span>
-            </button>
-            <button
-              onClick={() => onSelectSkill('reading')}
-              className="bg-[#f3efe6] hover:bg-[#e5ded3] text-[#162544] font-medium px-5 py-3 rounded-xl text-xs sm:text-sm transition-all cursor-pointer border border-[#e5ded3]"
-            >
-              Chọn kỹ năng khác
+              <span className="material-symbols-outlined text-sm">arrow_forward</span>
             </button>
           </div>
         </div>
 
         {/* Card B: Full Mock Exam Practice Room (5 cols) */}
-        <div className="lg:col-span-5 bg-[#162544] text-white rounded-3xl p-6 sm:p-7 border border-[#233760] shadow-md flex flex-col justify-between space-y-5 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-48 h-48 bg-[#d97706]/10 rounded-full blur-2xl pointer-events-none" />
-
-          <div className="flex items-center justify-between border-b border-[#233760] pb-3 relative z-10">
+        <div className="lg:col-span-5 bg-[#162544] text-white rounded-2xl p-5 sm:p-6 border border-[#233760] shadow-sm flex flex-col justify-between space-y-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#d97706] text-xl">timer</span>
-              <h2 className="font-serif font-bold text-lg text-white">Thi thử Full Exam 2026</h2>
+              <span className="material-symbols-outlined text-[#d97706] text-lg">timer</span>
+              <h2 className="font-serif font-bold text-base text-white">Thi thử Full Exam 2026</h2>
             </div>
-            <span className="text-[10px] font-bold text-white bg-[#d97706] px-2 py-0.5 rounded-full uppercase tracking-wider">
-              Bấm giờ thật
+            <span className="text-[10px] font-bold text-white bg-[#d97706] px-2 py-0.5 rounded-md uppercase">
+              Bấm giờ
             </span>
           </div>
 
-          <div className="space-y-2 relative z-10">
-            <h3 className="text-xl font-serif font-bold text-white leading-snug">
-              Trải nghiệm phòng thi thực tế với 4 kỹ năng tính giờ
-            </h3>
-            <p className="text-xs text-[#a3b3d1] leading-relaxed">
-              Mô phỏng 100% giao diện thi Aptis ESOL chính thức. Chấm điểm tự động và xuất chứng chỉ dự đoán CEFR ngay khi kết thúc.
-            </p>
-          </div>
+          <p className="text-xs text-[#a3b3d1]">
+            Mô phỏng 100% giao diện thi thật 4 kỹ năng. Tự động chấm điểm và đánh giá trình độ CEFR.
+          </p>
 
-          <div className="pt-2 relative z-10">
+          <div>
             <button
               onClick={onStartMockTest}
-              className="w-full bg-[#d97706] hover:bg-[#b45309] active:bg-[#92400e] text-white font-semibold py-3 px-5 rounded-xl text-xs sm:text-sm transition-all shadow-md cursor-pointer flex items-center justify-center gap-2"
+              className="w-full bg-[#d97706] hover:bg-[#b45309] text-white font-semibold py-2.5 px-4 rounded-xl text-xs sm:text-sm transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
             >
               <span>Vào phòng thi Full Test</span>
-              <span className="material-symbols-outlined text-base">play_arrow</span>
+              <span className="material-symbols-outlined text-sm">play_arrow</span>
             </button>
           </div>
         </div>
 
       </section>
 
-      {/* 3. Five Skills Practice Grid Hub (Interactive 5-Cards Matrix) */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#162544]">
-              Trung tâm 5 Kỹ năng
-            </h2>
-            <p className="text-xs sm:text-sm text-[#6b6860]">
-              Chọn kỹ năng để truy cập toàn bộ kho đề thi và luyện tập theo từng Part.
-            </p>
-          </div>
-        </div>
+      {/* 3. Five Skills Hub: Compact Cards without fluff text */}
+      <section className="space-y-3">
+        <h2 className="text-lg font-serif font-bold text-[#162544]">
+          Trung tâm 5 Kỹ năng
+        </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {SKILLS_LIST.map((skill) => {
             const completed = completedStats[skill.id] || 0;
             const progress = Math.min(100, Math.round((completed / skill.totalSets) * 100));
@@ -319,9 +292,9 @@ export default function DashboardView({
               <div
                 key={skill.id}
                 onClick={() => onSelectSkill(skill.id)}
-                className="bg-white rounded-2xl p-5 border border-[#e5ded3] shadow-xs hover:border-[#162544] hover:shadow-md transition-all duration-200 cursor-pointer flex flex-col justify-between group relative overflow-hidden"
+                className="bg-white rounded-2xl p-4 sm:p-5 border border-[#e5ded3] shadow-xs hover:border-[#162544] hover:shadow-md transition-all duration-200 cursor-pointer flex flex-col justify-between group relative overflow-hidden"
               >
-                {/* 3px Top Skill Accent Stripe */}
+                {/* 3px Top Accent Stripe */}
                 <div
                   className="absolute top-0 left-0 right-0 h-[3px]"
                   style={{ backgroundColor: skill.stripeColor }}
@@ -331,13 +304,13 @@ export default function DashboardView({
                   {/* Skill Header */}
                   <div className="flex items-center justify-between">
                     <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center text-white"
+                      className="w-9 h-9 rounded-lg flex items-center justify-center text-white"
                       style={{ backgroundColor: skill.stripeColor }}
                     >
-                      <span className="material-symbols-outlined text-xl">{skill.icon}</span>
+                      <span className="material-symbols-outlined text-lg">{skill.icon}</span>
                     </div>
                     <span className="text-[11px] font-semibold text-[#6b6860] bg-[#f3efe6] px-2 py-0.5 rounded-full border border-[#e5ded3]">
-                      {skill.totalSets} bộ đề
+                      {skill.totalSets} đề
                     </span>
                   </div>
 
@@ -345,21 +318,17 @@ export default function DashboardView({
                     <h3 className="font-serif font-bold text-base text-[#162544] group-hover:text-[#d97706] transition-colors">
                       {skill.name}
                     </h3>
-                    <span className="text-[11px] text-[#6b6860] font-medium block">
+                    <span className="text-[11px] text-[#6b6860] font-medium">
                       {skill.code}
                     </span>
                   </div>
-
-                  <p className="text-xs text-[#6b6860] line-clamp-2 leading-relaxed">
-                    {skill.description}
-                  </p>
                 </div>
 
-                {/* Progress & CTA */}
-                <div className="mt-5 pt-3 border-t border-[#e5ded3] space-y-3">
+                {/* Progress Bar & Compact Action Button */}
+                <div className="mt-4 pt-3 border-t border-[#e5ded3] space-y-2.5">
                   <div className="space-y-1">
                     <div className="flex justify-between text-[11px] font-semibold text-[#162544]">
-                      <span>Đã làm</span>
+                      <span>Tiến độ</span>
                       <span>{completed}/{skill.totalSets} ({progress}%)</span>
                     </div>
                     <div className="h-1.5 bg-[#f3efe6] rounded-full overflow-hidden">
@@ -374,10 +343,10 @@ export default function DashboardView({
                   </div>
 
                   <button
-                    className="w-full py-2 px-3 rounded-lg text-xs font-medium bg-[#f3efe6] text-[#162544] group-hover:bg-[#162544] group-hover:text-white transition-all flex items-center justify-center gap-1 cursor-pointer"
+                    className="w-full py-2 px-3 rounded-lg text-xs font-semibold bg-[#f3efe6] text-[#162544] group-hover:bg-[#162544] group-hover:text-white transition-all flex items-center justify-center gap-1 cursor-pointer"
                   >
-                    <span>Luyện đề ngay</span>
-                    <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">
+                    <span>Luyện đề</span>
+                    <span className="material-symbols-outlined text-xs group-hover:translate-x-1 transition-transform">
                       arrow_forward
                     </span>
                   </button>
@@ -388,40 +357,63 @@ export default function DashboardView({
         </div>
       </section>
 
-      {/* 4. CEFR Scoring Band Guide & Tips */}
-      <section className="bg-white rounded-3xl p-6 sm:p-8 border border-[#e5ded3] shadow-xs space-y-4">
-        <div className="flex items-center gap-2 border-b border-[#e5ded3] pb-3">
-          <span className="material-symbols-outlined text-[#162544] text-xl">analytics</span>
-          <h2 className="font-serif font-bold text-lg text-[#162544]">
-            Thang điểm & Chuẩn quy đổi CEFR Aptis ESOL
-          </h2>
+      {/* 4. Recent Test Activity Log (Replaces static CEFR Guide) */}
+      <section className="bg-white rounded-2xl p-5 sm:p-6 border border-[#e5ded3] shadow-xs space-y-4">
+        <div className="flex items-center justify-between border-b border-[#e5ded3] pb-3">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-[#162544] text-lg">history</span>
+            <h2 className="font-serif font-bold text-base text-[#162544]">
+              Lịch sử bài luyện gần đây
+            </h2>
+          </div>
+          <span className="text-xs text-[#6b6860] font-medium">
+            Tự động đồng bộ trên thiết bị của bạn
+          </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-1">
-          <div className="p-4 rounded-xl bg-[#faf8f5] border border-[#e5ded3] space-y-1">
-            <span className="text-xs font-bold text-[#d97706] uppercase tracking-wider">C1 – Advanced</span>
-            <div className="text-lg font-bold text-[#162544]">160 – 200 điểm</div>
-            <p className="text-[11px] text-[#6b6860]">Thành thạo tự nhiên, đáp ứng chuẩn giảng dạy và làm việc quốc tế.</p>
-          </div>
+        {recentActivities.length > 0 ? (
+          <div className="divide-y divide-[#e5ded3]">
+            {recentActivities.map((act, idx) => (
+              <div
+                key={idx}
+                className="py-3 flex items-center justify-between gap-4 text-xs sm:text-sm hover:bg-[#faf8f5] px-2 rounded-lg transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <span
+                    className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: act.color }}
+                  />
+                  <div>
+                    <span className="font-semibold text-[#162544]">{act.skillName}</span>
+                    <span className="text-[#6b6860] ml-2 font-normal text-xs">{act.keyName}</span>
+                  </div>
+                </div>
 
-          <div className="p-4 rounded-xl bg-[#faf8f5] border border-[#e5ded3] space-y-1">
-            <span className="text-xs font-bold text-[#059669] uppercase tracking-wider">B2 – Vantage</span>
-            <div className="text-lg font-bold text-[#162544]">120 – 159 điểm</div>
-            <p className="text-[11px] text-[#6b6860]">Chuẩn đầu ra đại học, thạc sĩ và hầu hết các cơ quan doanh nghiệp.</p>
+                <div className="flex items-center gap-3">
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#ecfdf5] text-emerald-800 border border-[#a7f3d0]">
+                    ✓ Đã làm
+                  </span>
+                  <button
+                    onClick={() => onSelectSkill(act.skillId)}
+                    className="text-xs text-[#162544] hover:text-[#d97706] font-semibold flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>Xem lại</span>
+                    <span className="material-symbols-outlined text-sm">chevron_right</span>
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-
-          <div className="p-4 rounded-xl bg-[#faf8f5] border border-[#e5ded3] space-y-1">
-            <span className="text-xs font-bold text-[#2563eb] uppercase tracking-wider">B1 – Threshold</span>
-            <div className="text-lg font-bold text-[#162544]">80 – 119 điểm</div>
-            <p className="text-[11px] text-[#6b6860]">Giao tiếp cơ bản, hiểu các ý chính trong công việc và học tập.</p>
+        ) : (
+          <div className="py-8 text-center space-y-2">
+            <span className="material-symbols-outlined text-3xl text-[#8e8b82]">
+              checklist
+            </span>
+            <p className="text-xs text-[#6b6860]">
+              Chưa có dữ liệu bài làm gần đây. Hãy chọn một kỹ năng bên trên để bắt đầu luyện tập!
+            </p>
           </div>
-
-          <div className="p-4 rounded-xl bg-[#faf8f5] border border-[#e5ded3] space-y-1">
-            <span className="text-xs font-bold text-[#6b6860] uppercase tracking-wider">A2 / A1 – Basic</span>
-            <div className="text-lg font-bold text-[#162544]">0 – 79 điểm</div>
-            <p className="text-[11px] text-[#6b6860]">Cần củng cố ngữ pháp nền tảng và nhận diện từ vựng cơ bản.</p>
-          </div>
-        </div>
+        )}
       </section>
 
     </div>
