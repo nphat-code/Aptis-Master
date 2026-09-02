@@ -87,6 +87,7 @@ export default function ReadingPart5Practice({
       renderDetailedAnswers={({ userAnswers }) => {
         const activeSetIndex = isAllPractice ? 0 : safeTestIndex;
         const paragraphs = rawParagraphsObj[`${activeSetIndex}`] || [];
+        const meoHocItems: string[] = rawQuestion5.meohoc?.[activeSetIndex] || [];
 
         return (
           <DetailedAnswersCard
@@ -121,6 +122,20 @@ export default function ReadingPart5Practice({
                 </div>
               );
             })}
+
+            {meoHocItems.length > 0 && (
+              <div className="bg-[#f3efe6] p-4 rounded-xl border border-[#e5ded3] text-left space-y-2 mt-4">
+                <div className="flex items-center gap-2 text-xs font-bold text-[#d97706] uppercase tracking-wider">
+                  <span className="material-symbols-outlined text-base">lightbulb</span>
+                  <span>Mẹo nhớ nhanh & Từ khóa trọng tâm</span>
+                </div>
+                <div className="text-xs sm:text-sm text-[#141413] space-y-1.5 leading-relaxed">
+                  {meoHocItems.map((item, idx) => (
+                    <p key={idx} dangerouslySetInnerHTML={{ __html: item }} />
+                  ))}
+                </div>
+              </div>
+            )}
           </DetailedAnswersCard>
         );
       }}

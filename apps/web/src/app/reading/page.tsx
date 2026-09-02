@@ -1,21 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import ReadingView from '@/components/ReadingView';
 
 export default function ReadingPage() {
   const router = useRouter();
-  const [data, setData] = useState<any>(null);
   const [isExamActive, setIsExamActive] = useState(false);
-
-  useEffect(() => {
-    fetch('/scraped_data.json')
-      .then((res) => res.json())
-      .then((d) => setData(d))
-      .catch((err) => console.error('Lỗi nạp scraped_data.json:', err));
-  }, []);
 
   const handleTabChange = (tab: string) => {
     if (typeof window !== 'undefined') {
@@ -35,7 +27,7 @@ export default function ReadingPage() {
           !isExamActive ? 'lg:pl-64 pt-14 lg:pt-0' : ''
         }`}
       >
-        <ReadingView onBackToHome={() => handleTabChange('dashboard')} onExamStateChange={setIsExamActive} data={data} />
+        <ReadingView onBackToHome={() => handleTabChange('dashboard')} onExamStateChange={setIsExamActive} />
       </div>
     </div>
   );

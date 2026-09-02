@@ -58,7 +58,6 @@ export default function Sidebar({ activeTab, setActiveTab, setSelectedSubPart }:
   }, [pathname]);
 
   const handleSelect = (skillId: string) => {
-    setActiveTab(skillId);
     if (setSelectedSubPart) setSelectedSubPart(null);
     setMobileOpen(false);
 
@@ -79,6 +78,8 @@ export default function Sidebar({ activeTab, setActiveTab, setSelectedSubPart }:
         clearTimeout(t1);
         clearTimeout(t2);
       };
+    } else {
+      setActiveTab(skillId);
     }
   };
 

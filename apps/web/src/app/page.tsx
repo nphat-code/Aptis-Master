@@ -1,89 +1,36 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import DashboardView from '@/components/dashboard/DashboardView';
-import ReadingView from '@/components/ReadingView';
-import ListeningView from '@/components/ListeningView';
-import SpeakingView from '@/components/SpeakingView';
-import WritingView from '@/components/WritingView';
-import GrammarView from '@/components/GrammarView';
 
-export default function AptisPage() {
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [isExamActive, setIsExamActive] = useState(false);
+export default function DashboardPage() {
+  const router = useRouter();
 
-  useEffect(() => {
-    // Detect URL path on mount
+  const handleTabChange = (tab: string) => {
     if (typeof window !== 'undefined') {
-      const path = window.location.pathname.replace('/', '');
-      if (['reading', 'listening', 'writing', 'speaking', 'grammar'].includes(path)) {
-        setActiveTab(path);
-      } else if (path === 'thi-thu') {
-        setActiveTab('mock-test');
+      const targetPath = tab === 'dashboard' ? '/' : tab === 'mock-test' ? '/thi-thu' : `/${tab}`;
+      if (window.location.pathname !== targetPath) {
+        router.push(targetPath);
       }
     }
-
-    fetch('/scraped_data.json')
-      .then((res) => res.json())
-      .then((d) => {
-        setData(d);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error('Lỗi nạp scraped_data.json:', err);
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#faf8f5] text-[#141413] flex flex-col items-center justify-center font-sans">
-        <div className="w-10 h-10 border-3 border-[#162544] border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-[#162544] font-semibold text-sm">Đang nạp dữ liệu AptisMaster...</p>
-      </div>
-    );
-  }
-
-  const renderContent = () => {
-    if (activeTab === 'reading' || activeTab === 'mock-test') {
-      return <ReadingView onBackToHome={() => setActiveTab('dashboard')} onExamStateChange={setIsExamActive} data={data} />;
-    }
-    if (activeTab === 'listening') {
-      return <ListeningView onBackToHome={() => setActiveTab('dashboard')} onExamStateChange={setIsExamActive} />;
-    }
-    if (activeTab === 'speaking') {
-      return <SpeakingView onBackToHome={() => setActiveTab('dashboard')} onExamStateChange={setIsExamActive} />;
-    }
-    if (activeTab === 'writing') {
-      return <WritingView onBackToHome={() => setActiveTab('dashboard')} onExamStateChange={setIsExamActive} />;
-    }
-    if (activeTab === 'grammar') {
-      return <GrammarView onBackToHome={() => setActiveTab('dashboard')} onExamStateChange={setIsExamActive} />;
-    }
-    return (
-      <DashboardView
-        onSelectSkill={(skillId) => setActiveTab(skillId)}
-        onStartMockTest={() => setActiveTab('mock-test')}
-      />
-    );
   };
 
   return (
     <div className="min-h-screen bg-[#faf8f5] text-[#141413] font-sans flex flex-col lg:flex-row">
-      {/* 1. Left Sidebar Navigation - Hidden during active exam room */}
-      {!isExamActive && <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />}
+      {/* 1. Left Sidebar Navigation */}
+      <Sidebar activeTab="dashboard" setActiveTab={handleTabChange} />
 
       {/* 2. Main Workspace Content Area */}
       <div
-        key={`page-content-${activeTab}`}
-        className={`flex-1 flex flex-col min-h-screen animate-tab-fade-up ${
-          !isExamActive ? 'lg:pl-64 pt-14 lg:pt-0' : ''
-        }`}
+        key="dashboard-content"
+        className="flex-1 flex flex-col min-h-screen animate-tab-fade-up lg:pl-64 pt-14 lg:pt-0"
       >
-        {renderContent()}
+        <DashboardView
+          onSelectSkill={(skillId) => handleTabChange(skillId)}
+          onStartMockTest={() => handleTabChange('mock-test')}
+        />
       </div>
     </div>
   );
