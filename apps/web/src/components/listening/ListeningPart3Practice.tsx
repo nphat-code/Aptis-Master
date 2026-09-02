@@ -202,6 +202,49 @@ export default function ListeningPart3Practice({
 
                     {/* Script Box */}
                     <ScriptViewer transcript={item.transcript} />
+
+                    {/* Mẹo nhớ nhanh Part 3 nếu có */}
+                    {(() => {
+                      const rawTips = (scrapedData as any).listening_tips || {};
+                      const m1List = rawTips.method1 || [];
+                      const m2List = rawTips.method2 || [];
+                      const topicClean = (item.topic || '').toLowerCase();
+
+                      const matchedM2 = m2List.find((t: any) => {
+                        const top = (t.topic || '').toLowerCase();
+                        return top && (topicClean.includes(top.slice(0, 5)) || top.includes(topicClean.slice(0, 5)));
+                      });
+
+                      const matchedM1 = m1List.find((t: any) => {
+                        const en = (t.topic_en || '').toLowerCase();
+                        const vi = (t.topic_vi || '').toLowerCase();
+                        return (en && (topicClean.includes(en.slice(0, 5)) || en.includes(topicClean.slice(0, 5)))) ||
+                               (vi && (topicClean.includes(vi.slice(0, 5)) || vi.includes(topicClean.slice(0, 5))));
+                      });
+
+                      if (!matchedM1 && !matchedM2) return null;
+
+                      return (
+                        <div className="bg-[#fffbeb] border border-[#fde68a] p-4 rounded-xl space-y-2 text-left">
+                          <div className="flex items-center gap-2 font-bold text-[#92400e] text-xs sm:text-sm">
+                            <span>💡</span>
+                            <span>Mẹo nhớ nhanh chủ đề ({matchedM2?.topic || matchedM1?.topic_en || 'Topic'}):</span>
+                          </div>
+                          <div className="text-xs sm:text-sm text-[#78350f] space-y-1.5 leading-relaxed">
+                            {matchedM2?.key && (
+                              <p>
+                                🎯 <strong>Câu khẩu quyết:</strong> {matchedM2.key}
+                              </p>
+                            )}
+                            {matchedM1?.voices && matchedM1.voices.map((v: any, vIdx: number) => (
+                              <p key={vIdx}>
+                                🗣️ <strong>Giọng {v.voice}:</strong> {v.key} — <em>{v.note}</em>
+                              </p>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </div>
                 );
               })}
