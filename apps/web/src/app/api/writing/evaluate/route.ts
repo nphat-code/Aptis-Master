@@ -213,7 +213,14 @@ function generateLocalFallbackEvaluation(
 
   let improvedVersion = '';
   if (isPart1) {
-    improvedVersion = `1. In Hanoi, Vietnam.\n2. Reading books and listening to music.\n3. Every weekend.\n4. With my close friends.\n5. Warm and sunny weather.`;
+    const hasSampleAnswers = questions.some((q) => (q as any).sampleAnswer);
+    if (hasSampleAnswers) {
+      improvedVersion = questions
+        .map((q, idx) => `${idx + 1}. ${(q as any).sampleAnswer || 'Good, thanks!'}`)
+        .join('\n');
+    } else {
+      improvedVersion = `1. I am doing great, thanks!\n2. I love the spring.\n3. Football is popular.\n4. I'm wearing a dress.\n5. I enjoy listening to pop.`;
+    }
   } else if (isPart2) {
     improvedVersion = `I joined this ${clubName || 'club'} because I have a great passion for it. I really hope to improve my skills and make new friends who share the same interest.`;
   } else if (isPart3) {
@@ -221,6 +228,26 @@ function generateLocalFallbackEvaluation(
   } else if (isPart4) {
     improvedVersion = `[Email 1 - To a friend (40-50 words)]\nHi Alex,\nHave you heard the latest news about our ${clubName || 'club'}? They just announced a major change to our upcoming schedule! I think it's quite inconvenient for us. How do you feel about this? Let's discuss it soon.\nBest,\n[Your name]\n\n[Email 2 - To Club President (120-150 words)]\nDear President,\nI am writing this email to express my thoughts regarding the recent announcement about our club activities. As an active and dedicated member, I would like to offer a few constructive suggestions.\n\nFirst and foremost, the proposed schedule modification may create difficulties for many members who have prior commitments during weekdays. To address this issue, I respectfully suggest offering alternative weekend sessions or conducting hybrid online meetings.\n\nThank you very much for your time, consideration, and leadership. I look forward to hearing your thoughts.\n\nYours sincerely,\n[Your name]`;
   }
+
+  const partSpecificSuggestions = isPart1
+    ? [
+        'Ưu tiên câu trả lời ngắn gọn (1–5 từ), đúng trọng tâm để tiết kiệm thời gian làm bài.',
+        'Chú ý viết hoa chữ cái đầu câu, đặt dấu chấm kết thúc câu và kiểm tra kỹ chính tả danh từ/tính từ.',
+      ]
+    : isPart2
+    ? [
+        'Nên sử dụng các liên từ cơ bản (because, so, and, but) để kết nối câu tự nhiên trong 20–30 từ.',
+        'Bổ sung các tính từ chỉ sở thích và động lực tham gia: passionate, eager to learn, excited, fascinating.',
+      ]
+    : isPart3
+    ? [
+        'Sử dụng các cụm từ nêu quan điểm giao tiếp: In my opinion, Personally, I think, From my perspective.',
+        'Kết hợp các liên từ mạch lạc: Furthermore, Moreover, However, For instance (duy trì 30–40 từ/câu).',
+      ]
+    : [
+        'Email 1 (Thân mật, 40–50 từ): Sử dụng từ viết tắt (I\'m, can\'t), từ ngữ cảm xúc và cấu trúc rủ rê (Why don\'t we..., Let\'s...).',
+        'Email 2 (Trang trọng, 120–150 từ): Sử dụng cấu trúc trang trọng (I am writing to express..., Furthermore, I would appreciate it if...), tuyệt đối KHÔNG viết tắt.',
+      ];
 
   return {
     score: scaledScore,
@@ -249,10 +276,7 @@ function generateLocalFallbackEvaluation(
         : isPart2
         ? 'Từ vựng diễn đạt phù hợp với phản hồi mạng xã hội Part 2.'
         : 'Từ vựng đơn giản, rõ ràng, phù hợp với câu trả lời ngắn Part 1.',
-      suggestions: [
-        'Nên sử dụng thêm các từ nối tự nhiên: Furthermore, However, Therefore, In addition.',
-        'Mở rộng cấu trúc câu phức và từ vựng chỉ cảm xúc: passionate, constructive, delighted, valuable.',
-      ],
+      suggestions: partSpecificSuggestions,
     },
     grammarErrors,
     spellingErrors,

@@ -43,6 +43,7 @@ function WritingResultsView({
       const payloadQuestions = targetQuestions.map((q, idx) => ({
         id: idx + 1,
         questionText: q.questionText,
+        sampleAnswer: q.sampleAnswer,
         userAnswer: userAnswers[idx] || '',
       }));
 
