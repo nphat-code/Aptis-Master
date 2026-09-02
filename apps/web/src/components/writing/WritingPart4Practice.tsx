@@ -44,11 +44,13 @@ function WritingPart4ResultsView({
         {
           id: 1,
           questionText: data.task1Text || 'Write a short email to your friend (about 50 words).',
+          sampleAnswer: data.sampleAnswer1 || '',
           userAnswer: userAnswers[0] || '',
         },
         {
           id: 2,
           questionText: data.task2Text || 'Write an email to the president of the club (about 120-150 words).',
+          sampleAnswer: data.sampleAnswer2 || '',
           userAnswer: userAnswers[1] || '',
         },
       ];

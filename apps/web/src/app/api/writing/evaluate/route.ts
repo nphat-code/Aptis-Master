@@ -222,11 +222,25 @@ function generateLocalFallbackEvaluation(
       improvedVersion = `1. I am doing great, thanks!\n2. I love the spring.\n3. Football is popular.\n4. I'm wearing a dress.\n5. I enjoy listening to pop.`;
     }
   } else if (isPart2) {
-    improvedVersion = `I joined this ${clubName || 'club'} because I have a great passion for it. I really hope to improve my skills and make new friends who share the same interest.`;
+    const sample = (questions[0] as any)?.sampleAnswer;
+    improvedVersion = sample || `I joined this ${clubName || 'club'} because I have a great passion for it. I really hope to improve my skills and make new friends who share the same interest.`;
   } else if (isPart3) {
-    improvedVersion = `Speaker 1: I completely agree with your viewpoint. In my experience, participating regularly helps us broaden our knowledge and connect with supportive members.\n\nSpeaker 2: To be honest, I prefer practical sessions because they allow us to apply what we learn immediately and solve real-life issues.\n\nSpeaker 3: That sounds like a wonderful initiative! If we organize monthly workshops, everyone will have the opportunity to share their creative ideas.`;
+    const hasSampleAnswers = questions.some((q) => (q as any).sampleAnswer);
+    if (hasSampleAnswers) {
+      improvedVersion = questions
+        .map((q, idx) => `Speaker ${idx + 1}: ${(q as any).sampleAnswer || 'I completely agree with your point.'}`)
+        .join('\n\n');
+    } else {
+      improvedVersion = `Speaker 1: I completely agree with your viewpoint. In my experience, participating regularly helps us broaden our knowledge and connect with supportive members.\n\nSpeaker 2: To be honest, I prefer practical sessions because they allow us to apply what we learn immediately and solve real-life issues.\n\nSpeaker 3: That sounds like a wonderful initiative! If we organize monthly workshops, everyone will have the opportunity to share their creative ideas.`;
+    }
   } else if (isPart4) {
-    improvedVersion = `[Email 1 - To a friend (40-50 words)]\nHi Alex,\nHave you heard the latest news about our ${clubName || 'club'}? They just announced a major change to our upcoming schedule! I think it's quite inconvenient for us. How do you feel about this? Let's discuss it soon.\nBest,\n[Your name]\n\n[Email 2 - To Club President (120-150 words)]\nDear President,\nI am writing this email to express my thoughts regarding the recent announcement about our club activities. As an active and dedicated member, I would like to offer a few constructive suggestions.\n\nFirst and foremost, the proposed schedule modification may create difficulties for many members who have prior commitments during weekdays. To address this issue, I respectfully suggest offering alternative weekend sessions or conducting hybrid online meetings.\n\nThank you very much for your time, consideration, and leadership. I look forward to hearing your thoughts.\n\nYours sincerely,\n[Your name]`;
+    const s1 = (questions[0] as any)?.sampleAnswer;
+    const s2 = (questions[1] as any)?.sampleAnswer;
+    if (s1 && s2) {
+      improvedVersion = `[Email 1 - To a friend (40-50 words)]\n${s1}\n\n[Email 2 - To Club President (120-150 words)]\n${s2}`;
+    } else {
+      improvedVersion = `[Email 1 - To a friend (40-50 words)]\nHi Alex,\nHave you heard the latest news about our ${clubName || 'club'}? They just announced a major change to our upcoming schedule! I think it's quite inconvenient for us. How do you feel about this? Let's discuss it soon.\nBest,\n[Your name]\n\n[Email 2 - To Club President (120-150 words)]\nDear President,\nI am writing this email to express my thoughts regarding the recent announcement about our club activities. As an active and dedicated member, I would like to offer a few constructive suggestions.\n\nFirst and foremost, the proposed schedule modification may create difficulties for many members who have prior commitments during weekdays. To address this issue, I respectfully suggest offering alternative weekend sessions or conducting hybrid online meetings.\n\nThank you very much for your time, consideration, and leadership. I look forward to hearing your thoughts.\n\nYours sincerely,\n[Your name]`;
+    }
   }
 
   const partSpecificSuggestions = isPart1
