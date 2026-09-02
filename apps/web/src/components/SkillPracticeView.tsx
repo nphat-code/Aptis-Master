@@ -393,15 +393,22 @@ export default function SkillPracticeView({
 
       {/* Skill Tips Modal (British Academic Modal) */}
       {showTipsModal && tipsContent && typeof window !== 'undefined' && createPortal(
-        <div className="fixed inset-0 z-[9999] bg-[#0f1a30]/60 backdrop-blur-sm flex items-center justify-center p-6 sm:p-10 my-auto">
-          <div className="bg-[#faf8f5] rounded-3xl p-6 sm:p-8 max-w-3xl w-full max-h-[78vh] flex flex-col justify-between space-y-5 shadow-2xl border border-[#e5ded3] relative overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-[#e5ded3] pb-4 relative z-10 shrink-0">
+        <div
+          onClick={() => setShowTipsModal(false)}
+          className="fixed inset-0 z-[9999] bg-[#0f1a30]/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 my-auto"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-[#faf8f5] rounded-3xl max-w-3xl w-full max-h-[88vh] flex flex-col shadow-2xl border border-[#e5ded3] relative overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-[#e5ded3] p-5 sm:p-6 relative z-10 shrink-0 bg-[#faf8f5]">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-[#fef3c7] border border-[#fde68a] flex items-center justify-center text-[#d97706] text-xl">
                   💡
                 </div>
                 <div>
-                  <h3 className="font-serif font-bold text-xl text-[#162544]">
+                  <h3 className="font-serif font-bold text-lg sm:text-xl text-[#162544]">
                     {tipsTitle || `Mẹo học ${skillTitle}`}
                   </h3>
                   <p className="text-xs text-[#6b6860] font-normal">
@@ -417,14 +424,16 @@ export default function SkillPracticeView({
               </button>
             </div>
 
-            <div className="space-y-4 text-sm text-[#333842] leading-relaxed max-h-[48vh] overflow-y-auto pr-3 font-sans custom-scrollbar relative z-10 flex-1">
+            {/* Modal Scrollable Body */}
+            <div className="p-5 sm:p-6 overflow-y-auto space-y-4 text-sm text-[#333842] font-sans custom-scrollbar flex-1 min-h-0">
               {tipsContent}
             </div>
 
-            <div className="pt-3 flex justify-end border-t border-[#e5ded3] relative z-10 shrink-0">
+            {/* Modal Footer */}
+            <div className="p-4 sm:px-6 flex justify-end border-t border-[#e5ded3] relative z-10 shrink-0 bg-[#faf8f5]">
               <button
                 onClick={() => setShowTipsModal(false)}
-                className="bg-[#162544] hover:bg-[#0f1a30] text-white font-medium text-sm px-6 py-2.5 rounded-full transition-all shadow-xs cursor-pointer"
+                className="bg-[#162544] hover:bg-[#0f1a30] text-white font-medium text-sm px-7 py-2.5 rounded-full transition-all shadow-xs cursor-pointer"
               >
                 Đã hiểu
               </button>

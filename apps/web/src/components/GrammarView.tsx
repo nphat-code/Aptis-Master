@@ -39,20 +39,31 @@ export default function GrammarView({ onBackToHome, onExamStateChange, data }: G
 
   const tipsContent = (
     <div className="space-y-4 text-sm font-sans">
-      <div className="bg-[#4edea3]/10 p-5 rounded-2xl border border-[#4edea3]/30 text-[#dae2fd] space-y-1.5 shadow-inner">
-        <p className="font-medium text-xs sm:text-sm leading-relaxed">
-          📚 <strong className="text-[#4edea3]">Chiến thuật Grammar & Vocabulary:</strong> Phần ngữ pháp và từ vựng là nền tảng cốt lõi giúp bạn nâng band điểm cả 4 kỹ năng. Hãy tập trung ôn theo cụm từ cố định (Collocations), từ đồng nghĩa và cấu trúc thì.
+      {/* Chiến thuật tổng quan */}
+      <div className="bg-[#fffbeb] p-4 sm:p-5 rounded-2xl border border-[#fde68a] text-[#78350f] space-y-1.5 shadow-2xs">
+        <div className="flex items-center gap-2 font-bold text-[#92400e] text-xs sm:text-sm">
+          <span>📚</span>
+          <span>Chiến thuật Grammar & Vocabulary:</span>
+        </div>
+        <p className="font-normal text-xs sm:text-sm leading-relaxed text-[#78350f]">
+          Phần ngữ pháp và từ vựng là nền tảng cốt lõi giúp bạn nâng band điểm cả 4 kỹ năng. Hãy tập trung ôn theo cụm từ cố định (Collocations), từ đồng nghĩa và cấu trúc thì.
         </p>
       </div>
 
-      <div className="bg-[#0b1326]/80 p-5 sm:p-6 rounded-2xl border border-white/10 space-y-3 hover:border-[#4edea3]/30 transition-all shadow-md">
-        <h4 className="font-extrabold text-white text-base flex items-center gap-3">
-          <span className="bg-[#4edea3]/20 text-[#4edea3] text-xs px-3 py-1 rounded-full border border-[#4edea3]/30 font-extrabold">Grammar & Vocabulary</span>
-          Chủ điểm trọng tâm
-        </h4>
-        <ul className="space-y-2 text-xs sm:text-sm text-[#bbcabf] pt-1">
-          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Hệ thống thì hoàn thành & tiếp diễn, câu điều kiện loại 1-2-3, mệnh đề quan hệ rút gọn, câu bị động.</span></li>
-          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Học từ vựng theo cụm từ (Collocations), từ đồng nghĩa (Synonyms) để giải quyết nhanh bài thi Vocabulary.</span></li>
+      {/* Grammar & Vocabulary */}
+      <div className="bg-white p-5 rounded-2xl border border-[#e5ded3] space-y-3 shadow-xs">
+        <div className="flex items-center justify-between">
+          <h4 className="font-serif font-bold text-[#162544] text-base flex items-center gap-2.5">
+            <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Grammar & Vocab</span>
+            <span>Chủ điểm trọng tâm</span>
+          </h4>
+          <span className="text-[11px] font-bold text-[#2563eb] bg-[#eff6ff] px-2.5 py-0.5 rounded-full border border-[#bfdbfe]">
+            Nền tảng điểm số
+          </span>
+        </div>
+        <ul className="space-y-2 text-xs sm:text-sm text-[#333842] pt-1">
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Hệ thống thì hoàn thành & tiếp diễn, câu điều kiện loại 1-2-3, mệnh đề quan hệ rút gọn, câu bị động.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Học từ vựng theo cụm từ (Collocations), từ đồng nghĩa (Synonyms) để giải quyết nhanh bài thi Vocabulary.</span></li>
         </ul>
       </div>
     </div>

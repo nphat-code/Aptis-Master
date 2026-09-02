@@ -66,45 +66,68 @@ export default function ReadingView({ onBackToHome, onExamStateChange, data }: R
 
   const tipsContent = (
     <div className="space-y-4 text-sm font-sans">
-      <div className="bg-[#4edea3]/10 p-5 rounded-2xl border border-[#4edea3]/30 text-[#dae2fd] space-y-1.5 shadow-inner">
-        <p className="font-medium text-xs sm:text-sm leading-relaxed">
-          💡 <strong className="text-[#4edea3]">Chiến thuật Reading Aptis 2026:</strong> Reading là một trong những kỹ năng dễ cải thiện điểm số nhất nếu biết làm theo trọng tâm. Thay vì làm đề dàn trải, hãy chia nhỏ từng Part để luyện phản xạ và nhớ theo dạng bài.
+      {/* Chiến thuật tổng quan */}
+      <div className="bg-[#fffbeb] p-4 sm:p-5 rounded-2xl border border-[#fde68a] text-[#78350f] space-y-1.5 shadow-2xs">
+        <div className="flex items-center gap-2 font-bold text-[#92400e] text-xs sm:text-sm">
+          <span>💡</span>
+          <span>Chiến thuật Reading Aptis 2026:</span>
+        </div>
+        <p className="font-normal text-xs sm:text-sm leading-relaxed text-[#78350f]">
+          Reading là một trong những kỹ năng dễ cải thiện điểm số nhất nếu biết làm theo trọng tâm. Thay vì làm đề dàn trải, hãy chia nhỏ từng Part để luyện phản xạ và nhớ theo dạng bài.
         </p>
       </div>
 
-      <div className="bg-[#0b1326]/80 p-5 sm:p-6 rounded-2xl border border-white/10 space-y-3 hover:border-[#4edea3]/30 transition-all shadow-md">
-        <h4 className="font-extrabold text-white text-base flex items-center gap-3">
-          <span className="bg-[#4edea3]/20 text-[#4edea3] text-xs px-3 py-1 rounded-full border border-[#4edea3]/30 font-extrabold">Part 1</span>
-          Sentence comprehension
-        </h4>
-        <p className="text-xs font-semibold text-[#4edea3]">Học đầy đủ kho câu hỏi (Phần dễ tích lũy điểm tối đa)</p>
-        <ul className="space-y-2 text-xs sm:text-sm text-[#bbcabf] pt-1">
-          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Học đầy đủ các câu hỏi có trong kho đề luyện tập.</span></li>
-          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Làm đi làm lại nhiều lần để tạo phản xạ nhận diện đáp án ngay lập tức.</span></li>
-          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Khi luyện, cố gắng vừa nhìn câu hỏi là nhận ra đáp án thay vì phải đọc hiểu từ đầu.</span></li>
+      {/* Part 1 */}
+      <div className="bg-white p-5 rounded-2xl border border-[#e5ded3] space-y-3 shadow-xs">
+        <div className="flex items-center justify-between">
+          <h4 className="font-serif font-bold text-[#162544] text-base flex items-center gap-2.5">
+            <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Part 1</span>
+            <span>Sentence comprehension</span>
+          </h4>
+          <span className="text-[11px] font-bold text-[#059669] bg-[#ecfdf5] px-2.5 py-0.5 rounded-full border border-[#a7f3d0]">
+            Tích lũy tối đa điểm
+          </span>
+        </div>
+        <p className="text-xs font-semibold text-[#6b6860]">Học đầy đủ kho câu hỏi (Phần dễ lấy điểm trọn vẹn)</p>
+        <ul className="space-y-2 text-xs sm:text-sm text-[#333842] pt-1">
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Học đầy đủ các câu hỏi có trong kho đề luyện tập.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Làm đi làm lại nhiều lần để tạo phản xạ nhận diện đáp án ngay lập tức.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Khi luyện, cố gắng vừa nhìn câu hỏi là nhận ra đáp án thay vì phải đọc hiểu từ đầu.</span></li>
         </ul>
       </div>
 
-      <div className="bg-[#0b1326]/80 p-5 sm:p-6 rounded-2xl border border-white/10 space-y-3 hover:border-[#4edea3]/30 transition-all shadow-md">
-        <h4 className="font-extrabold text-white text-base flex items-center gap-3">
-          <span className="bg-[#4edea3]/20 text-[#4edea3] text-xs px-3 py-1 rounded-full border border-[#4edea3]/30 font-extrabold">Part 2</span>
-          Text cohesion (Sắp xếp đoạn văn)
-        </h4>
-        <p className="text-xs font-semibold text-[#4edea3]">Luyện kỹ thuật liên kết từ và ngữ cảnh</p>
-        <ul className="space-y-2 text-xs sm:text-sm text-[#bbcabf] pt-1">
-          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Học theo kho câu hỏi và ghi nhớ các cặp từ nối logic (However, Therefore, In addition).</span></li>
-          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Chú ý những câu dễ gây nhầm lẫn để không bị mất điểm đáng tiếc.</span></li>
+      {/* Part 2 */}
+      <div className="bg-white p-5 rounded-2xl border border-[#e5ded3] space-y-3 shadow-xs">
+        <div className="flex items-center justify-between">
+          <h4 className="font-serif font-bold text-[#162544] text-base flex items-center gap-2.5">
+            <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Part 2</span>
+            <span>Text cohesion (Sắp xếp đoạn văn)</span>
+          </h4>
+          <span className="text-[11px] font-bold text-[#d97706] bg-[#fef3c7] px-2.5 py-0.5 rounded-full border border-[#fde68a]">
+            Logic & Từ nối
+          </span>
+        </div>
+        <p className="text-xs font-semibold text-[#6b6860]">Luyện kỹ thuật liên kết từ và ngữ cảnh</p>
+        <ul className="space-y-2 text-xs sm:text-sm text-[#333842] pt-1">
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Học theo kho câu hỏi và ghi nhớ các cặp từ nối logic (However, Therefore, In addition).</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Chú ý những câu dễ gây nhầm lẫn để không bị mất điểm đáng tiếc.</span></li>
         </ul>
       </div>
 
-      <div className="bg-[#0b1326]/80 p-5 sm:p-6 rounded-2xl border border-white/10 space-y-3 hover:border-[#4edea3]/30 transition-all shadow-md">
-        <h4 className="font-extrabold text-white text-base flex items-center gap-3">
-          <span className="bg-[#4edea3]/20 text-[#4edea3] text-xs px-3 py-1 rounded-full border border-[#4edea3]/30 font-extrabold">Part 3, 4 & 5</span>
-          Opinion matching & Long reading
-        </h4>
-        <ul className="space-y-2 text-xs sm:text-sm text-[#bbcabf] pt-1">
-          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Hiểu rõ bản chất lý do đáp án đúng thay vì chỉ học thuộc lòng vẹt.</span></li>
-          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Độ dài văn bản dài yêu cầu kỹ năng Skimming (đọc lướt lấy ý chính) và Scanning (tìm từ khóa cụ thể).</span></li>
+      {/* Part 3, 4 & 5 */}
+      <div className="bg-white p-5 rounded-2xl border border-[#e5ded3] space-y-3 shadow-xs">
+        <div className="flex items-center justify-between">
+          <h4 className="font-serif font-bold text-[#162544] text-base flex items-center gap-2.5">
+            <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Part 3, 4 & 5</span>
+            <span>Opinion matching & Long reading</span>
+          </h4>
+          <span className="text-[11px] font-bold text-[#4f46e5] bg-[#eef2ff] px-2.5 py-0.5 rounded-full border border-[#c7d2fe]">
+            Skimming & Scanning
+          </span>
+        </div>
+        <ul className="space-y-2 text-xs sm:text-sm text-[#333842] pt-1">
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Hiểu rõ bản chất lý do đáp án đúng thay vì chỉ học thuộc lòng vẹt.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Độ dài văn bản dài yêu cầu kỹ năng Skimming (đọc lướt lấy ý chính) và Scanning (tìm từ khóa cụ thể).</span></li>
         </ul>
       </div>
     </div>

@@ -53,20 +53,31 @@ export default function SpeakingView({ onBackToHome, onExamStateChange, data }: 
 
   const tipsContent = (
     <div className="space-y-4 text-sm font-sans">
-      <div className="bg-[#4edea3]/10 p-5 rounded-2xl border border-[#4edea3]/30 text-[#dae2fd] space-y-1.5 shadow-inner">
-        <p className="font-medium text-xs sm:text-sm leading-relaxed">
-          🗣️ <strong className="text-[#4edea3]">Chiến thuật Speaking Aptis 2026:</strong> Duy trì tốc độ nói vừa phải, phát âm chuẩn ngữ điệu. Tránh ngập ngừng quá 3 giây và áp dụng công thức <strong className="text-white">PREP (Point - Reason - Example - Point)</strong> để mở rộng ý.
+      {/* Chiến thuật tổng quan */}
+      <div className="bg-[#fffbeb] p-4 sm:p-5 rounded-2xl border border-[#fde68a] text-[#78350f] space-y-1.5 shadow-2xs">
+        <div className="flex items-center gap-2 font-bold text-[#92400e] text-xs sm:text-sm">
+          <span>🗣️</span>
+          <span>Chiến thuật Speaking Aptis 2026:</span>
+        </div>
+        <p className="font-normal text-xs sm:text-sm leading-relaxed text-[#78350f]">
+          Duy trì tốc độ nói vừa phải, phát âm chuẩn ngữ điệu. Tránh ngập ngừng quá 3 giây và áp dụng công thức <strong className="font-bold text-[#92400e]">PREP (Point - Reason - Example - Point)</strong> để mở rộng ý.
         </p>
       </div>
 
-      <div className="bg-[#0b1326]/80 p-5 sm:p-6 rounded-2xl border border-white/10 space-y-3 hover:border-[#4edea3]/30 transition-all shadow-md">
-        <h4 className="font-extrabold text-white text-base flex items-center gap-3">
-          <span className="bg-[#4edea3]/20 text-[#4edea3] text-xs px-3 py-1 rounded-full border border-[#4edea3]/30 font-extrabold">Part 1, 2 & 3</span>
-          Personal Info & Photo Description
-        </h4>
-        <ul className="space-y-2 text-xs sm:text-sm text-[#bbcabf] pt-1">
-          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>Miêu tả tổng quan bức tranh (In the foreground, In the background, On the left/right).</span></li>
-          <li className="flex items-start gap-2"><span className="text-[#4edea3] font-bold">✓</span><span>So sánh điểm tương đồng và khác biệt giữa 2 bức tranh trong 45 giây.</span></li>
+      {/* Part 1, 2 & 3 */}
+      <div className="bg-white p-5 rounded-2xl border border-[#e5ded3] space-y-3 shadow-xs">
+        <div className="flex items-center justify-between">
+          <h4 className="font-serif font-bold text-[#162544] text-base flex items-center gap-2.5">
+            <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Part 1, 2 & 3</span>
+            <span>Personal Info & Photo Description</span>
+          </h4>
+          <span className="text-[11px] font-bold text-[#e11d48] bg-[#fff1f2] px-2.5 py-0.5 rounded-full border border-[#fecdd3]">
+            Trôi chảy & Tự nhiên
+          </span>
+        </div>
+        <ul className="space-y-2 text-xs sm:text-sm text-[#333842] pt-1">
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Miêu tả tổng quan bức tranh (In the foreground, In the background, On the left/right).</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>So sánh điểm tương đồng và khác biệt giữa 2 bức tranh trong 45 giây.</span></li>
         </ul>
       </div>
     </div>
