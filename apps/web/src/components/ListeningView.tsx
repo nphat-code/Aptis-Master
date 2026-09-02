@@ -67,45 +67,86 @@ export default function ListeningView({ onBackToHome, onExamStateChange, data }:
       <div className="bg-[#fffbeb] p-4 sm:p-5 rounded-2xl border border-[#fde68a] text-[#78350f] space-y-1.5 shadow-2xs">
         <div className="flex items-center gap-2 font-bold text-[#92400e] text-xs sm:text-sm">
           <span>🎧</span>
-          <span>Chiến thuật Listening Aptis 2026:</span>
+          <span>Chiến thuật Listening Aptis 2026 (17 audio – 40 phút):</span>
         </div>
         <p className="font-normal text-xs sm:text-sm leading-relaxed text-[#78350f]">
-          Listening sẽ dễ dàng hơn rất nhiều nếu bạn học theo từng nhóm câu hỏi thay vì luyện đề dàn trải. Tập trung bắt từ khóa chính (Keywords) và luyện phản xạ âm thanh liên tục.
+          Mỗi đoạn audio chỉ được nghe <strong>tối đa 2 lần</strong>. Hãy luôn đọc kỹ câu hỏi và các phương án lựa chọn <em>trước khi</em> bấm nút Play để định hình sẵn thông tin cần bắt.
         </p>
       </div>
 
       {/* Part 1 */}
       <div className="bg-white p-5 rounded-2xl border border-[#e5ded3] space-y-3 shadow-xs">
         <div className="flex items-center justify-between">
-          <h4 className="font-serif font-bold text-[#162544] text-base flex items-center gap-2.5">
-            <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Câu 1–13</span>
-            <span>Part 1 – Nhận biết thông tin</span>
-          </h4>
+          <div className="flex items-center gap-2.5">
+            <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Part 1</span>
+            <h4 className="font-bold text-[#162544] text-sm sm:text-base">Information Recognition (Câu 1–13 – 26 điểm)</h4>
+          </div>
           <span className="text-[11px] font-bold text-[#059669] bg-[#ecfdf5] px-2.5 py-0.5 rounded-full border border-[#a7f3d0]">
-            Tích lũy tối đa điểm
+            Phần gỡ điểm chính
           </span>
         </div>
+        <p className="text-xs font-semibold text-[#6b6860]">13 đoạn hội thoại/độc thoại ngắn (Thông báo, tin nhắn thoại, chỉ đường)</p>
         <ul className="space-y-2 text-xs sm:text-sm text-[#333842] pt-1">
-          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Học đầy đủ các câu hỏi trong bộ tài liệu thi.</span></li>
-          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Luyện nghe phản xạ nhanh đáp án thay vì mất quá nhiều thời gian phân tích từ vựng.</span></li>
-          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Lưu ý số lần nghe tối đa là 2 lần cho mỗi audio.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Đọc trước phương án (Pre-reading):</strong> Dành 5–10 giây trước khi nghe để đọc 3 đáp án A, B, C và khoanh vùng loại thông tin (giờ giấc, giá tiền, địa điểm, hành động).</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Cẩn thận bẫy tự sửa (Self-Correction):</strong> Người nói thường đưa ra một thông tin trước rồi sửa lại ngay sau đó (ví dụ: <em>"Let's meet at 3 PM... Oh wait, I have a meeting, so 4 PM is better"</em> → Đáp án là 4 PM).</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Tận dụng lần nghe 1 & 2:</strong> Lần nghe 1 chọn đáp án sơ bộ, lần nghe 2 nghe rà soát lại để chắc chắn 100%.</span></li>
         </ul>
       </div>
 
-      {/* Part 2, 3 & 4 */}
+      {/* Part 2 */}
       <div className="bg-white p-5 rounded-2xl border border-[#e5ded3] space-y-3 shadow-xs">
         <div className="flex items-center justify-between">
-          <h4 className="font-serif font-bold text-[#162544] text-base flex items-center gap-2.5">
-            <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Câu 14–17</span>
-            <span>Part 2, 3 & 4 – Hội thoại & Độc thoại nâng cao</span>
-          </h4>
+          <div className="flex items-center gap-2.5">
+            <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Part 2</span>
+            <h4 className="font-bold text-[#162544] text-sm sm:text-base">Information Matching (Câu 14 – 8 điểm)</h4>
+          </div>
           <span className="text-[11px] font-bold text-[#d97706] bg-[#fef3c7] px-2.5 py-0.5 rounded-full border border-[#fde68a]">
-            Bắt Distractors
+            Ghép người nói
           </span>
         </div>
+        <p className="text-xs font-semibold text-[#6b6860]">4 người nói (Speaker 1–4) thảo luận về 1 chủ đề, ghép với 4 trong 6 options</p>
         <ul className="space-y-2 text-xs sm:text-sm text-[#333842] pt-1">
-          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Cảnh giác với các thông tin gây nhiễu (Distractors) trong đáp án.</span></li>
-          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Tận dụng thời gian chuẩn bị trước khi bấm Audio để đọc nhanh câu hỏi & phương án lựa chọn.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Đọc lướt 6 ý kiến trước:</strong> Gạch chân từ khóa chỉ thái độ (thích, ghét, lo lắng, bất ngờ, đề xuất) trong 6 lựa chọn.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Bắt ý chính từng Speaker:</strong> Mỗi người nói chỉ kéo dài khoảng 15–20 giây. Tập trung vào câu kết luận hoặc tính từ biểu cảm chính của người đó.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Loại trừ 2 options thừa:</strong> Hai ý kiến thừa thường là các bẫy nhắc lại từ vựng nhưng không phải ý chính của người nào.</span></li>
+        </ul>
+      </div>
+
+      {/* Part 3 */}
+      <div className="bg-white p-5 rounded-2xl border border-[#e5ded3] space-y-3 shadow-xs">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Part 3</span>
+            <h4 className="font-bold text-[#162544] text-sm sm:text-base">Opinion & Attitude (Câu 15 – 8 điểm)</h4>
+          </div>
+          <span className="text-[11px] font-bold text-[#4f46e5] bg-[#eef2ff] px-2.5 py-0.5 rounded-full border border-[#c7d2fe]">
+            Man / Woman / Both
+          </span>
+        </div>
+        <p className="text-xs font-semibold text-[#6b6860]">Đối thoại nam – nữ, xác định quan điểm của Man, Woman, hoặc Both</p>
+        <ul className="space-y-2 text-xs sm:text-sm text-[#333842] pt-1">
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Phân biệt giọng Nam và Nữ:</strong> Chú ý xem ai là người khởi xướng ý kiến và phản ứng của người đối diện là gì.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Dấu hiệu chọn BOTH (Cả hai):</strong> Khi người thứ hai đồng tình bằng các câu như: <em>"I completely agree", "You took the words right out of my mouth", "That's exactly what I think"</em>.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Dấu hiệu bất đồng:</strong> Khi có các từ chuyển hướng: <em>"Well, I'm not so sure", "On the other hand", "Actually, I see it differently"</em>.</span></li>
+        </ul>
+      </div>
+
+      {/* Part 4 */}
+      <div className="bg-white p-5 rounded-2xl border border-[#e5ded3] space-y-3 shadow-xs">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Part 4</span>
+            <h4 className="font-bold text-[#162544] text-sm sm:text-base">Inference & Monologues (Câu 16–17 – 8 điểm)</h4>
+          </div>
+          <span className="text-[11px] font-bold text-[#059669] bg-[#ecfdf5] px-2.5 py-0.5 rounded-full border border-[#a7f3d0]">
+            Độc thoại nâng cao
+          </span>
+        </div>
+        <p className="text-xs font-semibold text-[#6b6860]">2 bài thuyết trình/phát biểu dài, mỗi bài gồm 2 câu hỏi trắc nghiệm</p>
+        <ul className="space-y-2 text-xs sm:text-sm text-[#333842] pt-1">
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Đọc kỹ 2 câu hỏi trước khi nghe:</strong> Câu hỏi 1 thường hỏi về mục đích chung/nguyên nhân, câu hỏi 2 thường hỏi về chi tiết kết quả hoặc suy luận trong tương lai.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Bắt từ chuyển ý (Signposts):</strong> Lắng nghe các từ định hướng cấu trúc bài nói: <em>"First of all", "The key challenge was", "Consequently", "In conclusion"</em>.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Không hoảng loạn nếu lỡ một câu:</strong> Nếu bị lỡ thông tin câu 1, hãy chuyển sự tập trung ngay sang câu 2 và dùng lần nghe thứ 2 để bổ sung.</span></li>
         </ul>
       </div>
     </div>
