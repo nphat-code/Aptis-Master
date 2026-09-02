@@ -70,64 +70,86 @@ export default function ReadingView({ onBackToHome, onExamStateChange, data }: R
       <div className="bg-[#fffbeb] p-4 sm:p-5 rounded-2xl border border-[#fde68a] text-[#78350f] space-y-1.5 shadow-2xs">
         <div className="flex items-center gap-2 font-bold text-[#92400e] text-xs sm:text-sm">
           <span>💡</span>
-          <span>Chiến thuật Reading Aptis 2026:</span>
+          <span>Chiến thuật Reading Aptis 2026 (Tổng thời gian: 35 phút):</span>
         </div>
         <p className="font-normal text-xs sm:text-sm leading-relaxed text-[#78350f]">
-          Reading là một trong những kỹ năng dễ cải thiện điểm số nhất nếu biết làm theo trọng tâm. Thay vì làm đề dàn trải, hãy chia nhỏ từng Part để luyện phản xạ và nhớ theo dạng bài.
+          Phân bổ thời gian vàng: <strong>Part 1 (4 phút)</strong> → <strong>Part 2 & 3 (8 phút)</strong> → <strong>Part 4 (10 phút)</strong> → <strong>Part 5 (13 phút)</strong>. Hãy làm theo đúng thứ tự và không dừng lại quá 1 phút ở bất kỳ câu hỏi nào.
         </p>
       </div>
 
       {/* Part 1 */}
       <div className="bg-white p-5 rounded-2xl border border-[#e5ded3] space-y-3 shadow-xs">
         <div className="flex items-center justify-between">
-          <h4 className="font-serif font-bold text-[#162544] text-base flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5">
             <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Part 1</span>
-            <span>Sentence comprehension</span>
-          </h4>
+            <h4 className="font-bold text-[#162544] text-sm sm:text-base">Sentence Comprehension (5 câu – 10 điểm)</h4>
+          </div>
           <span className="text-[11px] font-bold text-[#059669] bg-[#ecfdf5] px-2.5 py-0.5 rounded-full border border-[#a7f3d0]">
-            Tích lũy tối đa điểm
+            Tích lũy điểm tối đa
           </span>
         </div>
-        <p className="text-xs font-semibold text-[#6b6860]">Học đầy đủ kho câu hỏi (Phần dễ lấy điểm trọn vẹn)</p>
+        <p className="text-xs font-semibold text-[#6b6860]">Mục tiêu: Đạt 10/10 điểm trong vòng 3–4 phút</p>
         <ul className="space-y-2 text-xs sm:text-sm text-[#333842] pt-1">
-          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Học đầy đủ các câu hỏi có trong kho đề luyện tập.</span></li>
-          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Làm đi làm lại nhiều lần để tạo phản xạ nhận diện đáp án ngay lập tức.</span></li>
-          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Khi luyện, cố gắng vừa nhìn câu hỏi là nhận ra đáp án thay vì phải đọc hiểu từ đầu.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Đọc lướt toàn câu:</strong> Đọc hết cả câu trước và sau chỗ trống để hiểu nghĩa tổng thể thay vì chỉ nhìn từ đứng ngay trước.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Xác định từ loại và Collocation:</strong> Chú ý giới từ đi kèm (ví dụ: <em>interested in, good at</em>) và cụm từ cố định để chọn ngay đáp án đúng.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Luyện tủ kho 48 đề:</strong> Đa phần các câu hỏi Part 1 đều nằm trong ngân hàng câu hỏi chuẩn, luyện phản xạ nhận diện tức thì.</span></li>
         </ul>
       </div>
 
-      {/* Part 2 */}
+      {/* Part 2 & 3 */}
       <div className="bg-white p-5 rounded-2xl border border-[#e5ded3] space-y-3 shadow-xs">
         <div className="flex items-center justify-between">
-          <h4 className="font-serif font-bold text-[#162544] text-base flex items-center gap-2.5">
-            <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Part 2</span>
-            <span>Text cohesion (Sắp xếp đoạn văn)</span>
-          </h4>
+          <div className="flex items-center gap-2.5">
+            <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Part 2 + 3</span>
+            <h4 className="font-bold text-[#162544] text-sm sm:text-base">Text Cohesion (10 câu – 10 điểm)</h4>
+          </div>
           <span className="text-[11px] font-bold text-[#d97706] bg-[#fef3c7] px-2.5 py-0.5 rounded-full border border-[#fde68a]">
-            Logic & Từ nối
+            Logic & Chuỗi câu
           </span>
         </div>
-        <p className="text-xs font-semibold text-[#6b6860]">Luyện kỹ thuật liên kết từ và ngữ cảnh</p>
+        <p className="text-xs font-semibold text-[#6b6860]">Kỹ thuật sắp xếp 5 câu thành đoạn văn hoàn chỉnh</p>
         <ul className="space-y-2 text-xs sm:text-sm text-[#333842] pt-1">
-          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Học theo kho câu hỏi và ghi nhớ các cặp từ nối logic (However, Therefore, In addition).</span></li>
-          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Chú ý những câu dễ gây nhầm lẫn để không bị mất điểm đáng tiếc.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Tìm câu mở đầu (Topic Sentence):</strong> Câu đầu tiên luôn là câu giới thiệu độc lập, không chứa các từ nối phụ thuộc (<em>However, Therefore, Meanwhile</em>) hoặc đại từ thay thế chưa rõ nguồn gốc (<em>He, She, They, This, That</em>).</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Bắt cặp liên kết (Chain Linking):</strong> Ghép các câu có mối quan hệ Danh từ riêng → Đại từ (<em>Mr. John → He</em>), Mạo từ không xác định → Xác định (<em>a new car → the car</em>), và mốc thời gian tuần tự (<em>In 1990 → Later → Nowadays</em>).</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Đọc lại toàn bài:</strong> Sau khi kéo thả xong, đọc liền mạch 5 câu từ trên xuống dưới để đảm bảo mạch truyện tự nhiên, hợp lý.</span></li>
         </ul>
       </div>
 
-      {/* Part 3, 4 & 5 */}
+      {/* Part 4 */}
       <div className="bg-white p-5 rounded-2xl border border-[#e5ded3] space-y-3 shadow-xs">
         <div className="flex items-center justify-between">
-          <h4 className="font-serif font-bold text-[#162544] text-base flex items-center gap-2.5">
-            <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Part 3, 4 & 5</span>
-            <span>Opinion matching & Long reading</span>
-          </h4>
+          <div className="flex items-center gap-2.5">
+            <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Part 4</span>
+            <h4 className="font-bold text-[#162544] text-sm sm:text-base">Opinion Matching (7 câu – 16 điểm)</h4>
+          </div>
           <span className="text-[11px] font-bold text-[#4f46e5] bg-[#eef2ff] px-2.5 py-0.5 rounded-full border border-[#c7d2fe]">
-            Skimming & Scanning
+            Trọng số cao nhất
           </span>
         </div>
+        <p className="text-xs font-semibold text-[#6b6860]">Ghép quan điểm 7 câu hỏi vào 4 nhân vật (Person A, B, C, D)</p>
         <ul className="space-y-2 text-xs sm:text-sm text-[#333842] pt-1">
-          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Hiểu rõ bản chất lý do đáp án đúng thay vì chỉ học thuộc lòng vẹt.</span></li>
-          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Độ dài văn bản dài yêu cầu kỹ năng Skimming (đọc lướt lấy ý chính) và Scanning (tìm từ khóa cụ thể).</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Đọc câu hỏi trước – Gạch chân Keywords:</strong> Đọc kỹ 7 câu hỏi và khoanh vùng từ khóa về cảm xúc, thái độ, hành động của người nói.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Tìm Paraphrasing (Từ đồng nghĩa):</strong> Aptis không bao giờ lặp lại từ y hệt trong bài đọc. Hãy tìm các cách diễn đạt tương đương (ví dụ: <em>difficult = hard = challenging</em>).</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Cảnh giác với bẫy từ khóa:</strong> Một người có thể nhắc đến từ khóa trong câu hỏi nhưng thái độ lại trái ngược (phủ định hoặc nói về người khác).</span></li>
+        </ul>
+      </div>
+
+      {/* Part 5 */}
+      <div className="bg-white p-5 rounded-2xl border border-[#e5ded3] space-y-3 shadow-xs">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Part 5</span>
+            <h4 className="font-bold text-[#162544] text-sm sm:text-base">Long Text Comprehension (7 câu – 14 điểm)</h4>
+          </div>
+          <span className="text-[11px] font-bold text-[#059669] bg-[#ecfdf5] px-2.5 py-0.5 rounded-full border border-[#a7f3d0]">
+            Ghép Heading
+          </span>
+        </div>
+        <p className="text-xs font-semibold text-[#6b6860]">Chọn tiêu đề chuẩn xác cho 7 đoạn văn từ 8 lựa chọn (1 heading thừa)</p>
+        <ul className="space-y-2 text-xs sm:text-sm text-[#333842] pt-1">
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Quy tắc Câu đầu & Câu cuối:</strong> Ý chính của đoạn văn tiếng Anh (Main Idea) thường nằm ở 1–2 câu đầu (diễn dịch) hoặc câu cuối cùng (quy nạp).</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Phân biệt Ý chính vs. Chi tiết minh họa:</strong> Tránh chọn các tiêu đề chỉ nêu 1 ví dụ hay 1 con số nhỏ trong đoạn. Tiêu đề đúng phải bao quát trọn vẹn toàn bộ đoạn văn.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Phương pháp loại trừ:</strong> Gán tiêu đề chắc chắn trước, sau đó so sánh các heading còn lại để tìm ra tiêu đề bẫy.</span></li>
         </ul>
       </div>
     </div>
