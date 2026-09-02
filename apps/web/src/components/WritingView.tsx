@@ -65,44 +65,87 @@ export default function WritingView({ onBackToHome, onExamStateChange, data }: W
       <div className="bg-[#fffbeb] p-4 sm:p-5 rounded-2xl border border-[#fde68a] text-[#78350f] space-y-1.5 shadow-2xs">
         <div className="flex items-center gap-2 font-bold text-[#92400e] text-xs sm:text-sm">
           <span>✍️</span>
-          <span>Chiến thuật Writing Aptis 2026:</span>
+          <span>Chiến thuật Writing Aptis 2026 (4 phần – 50 phút – Thang 50 điểm):</span>
         </div>
         <p className="font-normal text-xs sm:text-sm leading-relaxed text-[#78350f]">
-          Writing gồm 4 phần, trong đó <strong className="font-bold text-[#92400e]">Part 4 (Viết 2 Email)</strong> chiếm trọng số điểm lớn nhất. Hãy nắm chắc cấu trúc Email trang trọng (Formal) và thân mật (Informal).
+          Phân bổ thời gian: <strong>Part 1 (3 phút)</strong> → <strong>Part 2 (7 phút)</strong> → <strong>Part 3 (10 phút)</strong> → <strong>Part 4 (30 phút)</strong>. Part 4 chiếm 50% tổng điểm (25/50đ), hãy dành nhiều thời gian nhất để hoàn thiện 2 bức email chỉn chu.
         </p>
       </div>
 
-      {/* Part 1 & 2 */}
+      {/* Part 1 */}
       <div className="bg-white p-5 rounded-2xl border border-[#e5ded3] space-y-3 shadow-xs">
         <div className="flex items-center justify-between">
-          <h4 className="font-serif font-bold text-[#162544] text-base flex items-center gap-2.5">
-            <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Part 1 & 2</span>
-            <span>Short answers & Personal info</span>
-          </h4>
+          <div className="flex items-center gap-2.5">
+            <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Part 1</span>
+            <h4 className="font-bold text-[#162544] text-sm sm:text-base">Short Answers (5 câu – 5 điểm)</h4>
+          </div>
           <span className="text-[11px] font-bold text-[#059669] bg-[#ecfdf5] px-2.5 py-0.5 rounded-full border border-[#a7f3d0]">
-            Chuẩn ngữ pháp
+            1–5 từ / câu
           </span>
         </div>
+        <p className="text-xs font-semibold text-[#6b6860]">Điền thông tin cá nhân ngắn vào biểu mẫu</p>
         <ul className="space-y-2 text-xs sm:text-sm text-[#333842] pt-1">
-          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Part 1: Trả lời ngắn từ 1-5 từ. Viết đúng chính tả, ngữ pháp và nhớ viết hoa chữ cái đầu.</span></li>
-          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Part 2: Viết câu hoàn chỉnh từ 20-30 từ. Trả lời đúng trọng tâm câu hỏi.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Độ dài chuẩn:</strong> Trả lời từ 1–5 từ. Tuyệt đối không viết thành câu dài để tránh mắc lỗi ngữ pháp không đáng có.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Quy tắc chính tả:</strong> Luôn viết hoa chữ cái đầu câu (hoặc tên riêng, ngày tháng) và kiểm tra kỹ lỗi gõ bàn phím.</span></li>
         </ul>
       </div>
 
-      {/* Part 3 & 4 */}
+      {/* Part 2 */}
       <div className="bg-white p-5 rounded-2xl border border-[#e5ded3] space-y-3 shadow-xs">
         <div className="flex items-center justify-between">
-          <h4 className="font-serif font-bold text-[#162544] text-base flex items-center gap-2.5">
-            <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Part 3 & 4</span>
-            <span>Social room & Formal/Informal Emails</span>
-          </h4>
-          <span className="text-[11px] font-bold text-[#4f46e5] bg-[#eef2ff] px-2.5 py-0.5 rounded-full border border-[#c7d2fe]">
-            Trọng số cao nhất
+          <div className="flex items-center gap-2.5">
+            <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Part 2</span>
+            <h4 className="font-bold text-[#162544] text-sm sm:text-base">Form Filling (1 câu – 5 điểm)</h4>
+          </div>
+          <span className="text-[11px] font-bold text-[#d97706] bg-[#fef3c7] px-2.5 py-0.5 rounded-full border border-[#fde68a]">
+            20–30 từ
           </span>
         </div>
+        <p className="text-xs font-semibold text-[#6b6860]">Viết đoạn văn ngắn giải thích lý do tham gia hoặc thói quen cá nhân</p>
         <ul className="space-y-2 text-xs sm:text-sm text-[#333842] pt-1">
-          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Part 3: Trả lời 3 câu hỏi trong phòng chat (30-40 từ/câu). Dùng từ nối linh hoạt.</span></li>
-          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span>Part 4: Email người bạn (50 từ, văn phong Informal) và Email gửi quản lý (120-150 từ, văn phong Formal).</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Viết câu hoàn chỉnh:</strong> Viết từ 2–3 câu hoàn chỉnh có đầy đủ Chủ ngữ + Vị ngữ.</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Dùng từ nối:</strong> Sử dụng các liên từ cơ bản (<em>because, so, and, especially</em>) để câu văn mạch lạc, tự nhiên.</span></li>
+        </ul>
+      </div>
+
+      {/* Part 3 */}
+      <div className="bg-white p-5 rounded-2xl border border-[#e5ded3] space-y-3 shadow-xs">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Part 3</span>
+            <h4 className="font-bold text-[#162544] text-sm sm:text-base">Social Room / Club Chat (3 câu – 15 điểm)</h4>
+          </div>
+          <span className="text-[11px] font-bold text-[#4f46e5] bg-[#eef2ff] px-2.5 py-0.5 rounded-full border border-[#c7d2fe]">
+            30–40 từ / câu
+          </span>
+        </div>
+        <p className="text-xs font-semibold text-[#6b6860]">Trả lời 3 câu hỏi từ 3 thành viên trong phòng chat câu lạc bộ</p>
+        <ul className="space-y-2 text-xs sm:text-sm text-[#333842] pt-1">
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Tương tác tự nhiên:</strong> Bắt đầu bằng phản hồi trực tiếp ý kiến của người hỏi (<em>"Hi John! That's a great question.", "I completely agree with your point."</em>).</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Cấu trúc chuẩn:</strong> Nêu quan điểm cá nhân → Giải thích lý do → Đưa ra 1 ví dụ thực tế ngắn gọn (đủ 30–40 từ).</span></li>
+        </ul>
+      </div>
+
+      {/* Part 4 */}
+      <div className="bg-white p-5 rounded-2xl border border-[#e5ded3] space-y-3 shadow-xs">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <span className="bg-[#162544] text-white text-xs px-2.5 py-0.5 rounded-full font-bold">Part 4</span>
+            <h4 className="font-bold text-[#162544] text-sm sm:text-base">Formal & Informal Emails (2 email – 25 điểm)</h4>
+          </div>
+          <span className="text-[11px] font-bold text-[#e11d48] bg-[#fff1f2] px-2.5 py-0.5 rounded-full border border-[#fecdd3]">
+            Trọng số lớn nhất
+          </span>
+        </div>
+        <p className="text-xs font-semibold text-[#6b6860]">Phản hồi lại thông báo thay đổi của CLB</p>
+        <ul className="space-y-2 text-xs sm:text-sm text-[#333842] pt-1">
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Email 1 – Informal (~50 từ gửi bạn):</strong> Dùng văn phong thân mật (<em>"Hi Sarah,", "Can you believe that...", "Let me know what you think!"</em>), cho phép dùng từ viết tắt (<em>I'm, can't</em>).</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Email 2 – Formal (120–150 từ gửi Quản lý):</strong> Văn phong trang trọng. Tuyệt đối không dùng từ viết tắt (phải viết <em>I am, cannot, would like</em>).</span></li>
+          <li className="flex items-start gap-2"><span className="text-[#059669] font-bold">✓</span><span><strong>Dàn ý Formal chuẩn 4 đoạn:</strong><br/>
+            • <em>Mở đầu:</em> "Dear Sir or Madam, / Dear Club President, I am writing to express my concern regarding the recent announcement about..."<br/>
+            • <em>Nêu vấn đề & tác động:</em> "This sudden change will cause significant inconvenience to many members because..."<br/>
+            • <em>Đề xuất giải pháp mang tính xây dựng:</em> "I would like to suggest that the club could consider..."<br/>
+            • <em>Kết thư:</em> "I look forward to hearing from you soon. Yours sincerely, [Your Name]"</span></li>
         </ul>
       </div>
     </div>
