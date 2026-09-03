@@ -58,7 +58,7 @@ Tài liệu này lưu trữ toàn bộ các bộ Test Case chuẩn dùng để k
 
 ---
 
-### ⚠️ NHÓM 2: Vi Phạm Giới Hạn Độ Dài (Over-length Errors | 6 – 8/10 Điểm)
+### ⚠️ NHÓM 2: Vi Phạm Giới Hạn Độ Dài (Over-length Errors | 6 – 8.5/10 Điểm)
 
 #### 📋 TC-04: Thí sinh giỏi nhưng viết quá dài (> 5 từ/câu)
 * **Mục tiêu**: Kiểm tra logic phạt số từ khi thí sinh viết câu dài hơn 5 từ.
@@ -69,7 +69,7 @@ Tài liệu này lưu trữ toàn bộ các bộ Test Case chuẩn dùng để k
   - `Q4`: `I am currently wearing a black shirt.` (7 từ ❌ - Dư 2 từ)
   - `Q5`: `My favorite music is pop.` (5 từ ✅)
 * **Kỳ vọng**:
-  - **Điểm**: `7 – 8/10` | **CEFR**: `B2` | **Star**: `Good`
+  - **Điểm**: `8.5/10` (dải `7 – 8.5/10`) | **CEFR**: `B2` | **Star**: `Good`
   - **Task Fulfillment**: Cảnh báo ở Q1, Q3, Q4 (`Câu trả lời vượt quá số lượng từ theo yêu cầu (hơi dài)`).
   - **Sửa lỗi**: Không báo lỗi ngữ pháp (vì câu đúng), chỉ lưu ý số từ.
 

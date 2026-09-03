@@ -76,7 +76,12 @@ export default function WritingAiFeedbackCard({
       correction: s.corrected,
       explanation: s.explanation,
     })),
-  ];
+  ].filter(
+    (err) =>
+      Boolean(err.original && err.correction) &&
+      err.original.trim().toLowerCase() !== err.correction.trim().toLowerCase() &&
+      !err.type?.toLowerCase().includes('độ dài')
+  );
 
   // Deduplicate errors by original + correction
   const uniqueErrors = allErrors.filter(
@@ -265,9 +270,9 @@ export default function WritingAiFeedbackCard({
       </div>
 
       {/* 4. Details Section: 3 Columns Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-stretch">
         {/* Column 1: Task Completion & Word Count Check */}
-        <div className="bg-white border border-[#e5ded3] p-5 rounded-2xl shadow-2xs flex flex-col gap-3">
+        <div className="bg-white border border-[#e5ded3] p-5 rounded-2xl shadow-2xs flex flex-col gap-3 h-full">
           <div className="flex items-center gap-2 border-b border-[#f0e9df] pb-3">
             <span className="material-symbols-outlined text-[#162544]">checklist</span>
             <h3 className="font-bold text-base text-[#162544]">Hoàn Thành Nhiệm Vụ</h3>
@@ -305,7 +310,7 @@ export default function WritingAiFeedbackCard({
         </div>
 
         {/* Column 2: Grammar & Spelling Corrections */}
-        <div className="bg-white border border-[#e5ded3] p-5 rounded-2xl shadow-2xs flex flex-col gap-3">
+        <div className="bg-white border border-[#e5ded3] p-5 rounded-2xl shadow-2xs flex flex-col gap-3 h-full">
           <div className="flex items-center justify-between border-b border-[#f0e9df] pb-3">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-[#162544]">spellcheck</span>
@@ -385,7 +390,7 @@ export default function WritingAiFeedbackCard({
         </div>
 
         {/* Column 3: Vocabulary Enhancement */}
-        <div className="bg-white border border-[#e5ded3] p-5 rounded-2xl shadow-2xs flex flex-col gap-3">
+        <div className="bg-white border border-[#e5ded3] p-5 rounded-2xl shadow-2xs flex flex-col gap-3 h-full">
           <div className="flex items-center gap-2 border-b border-[#f0e9df] pb-3">
             <span className="material-symbols-outlined text-[#162544]">menu_book</span>
             <h3 className="font-bold text-base text-[#162544]">Nâng Cấp Từ Vựng</h3>

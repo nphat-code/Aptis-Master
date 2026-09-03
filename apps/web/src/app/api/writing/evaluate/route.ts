@@ -119,6 +119,23 @@ function sanitizeVocabularySuggestions(suggestions: string[]): string[] {
     });
 }
 
+function isNonEnglishAnswer(text: string): boolean {
+  if (!text) return false;
+  const trimmed = text.trim();
+  const vnDiacriticsRegex = /[àáảãạăắằẳẵặâấầẩẫậđèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵ]/i;
+  if (vnDiacriticsRegex.test(trimmed)) return true;
+
+  const vnCommonWords = new Set([
+    'toi', 'khoe', 'mua', 'he', 'dong', 'xuan', 'thu', 'bong', 'da', 'ao', 'quan',
+    'so', 'mi', 'nhac', 'tre', 'viet', 'nam', 'khong', 'co', 'ban', 'em', 'anh', 'chi'
+  ]);
+  const tokens = trimmed.toLowerCase().split(/[\s,.'!?]+/).filter(Boolean);
+  if (tokens.length > 0 && tokens.every((t) => vnCommonWords.has(t))) {
+    return true;
+  }
+  return false;
+}
+
 // Deterministic Local Fallback Evaluator when no API key is configured or offline
 function generateLocalFallbackEvaluation(
   questions: QuestionSubmission[],
@@ -126,6 +143,12 @@ function generateLocalFallbackEvaluation(
   partId: string = 'part1'
 ): WritingAiFeedbackResponse {
   let validCount = 0;
+  let minorLengthViolationsCount = 0;
+  let moderateLengthViolationsCount = 0;
+  let severeLengthViolationsCount = 0;
+  let emptyCount = 0;
+  let nonEnglishCount = 0;
+
   const isPart1 = partId.toLowerCase() === 'part1';
   const isPart2 = partId.toLowerCase() === 'part2';
   const isPart3 = partId.toLowerCase() === 'part3';
@@ -144,43 +167,137 @@ function generateLocalFallbackEvaluation(
     const minWords = isPart4 ? (idx === 0 ? 40 : 120) : isPart3 ? 30 : isPart2 ? 20 : 1;
     const maxWords = isPart4 ? (idx === 0 ? 60 : 150) : isPart3 ? 40 : isPart2 ? 30 : 5;
 
-    if (words >= minWords && words <= maxWords) {
-      validCount++;
-      details.push({
-        questionIndex: qNum,
-        isCorrect: true,
-        note: 'Câu trả lời phù hợp với chủ đề và đạt độ dài yêu cầu.',
-      });
-    } else if (words === 0) {
+    if (words === 0) {
+      emptyCount++;
       details.push({
         questionIndex: qNum,
         isCorrect: false,
         note: 'Bỏ trống câu hỏi.',
       });
-    } else {
+    } else if (isNonEnglishAnswer(ans)) {
+      nonEnglishCount++;
       details.push({
         questionIndex: qNum,
         isCorrect: false,
-        note: words < minWords ? 'Câu trả lời chưa đủ từ theo yêu cầu (hơi ngắn).' : 'Câu trả lời vượt quá số lượng từ theo yêu cầu (hơi dài).',
+        note: 'Bài làm không phải tiếng Anh hợp lệ.',
       });
-      const ruleCorr: RuleCorrection = {
+    } else if (words >= minWords && words <= maxWords) {
+      validCount++;
+      details.push({
         questionIndex: qNum,
-        type: 'Độ dài câu',
-        original: ans,
-        correction: ans,
-        explanation: words < minWords ? `Bài viết chưa đạt số lượng từ quy định (${minWords}-${maxWords} từ).` : `Bài viết vượt quá số lượng từ quy định (${minWords}-${maxWords} từ).`,
-      };
-      corrections.push(ruleCorr);
+        isCorrect: true,
+        note: isPart2
+          ? 'Câu trả lời phù hợp với chủ đề và đạt độ dài quy định (20-30 từ).'
+          : isPart3
+          ? 'Câu trả lời phù hợp với chủ đề và đạt độ dài quy định (30-40 từ).'
+          : isPart4
+          ? `Câu trả lời phù hợp với chủ đề và đạt độ dài quy định (${minWords}-${maxWords} từ).`
+          : 'Câu trả lời phù hợp với chủ đề và đạt độ dài quy định (1-5 từ).',
+      });
+    } else {
+      if (words < minWords) {
+        const diff = minWords - words;
+        if (diff <= 2) {
+          minorLengthViolationsCount++;
+          details.push({
+            questionIndex: qNum,
+            isCorrect: false,
+            note: `Câu trả lời chưa đủ từ theo yêu cầu (hơi ngắn: ${words} từ).`,
+          });
+        } else {
+          severeLengthViolationsCount++;
+          details.push({
+            questionIndex: qNum,
+            isCorrect: false,
+            note: `Câu trả lời quá ngắn (${words} từ, quy định tối thiểu ${minWords} từ).`,
+          });
+        }
+      } else {
+        const excess = words - maxWords;
+        if (isPart1) {
+          if (excess <= 3) {
+            minorLengthViolationsCount++;
+            details.push({
+              questionIndex: qNum,
+              isCorrect: false,
+              note: `Câu trả lời vượt quá số lượng từ theo yêu cầu (hơi dài: ${words} từ).`,
+            });
+          } else if (excess <= 6) {
+            moderateLengthViolationsCount++;
+            details.push({
+              questionIndex: qNum,
+              isCorrect: false,
+              note: `Câu trả lời quá dài (${words} từ, quy định tối đa 5 từ).`,
+            });
+          } else {
+            severeLengthViolationsCount++;
+            details.push({
+              questionIndex: qNum,
+              isCorrect: false,
+              note: `Câu trả lời quá dài (${words} từ, quy định 1-5 từ).`,
+            });
+          }
+        } else {
+          if (excess <= 5) {
+            minorLengthViolationsCount++;
+            details.push({
+              questionIndex: qNum,
+              isCorrect: false,
+              note: `Câu trả lời vượt quá số lượng từ theo yêu cầu (hơi dài: ${words} từ).`,
+            });
+          } else {
+            severeLengthViolationsCount++;
+            details.push({
+              questionIndex: qNum,
+              isCorrect: false,
+              note: `Câu trả lời vượt quá số lượng từ quy định (${words} từ, tối đa ${maxWords} từ).`,
+            });
+          }
+        }
+      }
     }
   });
 
   const allEmpty = questions.every((q) => !(q.userAnswer || '').trim());
   let maxScore = 10;
-  let scaledScore = allEmpty
-    ? 0
-    : isPart1
-    ? Math.max(0, 10 - (total - validCount) * 2)
-    : Math.round((validCount / total) * 10);
+  let scaledScore = 10;
+
+  if (allEmpty) {
+    scaledScore = 0;
+  } else if (isPart1) {
+    const emptyPenalty = emptyCount * 2.0;
+    const nonEnglishPenalty = nonEnglishCount * 2.0;
+    const severePenalty = severeLengthViolationsCount * 1.5;
+    const modPenalty = moderateLengthViolationsCount * 1.0;
+    const minorPenalty = Math.min(2.0, minorLengthViolationsCount * 0.5);
+    const grammarPenalty = corrections.length * 1.0;
+
+    scaledScore = Math.max(
+      0,
+      Math.round(
+        (10 - emptyPenalty - nonEnglishPenalty - severePenalty - modPenalty - minorPenalty - grammarPenalty) * 2
+      ) / 2
+    );
+  } else if (isPart2) {
+    const q1Words = questions[0]?.userAnswer ? questions[0].userAnswer.trim().split(/\s+/).filter(Boolean).length : 0;
+    if (q1Words === 0 || nonEnglishCount > 0) scaledScore = 0;
+    else if (q1Words >= 20 && q1Words <= 30) scaledScore = Math.max(0, 10 - corrections.length * 1.5);
+    else if (q1Words >= 16 && q1Words <= 35) scaledScore = Math.max(0, 8 - corrections.length * 1.5);
+    else if (q1Words >= 12 && q1Words <= 40) scaledScore = Math.max(0, 6 - corrections.length * 1.5);
+    else scaledScore = Math.max(0, 4 - corrections.length * 1.5);
+  } else if (isPart3) {
+    const emptyPenalty = emptyCount * 3.3;
+    const nonEnglishPenalty = nonEnglishCount * 3.3;
+    const minorPenalty = minorLengthViolationsCount * 0.7;
+    const severePenalty = severeLengthViolationsCount * 1.5;
+    scaledScore = Math.max(0, Math.round(10 - emptyPenalty - nonEnglishPenalty - minorPenalty - severePenalty - corrections.length * 1.0));
+  } else if (isPart4) {
+    const emptyPenalty = emptyCount * 5.0;
+    const nonEnglishPenalty = nonEnglishCount * 5.0;
+    const minorPenalty = minorLengthViolationsCount * 1.0;
+    const severePenalty = severeLengthViolationsCount * 2.0;
+    scaledScore = Math.max(0, Math.round(10 - emptyPenalty - nonEnglishPenalty - minorPenalty - severePenalty - corrections.length * 1.0));
+  }
 
   let cefr: 'A0' | 'A1' | 'A2' | 'B1' | 'B2' | 'C1' =
     scaledScore === 0
@@ -195,18 +312,31 @@ function generateLocalFallbackEvaluation(
       ? 'A2'
       : 'A1';
 
-  const bandScore = allEmpty ? 0 : scaledScore >= 9 ? 5 : scaledScore >= 7 ? 4 : scaledScore >= 5 ? 3 : scaledScore >= 3 ? 2 : 1;
+  const calcTf = allEmpty || nonEnglishCount === total
+    ? 0
+    : Math.max(1, Math.min(5, Math.round(5 - (emptyCount * 2 + nonEnglishCount * 2 + severeLengthViolationsCount * 1.5 + moderateLengthViolationsCount * 1.0 + minorLengthViolationsCount * 0.5))));
+  const calcGra = allEmpty ? 0 : Math.max(1, Math.min(5, 5 - corrections.length));
+  const calcVra = allEmpty ? 0 : scaledScore >= 9 ? 5 : scaledScore >= 7 ? 4 : scaledScore >= 5 ? 3 : scaledScore >= 3 ? 2 : 1;
+  const calcCc = allEmpty ? 0 : emptyCount > 0 ? Math.max(1, 4 - emptyCount) : 5;
+  const calcReg = allEmpty ? 0 : 5;
 
   const bands: WritingCefrBands = {
-    tf: bandScore,
-    gra: bandScore,
-    vra: bandScore,
-    cc: bandScore,
-    reg: isPart1 ? 5 : bandScore,
+    tf: calcTf,
+    gra: calcGra,
+    vra: calcVra,
+    cc: calcCc,
+    reg: isPart1 ? 5 : calcReg,
   };
 
   const partLabel = partId.toUpperCase();
-  const taskSummary = `Bạn đã hoàn thành ${validCount}/${total} yêu cầu trong bài làm ${partLabel}. ${clubName ? `Chủ đề: ${clubName}.` : ''}`;
+  const totalLengthViolations = minorLengthViolationsCount + moderateLengthViolationsCount + severeLengthViolationsCount;
+  const taskSummary = isPart1
+    ? (validCount === total
+      ? `Bạn đã trả lời đúng quy định độ dài (1-5 từ/câu) và phù hợp với tất cả 5 câu hỏi. ${clubName ? `Chủ đề: ${clubName}.` : ''}`
+      : (emptyCount === 0 && nonEnglishCount === 0)
+      ? `Bạn đã trả lời đúng chủ đề ${total}/${total} câu hỏi (trong đó có ${totalLengthViolations} câu hơi dài so với quy định 1–5 từ).`
+      : `Bạn đã hoàn thành ${validCount}/${total} yêu cầu trong bài làm ${partLabel}.`)
+    : `Bạn đã hoàn thành ${validCount}/${total} yêu cầu trong bài làm ${partLabel}. ${clubName ? `Chủ đề: ${clubName}.` : ''}`;
   const keyTakeaway = allEmpty
     ? `Bài làm ${partLabel} chưa được thực hiện (Bỏ trống bài làm). Bạn đạt điểm 0/10 (Trình độ A0).`
     : `Bài làm ${partLabel} đạt điểm ${scaledScore}/10 (Trình độ CEFR ${cefr}).`;
@@ -409,12 +539,20 @@ function enforceExactScoreMath(
   }
 
   // 2. Sanitize task details
+  let minorLengthErrors = 0;
+  let moderateLengthErrors = 0;
+  let severeLengthErrors = 0;
+  let emptyErrors = 0;
+  let nonEnglishErrors = 0;
+  let offTopicErrors = 0;
+
   const rawTaskDetails = data.taskCompletion?.details || [];
   const sanitizedTaskDetails = rawTaskDetails.map((d) => {
     const qIdx = (d.questionIndex || 1) - 1;
     const ansText = (userAnswers[qIdx] || '').trim();
     const ansWords = ansText ? ansText.split(/\s+/).filter(Boolean).length : 0;
     const isSingleChar = ansText.length === 1 && !/^[0-9]$/.test(ansText);
+    const isNonEnglish = isNonEnglishAnswer(ansText);
 
     const minAllowedWords = isPart4 ? (qIdx === 0 ? 40 : 120) : isPart3 ? 30 : isPart2 ? 20 : 1;
     const maxAllowedWords = isPart4 ? (qIdx === 0 ? 60 : 150) : isPart3 ? 40 : isPart2 ? 30 : 5;
@@ -422,7 +560,43 @@ function enforceExactScoreMath(
     const isLengthCompliant = ansWords >= minAllowedWords && ansWords <= maxAllowedWords;
     const isOffTopicItem = offTopicQuestionIndices.has(d.questionIndex);
 
-    if (isLengthCompliant && !isOffTopicItem && !isSingleChar) {
+    if (ansWords === 0) {
+      emptyErrors++;
+      return {
+        ...d,
+        isCorrect: false,
+        note: 'Bỏ trống câu hỏi.',
+      };
+    }
+
+    if (isNonEnglish) {
+      nonEnglishErrors++;
+      return {
+        ...d,
+        isCorrect: false,
+        note: 'Bài làm không phải tiếng Anh hợp lệ.',
+      };
+    }
+
+    if (isOffTopicItem) {
+      offTopicErrors++;
+      return {
+        ...d,
+        isCorrect: false,
+        note: 'Nội dung chưa phù hợp với chủ đề câu hỏi.',
+      };
+    }
+
+    if (isSingleChar) {
+      severeLengthErrors++;
+      return {
+        ...d,
+        isCorrect: false,
+        note: 'Câu trả lời quá ngắn và không rõ nghĩa.',
+      };
+    }
+
+    if (isLengthCompliant) {
       return {
         ...d,
         isCorrect: true,
@@ -436,18 +610,66 @@ function enforceExactScoreMath(
       };
     }
 
-    const lengthNote =
-      ansWords < minAllowedWords
-        ? 'Câu trả lời chưa đủ từ theo yêu cầu (hơi ngắn).'
-        : ansWords > maxAllowedWords
-        ? 'Câu trả lời vượt quá số lượng từ theo yêu cầu (hơi dài).'
-        : d.note;
-
-    return {
-      ...d,
-      isCorrect: false,
-      note: isSingleChar ? 'Câu trả lời quá ngắn và không rõ nghĩa.' : lengthNote,
-    };
+    if (ansWords < minAllowedWords) {
+      const diff = minAllowedWords - ansWords;
+      if (diff <= 2) {
+        minorLengthErrors++;
+        return {
+          ...d,
+          isCorrect: false,
+          note: `Câu trả lời chưa đủ từ theo yêu cầu (hơi ngắn: ${ansWords} từ).`,
+        };
+      } else {
+        severeLengthErrors++;
+        return {
+          ...d,
+          isCorrect: false,
+          note: `Câu trả lời quá ngắn (${ansWords} từ, quy định tối thiểu ${minAllowedWords} từ).`,
+        };
+      }
+    } else {
+      const excess = ansWords - maxAllowedWords;
+      if (isPart1) {
+        if (excess <= 3) {
+          minorLengthErrors++;
+          return {
+            ...d,
+            isCorrect: false,
+            note: `Câu trả lời vượt quá số lượng từ theo yêu cầu (hơi dài: ${ansWords} từ).`,
+          };
+        } else if (excess <= 6) {
+          moderateLengthErrors++;
+          return {
+            ...d,
+            isCorrect: false,
+            note: `Câu trả lời quá dài (${ansWords} từ, quy định 1-5 từ).`,
+          };
+        } else {
+          severeLengthErrors++;
+          return {
+            ...d,
+            isCorrect: false,
+            note: `Câu trả lời quá dài (${ansWords} từ, quy định 1-5 từ).`,
+          };
+        }
+      } else {
+        if (excess <= 5) {
+          minorLengthErrors++;
+          return {
+            ...d,
+            isCorrect: false,
+            note: `Câu trả lời vượt quá số lượng từ theo yêu cầu (hơi dài: ${ansWords} từ).`,
+          };
+        } else {
+          severeLengthErrors++;
+          return {
+            ...d,
+            isCorrect: false,
+            note: `Câu trả lời vượt quá số lượng từ quy định (${ansWords} từ, tối đa ${maxAllowedWords} từ).`,
+          };
+        }
+      }
+    }
   });
 
   const taskErrors = sanitizedTaskDetails.filter((d) => d.isCorrect === false).length;
@@ -459,10 +681,23 @@ function enforceExactScoreMath(
   const correctTaskCount = Math.max(0, totalQuestionsCount - taskErrors);
 
   if (isPart1) {
-    score = Math.max(0, 10 - taskErrors * 2 - correctionsCount * 1);
+    const emptyDeduction = emptyErrors * 2.0;
+    const nonEnglishDeduction = nonEnglishErrors * 2.0;
+    const offTopicDeduction = offTopicErrors * 2.0;
+    const severeDeduction = severeLengthErrors * 1.5;
+    const modDeduction = moderateLengthErrors * 1.0;
+    const minorDeduction = Math.min(2.0, minorLengthErrors * 0.5);
+    const grammarDeduction = correctionsCount * 1.0;
+
+    score = Math.max(
+      0,
+      Math.round(
+        (10 - emptyDeduction - nonEnglishDeduction - offTopicDeduction - severeDeduction - modDeduction - minorDeduction - grammarDeduction) * 2
+      ) / 2
+    );
   } else if (isPart2) {
     const wc = wordCounts[0] || 0;
-    if (offTopicQuestionIndices.size > 0) {
+    if (offTopicQuestionIndices.size > 0 || nonEnglishErrors > 0) {
       score = 0;
     } else if (wc > 0 && wc < 15) {
       score = Math.max(0, 4 - correctionsCount * 1);
@@ -484,7 +719,7 @@ function enforceExactScoreMath(
       score = 2;
     }
   } else if (isPart3) {
-    if (offTopicQuestionIndices.size > 0) {
+    if (offTopicQuestionIndices.size > 0 || nonEnglishErrors === totalQuestionsCount) {
       score = 0;
     } else if (totalErrors === 0) {
       score = 10;
@@ -500,7 +735,7 @@ function enforceExactScoreMath(
       score = Math.max(0, 10 - totalErrors * 2);
     }
   } else if (isPart4) {
-    if (offTopicQuestionIndices.size > 0) {
+    if (offTopicQuestionIndices.size > 0 || nonEnglishErrors === totalQuestionsCount) {
       score = 0;
     } else if (totalErrors === 0) {
       score = 10;
@@ -525,18 +760,26 @@ function enforceExactScoreMath(
     score === 0 ? 'A0' : score >= 9 ? 'C1' : score >= 7 ? 'B2' : score >= 5 ? 'B1' : score >= 3 ? 'A2' : 'A1';
 
   // Compute standard CEFR 5 criteria bands (0 to 5)
-  const calcTfBand = Math.max(0, Math.min(5, Math.round((correctTaskCount / Math.max(1, totalQuestionsCount)) * 5)));
+  const calcTfBand = Math.max(
+    0,
+    Math.min(
+      5,
+      Math.round(
+        5 - (emptyErrors * 2 + nonEnglishErrors * 2 + offTopicErrors * 2 + severeLengthErrors * 1.5 + moderateLengthErrors * 1.0 + minorLengthErrors * 0.5)
+      )
+    )
+  );
   const calcGraBand = Math.max(0, Math.min(5, 5 - Math.min(5, correctionsCount)));
   const calcVraBand = score >= 9 ? 5 : score >= 7 ? 4 : score >= 5 ? 3 : score >= 3 ? 2 : 1;
-  const calcCcBand = taskErrors === 0 ? (score >= 8 ? 5 : 4) : Math.max(1, 4 - taskErrors);
+  const calcCcBand = emptyErrors > 0 ? Math.max(1, 4 - emptyErrors) : 5;
   const calcRegBand = isPart1 ? 5 : isPart4 ? (taskErrors === 0 ? 5 : 4) : 5;
 
   const resolvedBands: WritingCefrBands = {
-    tf: data.bands?.tf !== undefined ? Math.min(5, Math.max(0, data.bands.tf)) : calcTfBand,
-    gra: data.bands?.gra !== undefined ? Math.min(5, Math.max(0, data.bands.gra)) : calcGraBand,
-    vra: data.bands?.vra !== undefined ? Math.min(5, Math.max(0, data.bands.vra)) : calcVraBand,
-    cc: data.bands?.cc !== undefined ? Math.min(5, Math.max(0, data.bands.cc)) : calcCcBand,
-    reg: data.bands?.reg !== undefined ? Math.min(5, Math.max(0, data.bands.reg)) : calcRegBand,
+    tf: calcTfBand,
+    gra: calcGraBand,
+    vra: calcVraBand,
+    cc: calcCcBand,
+    reg: isPart1 ? 5 : calcRegBand,
   };
 
   const taskStatus = taskErrors === 0 ? 'success' : taskErrors >= 2 ? 'danger' : 'warning';
@@ -547,6 +790,8 @@ function enforceExactScoreMath(
     : isPart1
     ? (taskErrors === 0
       ? 'Bạn đã trả lời đúng quy định độ dài (1-5 từ/câu) và phù hợp với tất cả 5 câu hỏi.'
+      : (emptyErrors === 0 && offTopicErrors === 0 && nonEnglishErrors === 0)
+      ? `Bạn đã trả lời đúng chủ đề ${totalQuestionsCount}/${totalQuestionsCount} câu hỏi (trong đó có ${minorLengthErrors + moderateLengthErrors + severeLengthErrors} câu hơi dài so với quy định 1–5 từ).`
       : `Bạn đã trả lời đúng yêu cầu ${correctTaskCount}/${totalQuestionsCount} câu hỏi. Có ${taskErrors} câu chưa phù hợp hoặc vi phạm số lượng từ.`)
     : isPart3
     ? (taskErrors === 0
@@ -780,7 +1025,15 @@ Respond ONLY with a single valid raw JSON object matching this structure:
     // 1. If Groq API Key is present
     if (process.env.GROQ_API_KEY) {
       const groqKeys = process.env.GROQ_API_KEY.split(',').map((k) => k.trim()).filter(Boolean);
-      const groqModels = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192'];
+      const groqModels = [
+        'qwen/qwen3.8-27b',
+        'qwen/qwen3.6-27b',
+        'groq/compound-mini',
+        'openai/gpt-oss-120b',
+        'openai/gpt-oss-20b',
+        'llama-3.3-70b-versatile',
+        'llama-3.1-8b-instant',
+      ];
 
       for (const groqKey of groqKeys) {
         let keyRateLimited = false;
