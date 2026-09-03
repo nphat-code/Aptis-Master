@@ -7,6 +7,7 @@ export interface WritingAiFeedbackCardProps {
   feedback: WritingAiFeedbackResponse;
   partTitle?: string;
   clubName?: string;
+  hideModelAnswerBox?: boolean;
   onReEvaluate?: () => void;
   onRetake?: () => void;
 }
@@ -15,6 +16,7 @@ export default function WritingAiFeedbackCard({
   feedback,
   partTitle,
   clubName,
+  hideModelAnswerBox = false,
   onReEvaluate,
   onRetake,
 }: WritingAiFeedbackCardProps) {
@@ -417,7 +419,7 @@ export default function WritingAiFeedbackCard({
       </div>
 
       {/* 5. Improved Version / Model Answer Box */}
-      {improvedVersion && (
+      {!hideModelAnswerBox && improvedVersion && (
         <div className="bg-white border border-[#e5ded3] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-3 relative overflow-hidden">
           <div className="flex items-center justify-between border-b border-[#f0e9df] pb-3">
             <div className="flex items-center gap-2">

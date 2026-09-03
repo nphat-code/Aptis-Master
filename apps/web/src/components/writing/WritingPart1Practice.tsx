@@ -98,6 +98,7 @@ function WritingResultsView({
         feedback={aiFeedback}
         partTitle="Kết Quả Đánh Giá Writing - Part 1"
         clubName={clubName}
+        hideModelAnswerBox={true}
         onReEvaluate={runAiEvaluation}
         onRetake={onRetake}
       />
@@ -112,6 +113,8 @@ function WritingResultsView({
             const userAns = userAnswers[idx] || '';
             const wc = countWords(userAns);
             const isValid = wc >= 1 && wc <= 5;
+            const aiImproved = aiFeedback?.improvedAnswers?.find((a) => a.questionIndex === idx + 1)?.improvedText;
+            const displaySample = aiImproved || q.sampleAnswer || 'N/A';
 
             return (
               <div
@@ -142,11 +145,11 @@ function WritingResultsView({
                   {/* Right Column: Model Answer */}
                   <div className="p-4 bg-[#ecfdf5] space-y-1.5">
                     <span className="text-xs font-bold text-[#064e3b] uppercase tracking-wider flex items-center gap-1">
-                      <span className="material-symbols-outlined text-[16px]">lightbulb</span>
-                      <span>Bài mẫu tham khảo</span>
+                      <span className="material-symbols-outlined text-[16px] text-emerald-600">auto_awesome</span>
+                      <span>Bài mẫu cải thiện (AI tối ưu từ bài của bạn)</span>
                     </span>
                     <p className="font-normal text-emerald-950 text-[14px] leading-relaxed">
-                      {q.sampleAnswer || 'N/A'}
+                      {displaySample}
                     </p>
                   </div>
                 </div>

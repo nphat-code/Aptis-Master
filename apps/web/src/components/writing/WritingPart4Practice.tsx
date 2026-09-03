@@ -108,6 +108,7 @@ function WritingPart4ResultsView({
         feedback={aiFeedback}
         partTitle="Kết Quả Đánh Giá Writing - Part 4"
         clubName={clubName}
+        hideModelAnswerBox={true}
         onReEvaluate={runAiEvaluation}
         onRetake={onRetake}
       />
@@ -138,14 +139,22 @@ function WritingPart4ResultsView({
                 {userAnswers[0] || <span className="italic text-slate-400">(Bỏ trống)</span>}
               </p>
             </div>
-            {data.sampleAnswer1 && (
-              <div className="text-[14px]">
-                <div className="p-3 bg-[#ecfdf5] border border-emerald-300/90 rounded-xl text-emerald-900 font-normal text-[14px] space-y-1">
-                  <span className="text-xs font-bold text-emerald-800 block">💡 Bài viết mẫu</span>
-                  <p className="font-normal text-emerald-950 whitespace-pre-line">{cleanSample(data.sampleAnswer1)}</p>
+            {(() => {
+              const aiImproved1 = aiFeedback?.improvedAnswers?.[0]?.improvedText;
+              const displaySample1 = aiImproved1 || cleanSample(data.sampleAnswer1);
+              if (!displaySample1) return null;
+              return (
+                <div className="text-[14px]">
+                  <div className="p-3 bg-[#ecfdf5] border border-emerald-300/90 rounded-xl text-emerald-900 font-normal text-[14px] space-y-1">
+                    <span className="text-xs font-bold text-[#064e3b] uppercase tracking-wider flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[16px] text-emerald-600">auto_awesome</span>
+                      <span>Bài mẫu cải thiện (AI tối ưu từ bài của bạn)</span>
+                    </span>
+                    <p className="font-normal text-emerald-950 whitespace-pre-line">{displaySample1}</p>
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
 
           {/* Task 2 Review */}
@@ -163,14 +172,22 @@ function WritingPart4ResultsView({
                 {userAnswers[1] || <span className="italic text-slate-400">(Bỏ trống)</span>}
               </p>
             </div>
-            {data.sampleAnswer2 && (
-              <div className="text-[14px]">
-                <div className="p-3 bg-[#ecfdf5] border border-emerald-300/90 rounded-xl text-emerald-900 font-normal text-[14px] space-y-1">
-                  <span className="text-xs font-bold text-emerald-800 block">💡 Bài viết mẫu</span>
-                  <p className="font-normal text-emerald-950 whitespace-pre-line">{cleanSample(data.sampleAnswer2)}</p>
+            {(() => {
+              const aiImproved2 = aiFeedback?.improvedAnswers?.[1]?.improvedText;
+              const displaySample2 = aiImproved2 || cleanSample(data.sampleAnswer2);
+              if (!displaySample2) return null;
+              return (
+                <div className="text-[14px]">
+                  <div className="p-3 bg-[#ecfdf5] border border-emerald-300/90 rounded-xl text-emerald-900 font-normal text-[14px] space-y-1">
+                    <span className="text-xs font-bold text-[#064e3b] uppercase tracking-wider flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[16px] text-emerald-600">auto_awesome</span>
+                      <span>Bài mẫu cải thiện (AI tối ưu từ bài của bạn)</span>
+                    </span>
+                    <p className="font-normal text-emerald-950 whitespace-pre-line">{displaySample2}</p>
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
         </div>
       </DetailedAnswersCard>

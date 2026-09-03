@@ -91,6 +91,7 @@ function WritingPart3ResultsView({
         feedback={aiFeedback}
         partTitle="Kết Quả Đánh Giá Writing - Part 3"
         clubName={clubName}
+        hideModelAnswerBox={true}
         onReEvaluate={runAiEvaluation}
         onRetake={onRetake}
       />
@@ -103,6 +104,8 @@ function WritingPart3ResultsView({
         <div className="space-y-4 text-left">
           {targetQuestions.map((q, idx) => {
             const userAns = userAnswers[idx] || '';
+            const aiImproved = aiFeedback?.improvedAnswers?.find((a) => a.questionIndex === idx + 1)?.improvedText;
+            const displaySample = aiImproved || q.sampleAnswer;
 
             return (
               <div
@@ -127,11 +130,14 @@ function WritingPart3ResultsView({
                 </div>
 
                 {/* Model Sample Answer */}
-                {q.sampleAnswer && (
+                {displaySample && (
                   <div className="text-[14px]">
                     <div className="p-3 bg-[#ecfdf5] border border-emerald-300/90 rounded-xl text-emerald-900 font-normal text-[14px] space-y-1">
-                      <span className="text-xs font-bold text-emerald-800 block">💡 Bài viết mẫu</span>
-                      <p className="font-normal text-emerald-950">{q.sampleAnswer}</p>
+                      <span className="text-xs font-bold text-[#064e3b] uppercase tracking-wider flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[16px] text-emerald-600">auto_awesome</span>
+                        <span>Bài mẫu cải thiện (AI tối ưu từ bài của bạn)</span>
+                      </span>
+                      <p className="font-normal text-emerald-950 whitespace-pre-line">{displaySample}</p>
                     </div>
                   </div>
                 )}

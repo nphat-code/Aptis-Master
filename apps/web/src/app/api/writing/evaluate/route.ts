@@ -67,6 +67,7 @@ export interface WritingAiFeedbackResponse {
   grammarErrors?: WritingErrorItem[];
   spellingErrors?: WritingErrorItem[];
   improvedVersion?: string;
+  improvedAnswers?: Array<{ questionIndex: number; improvedText: string }>;
   criteriaAnalysis?: WritingCriteriaAnalysis;
   feedback?: string;
   keyTakeaway: string;
@@ -342,35 +343,63 @@ function generateLocalFallbackEvaluation(
     : `Bài làm ${partLabel} đạt điểm ${scaledScore}/10 (Trình độ CEFR ${cefr}).`;
 
   let improvedVersion = '';
+  const improvedAnswers: Array<{ questionIndex: number; improvedText: string }> = [];
+
   if (isPart1) {
-    const hasSampleAnswers = questions.some((q) => (q as any).sampleAnswer);
-    if (hasSampleAnswers) {
-      improvedVersion = questions
-        .map((q, idx) => `${idx + 1}. ${(q as any).sampleAnswer || 'Good, thanks!'}`)
-        .join('\n');
-    } else {
-      improvedVersion = `1. I am doing great, thanks!\n2. I love the spring.\n3. Football is popular.\n4. I'm wearing a dress.\n5. I enjoy listening to pop.`;
-    }
+    questions.forEach((q, idx) => {
+      const qNum = idx + 1;
+      const rawAns = (q.userAnswer || '').trim();
+      let polished = '';
+      if (rawAns) {
+        const cleaned = rawAns.replace(/[.!?]+$/, '').trim();
+        const words = cleaned.split(/\s+/).filter(Boolean);
+        if (words.length <= 5) {
+          polished = cleaned.charAt(0).toUpperCase() + cleaned.slice(1) + '.';
+        } else if (/doing well|very well/i.test(cleaned)) {
+          polished = 'Well, thank you.';
+        } else if (/football/i.test(cleaned)) {
+          polished = 'Football.';
+        } else if (/wearing/i.test(cleaned)) {
+          const match = cleaned.match(/wearing\s+(.+)$/i);
+          polished = match ? (match[1].charAt(0).toUpperCase() + match[1].slice(1) + '.') : 'A black shirt.';
+        } else if (/spring|summer|autumn|fall|winter/i.test(cleaned)) {
+          const season = cleaned.match(/spring|summer|autumn|fall|winter/i)?.[0];
+          polished = season ? (season.charAt(0).toUpperCase() + season.slice(1) + '.') : 'Spring weather.';
+        } else if (/pop|rock|jazz|classical/i.test(cleaned)) {
+          const music = cleaned.match(/pop|rock|jazz|classical/i)?.[0];
+          polished = music ? (music.charAt(0).toUpperCase() + music.slice(1) + ' music.') : 'Pop music.';
+        } else {
+          polished = words.slice(0, 4).join(' ') + '.';
+        }
+      } else {
+        polished = (q as any).sampleAnswer || 'Good, thanks!';
+      }
+      improvedAnswers.push({ questionIndex: qNum, improvedText: polished });
+    });
+    improvedVersion = improvedAnswers.map((a) => `${a.questionIndex}. ${a.improvedText}`).join('\n');
   } else if (isPart2) {
+    const rawAns = (questions[0]?.userAnswer || '').trim();
     const sample = (questions[0] as any)?.sampleAnswer;
-    improvedVersion = sample || `I joined this ${clubName || 'club'} because I have a great passion for it. I really hope to improve my skills and make new friends who share the same interest.`;
+    const improved = rawAns.length > 20
+      ? rawAns
+      : (sample || `I joined this ${clubName || 'club'} because I have a great passion for it. I really hope to improve my skills and make new friends who share the same interest.`);
+    improvedAnswers.push({ questionIndex: 1, improvedText: improved });
+    improvedVersion = improved;
   } else if (isPart3) {
-    const hasSampleAnswers = questions.some((q) => (q as any).sampleAnswer);
-    if (hasSampleAnswers) {
-      improvedVersion = questions
-        .map((q, idx) => `Speaker ${idx + 1}: ${(q as any).sampleAnswer || 'I completely agree with your point.'}`)
-        .join('\n\n');
-    } else {
-      improvedVersion = `Speaker 1: I completely agree with your viewpoint. In my experience, participating regularly helps us broaden our knowledge and connect with supportive members.\n\nSpeaker 2: To be honest, I prefer practical sessions because they allow us to apply what we learn immediately and solve real-life issues.\n\nSpeaker 3: That sounds like a wonderful initiative! If we organize monthly workshops, everyone will have the opportunity to share their creative ideas.`;
-    }
+    questions.forEach((q, idx) => {
+      const qNum = idx + 1;
+      const rawAns = (q.userAnswer || '').trim();
+      const sample = (q as any).sampleAnswer || 'I completely agree with your viewpoint. In my experience, participating regularly helps us broaden our knowledge.';
+      const improved = rawAns.length > 20 ? rawAns : sample;
+      improvedAnswers.push({ questionIndex: qNum, improvedText: improved });
+    });
+    improvedVersion = improvedAnswers.map((a) => `Speaker ${a.questionIndex}: ${a.improvedText}`).join('\n\n');
   } else if (isPart4) {
-    const s1 = (questions[0] as any)?.sampleAnswer;
-    const s2 = (questions[1] as any)?.sampleAnswer;
-    if (s1 && s2) {
-      improvedVersion = `[Email 1 - To a friend (40-50 words)]\n${s1}\n\n[Email 2 - To Club President (120-150 words)]\n${s2}`;
-    } else {
-      improvedVersion = `[Email 1 - To a friend (40-50 words)]\nHi Alex,\nHave you heard the latest news about our ${clubName || 'club'}? They just announced a major change to our upcoming schedule! I think it's quite inconvenient for us. How do you feel about this? Let's discuss it soon.\nBest,\n[Your name]\n\n[Email 2 - To Club President (120-150 words)]\nDear President,\nI am writing this email to express my thoughts regarding the recent announcement about our club activities. As an active and dedicated member, I would like to offer a few constructive suggestions.\n\nFirst and foremost, the proposed schedule modification may create difficulties for many members who have prior commitments during weekdays. To address this issue, I respectfully suggest offering alternative weekend sessions or conducting hybrid online meetings.\n\nThank you very much for your time, consideration, and leadership. I look forward to hearing your thoughts.\n\nYours sincerely,\n[Your name]`;
-    }
+    const s1 = (questions[0]?.userAnswer || '').trim() || (questions[0] as any)?.sampleAnswer || 'Hi Alex, Have you heard the latest news about our club? I think it is quite surprising. Let us talk soon! Best, [Name]';
+    const s2 = (questions[1]?.userAnswer || '').trim() || (questions[1] as any)?.sampleAnswer || 'Dear President, I am writing this email to express my thoughts regarding the recent announcement about our club activities...';
+    improvedAnswers.push({ questionIndex: 1, improvedText: s1 });
+    improvedAnswers.push({ questionIndex: 2, improvedText: s2 });
+    improvedVersion = `[Email 1]\n${s1}\n\n[Email 2]\n${s2}`;
   }
 
   const partSpecificSuggestions = isPart1
@@ -425,6 +454,7 @@ function generateLocalFallbackEvaluation(
     grammarErrors,
     spellingErrors,
     improvedVersion,
+    improvedAnswers,
     criteriaAnalysis: {
       tf: allEmpty ? 'Bài làm bị bỏ trống hoàn toàn, không đáp ứng yêu cầu đề bài.' : `Bạn đã hoàn thành ${validCount}/${total} yêu cầu với độ dài phù hợp.`,
       gra: allEmpty ? 'Chưa có dữ liệu để đánh giá ngữ pháp.' : 'Cấu trúc câu cơ bản hoàn chỉnh, cần mở rộng thêm các thì và cấu trúc nâng cao.',
@@ -872,6 +902,30 @@ function enforceExactScoreMath(
     grammarErrors,
     spellingErrors,
     improvedVersion: data.improvedVersion || generateLocalFallbackEvaluation(data.taskCompletion?.details?.map((_, idx) => ({ id: idx, questionText: '', userAnswer: userAnswers[idx] || '' })) || [], clubName, partId).improvedVersion,
+    improvedAnswers: (() => {
+      let resolved = data.improvedAnswers || [];
+      if (resolved.length === 0 && data.improvedVersion) {
+        const lines = data.improvedVersion.split('\n').map((l) => l.trim()).filter(Boolean);
+        lines.forEach((line) => {
+          const match = line.match(/^(\d+)[\.\)]\s*(.+)$/);
+          if (match) {
+            resolved.push({
+              questionIndex: parseInt(match[1], 10),
+              improvedText: match[2].trim(),
+            });
+          }
+        });
+      }
+      if (resolved.length === 0) {
+        const fallback = generateLocalFallbackEvaluation(
+          userAnswers.map((ans, idx) => ({ id: idx + 1, questionText: '', userAnswer: ans })),
+          clubName,
+          partId
+        );
+        resolved = fallback.improvedAnswers || [];
+      }
+      return resolved;
+    })(),
     criteriaAnalysis: data.criteriaAnalysis || {
       tf: `Đạt ${resolvedBands.tf}/5 điểm. ${taskSummary}`,
       gra: `Đạt ${resolvedBands.gra}/5 điểm. ${realCorrections.length === 0 ? 'Độ chính xác ngữ pháp tốt.' : `Phát hiện ${realCorrections.length} lỗi cần khắc phục.`}`,
@@ -1011,6 +1065,12 @@ Respond ONLY with a single valid raw JSON object matching this structure:
     }
   ],
   "improvedVersion": "Complete polished English rewrite demonstrating high band standard",
+  "improvedAnswers": [
+    {
+      "questionIndex": 1,
+      "improvedText": "Polished high-band CEFR version strictly based on candidate's original content/facts and strictly respecting word limits"
+    }
+  ],
   "criteriaAnalysis": {
     "tf": "Detailed Vietnamese feedback for Task Fulfillment",
     "gra": "Detailed Vietnamese feedback for Grammatical Accuracy",
