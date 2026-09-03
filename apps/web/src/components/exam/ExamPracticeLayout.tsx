@@ -167,11 +167,16 @@ export default function ExamPracticeLayout({
     return () => clearInterval(timer);
   }, [hasExamStarted, isSubmitted]);
 
-  // Format time MM:SS
+  // Format time HH:MM:SS (TestReach Aptis standard format: e.g. 00:34:28)
   const formatTime = (secs: number) => {
-    const m = Math.floor(secs / 60);
-    const s = secs % 60;
-    return `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+    const safeSecs = Math.max(0, secs);
+    const h = Math.floor(safeSecs / 3600);
+    const m = Math.floor((safeSecs % 3600) / 60);
+    const s = safeSecs % 60;
+    const hh = h < 10 ? `0${h}` : `${h}`;
+    const mm = m < 10 ? `0${m}` : `${m}`;
+    const ss = s < 10 ? `0${s}` : `${s}`;
+    return `${hh}:${mm}:${ss}`;
   };
 
   // Handle Answer Selection
@@ -294,20 +299,17 @@ export default function ExamPracticeLayout({
         </div>
       </header>
 
-      {/* Top Right Timer Box (Visibly active across all screens once test has started) */}
-      {!unlimitedTime && hasExamStarted && examStep !== 'results' && (
-        <div className="absolute right-6 sm:right-10 top-18 text-center min-w-[120px] z-20 animate-in fade-in duration-300">
-          <div className="text-2xl font-mono font-bold text-[#162544] tracking-wider">
-            {formatTime(timeLeftSeconds)}
-          </div>
-          <div className="text-[10px] font-semibold text-[#6b6860] uppercase tracking-wider -mt-0.5">
-            Time remaining
-          </div>
-          <div className="h-1 bg-[#e5ded3] rounded-full mt-1.5 w-full overflow-hidden">
-            <div
-              className="h-full bg-[#d97706] transition-all duration-1000 ease-linear rounded-full"
-              style={{ width: `${Math.max(0, Math.min(100, (timeLeftSeconds / timeAllowedSeconds) * 100))}%` }}
-            />
+      {/* Top Right Timer Box (TestReach Aptis UI - exact match to official exam room) */}
+      {!unlimitedTime && (hasExamStarted || examStep === 'questions') && examStep !== 'results' && !reviewMode && (
+        <div className="fixed right-6 sm:right-10 top-20 z-20 select-none animate-in fade-in duration-300">
+          <div className="flex flex-col items-end">
+            <div className="text-2xl sm:text-[26px] font-bold text-slate-900 tracking-tight tabular-nums leading-none">
+              {formatTime(timeLeftSeconds)}
+            </div>
+            <div className="text-[13px] font-medium text-[#24085A] mt-1.5 leading-none">
+              Time remaining
+            </div>
+            <div className="w-full h-[3px] bg-[#24085A] rounded-full mt-1.5" />
           </div>
         </div>
       )}
@@ -695,6 +697,7 @@ export default function ExamPracticeLayout({
                   setExamStep('instructions');
                 } else if (examStep === 'instructions') {
                   setExamStep('questions');
+                  setHasExamStarted(true);
                 } else if (examStep === 'questions') {
                   if (currentQuestionIndex < totalQuestions - 1) {
                     setCurrentQuestionIndex((prev) => prev + 1);
@@ -780,6 +783,7 @@ export default function ExamPracticeLayout({
                 onClick={() => {
                   setShowProceedModal(false);
                   setExamStep('questions');
+                  setHasExamStarted(true);
                 }}
                 className="bg-[#24085A] hover:bg-[#1a0642] text-white font-semibold text-sm px-6 py-2 rounded-xl transition-all shadow-md active:scale-95 cursor-pointer"
               >
