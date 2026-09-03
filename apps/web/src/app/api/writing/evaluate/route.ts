@@ -559,11 +559,22 @@ function enforceExactScoreMath(
       exp.includes('có thể viết') ||
       exp.includes('có thể dùng') ||
       exp.includes('mượt mà') ||
-      exp.includes('tự nhiên hơn');
+      exp.includes('tự nhiên hơn') ||
+      exp.includes('chấp nhận được') ||
+      exp.includes('được coi là đúng') ||
+      exp.includes('không bị trừ điểm') ||
+      exp.includes('rõ ràng hơn') ||
+      exp.includes('tùy chọn') ||
+      exp.includes('phong cách');
+
+    const origWithoutPunct = origRaw.replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim();
+    const corrWithoutPunct = corrRaw.replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim();
+    const isPunctuationOnlyChange = origWithoutPunct.length > 0 && origWithoutPunct === corrWithoutPunct;
 
     const corrWords = c.correction.trim().split(/\s+/).filter(Boolean).length;
     const isPart1FragmentPenalty = isPart1 && (
       corrWords > 5 ||
+      isPunctuationOnlyChange ||
       exp.includes('rút gọn') ||
       exp.includes('fragment') ||
       exp.includes('thiếu chủ ngữ') ||
@@ -1018,6 +1029,7 @@ EVALUATION CRITERIA (Band Scale 0 to 5 for each criterion):
 
 ERROR DETECTION PROTOCOL:
 - Check EVERY word. Report specific grammarErrors and spellingErrors with original, corrected, and clear Vietnamese explanation.
+- ONLY report genuine, objective grammar or spelling mistakes. NEVER report acceptable stylistic preferences, minor punctuation variations, or phrasing alternatives as grammar errors if the candidate's sentence is already acceptable.
 - For vocabulary, suggest advanced English replacements (never suggest Vietnamese replacements).
 - Provide an improvedVersion: a polished English rewrite demonstrating high CEFR B2/C1 standard.
 - Write all feedback, criteria analysis, and notes in natural, encouraging Vietnamese using "bạn" (never "ứng viên" or "thí sinh").

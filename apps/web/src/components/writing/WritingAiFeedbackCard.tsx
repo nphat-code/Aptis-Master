@@ -80,13 +80,34 @@ export default function WritingAiFeedbackCard({
       correction: s.corrected,
       explanation: s.explanation,
     })),
-  ].filter(
-    (err) =>
-      Boolean(err.original && err.correction) &&
-      err.original.trim().toLowerCase() !== err.correction.trim().toLowerCase() &&
-      !err.type?.toLowerCase().includes('độ dài') &&
-      !(isPart1 && err.correction.trim().split(/\s+/).filter(Boolean).length > 5)
-  );
+  ].filter((err) => {
+    if (!err.original || !err.correction) return false;
+    const oRaw = err.original.trim().toLowerCase();
+    const cRaw = err.correction.trim().toLowerCase();
+    if (oRaw === cRaw) return false;
+    if (err.type?.toLowerCase().includes('độ dài')) return false;
+
+    const exp = (err.explanation || '').toLowerCase();
+    if (
+      exp.includes('không có lỗi') ||
+      exp.includes('đã đúng') ||
+      exp.includes('câu đã chuẩn') ||
+      exp.includes('chấp nhận được') ||
+      exp.includes('được coi là đúng') ||
+      exp.includes('không bị trừ điểm')
+    ) {
+      return false;
+    }
+
+    if (isPart1) {
+      if (err.correction.trim().split(/\s+/).filter(Boolean).length > 5) return false;
+      const oNoPunct = oRaw.replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim();
+      const cNoPunct = cRaw.replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim();
+      if (oNoPunct.length > 0 && oNoPunct === cNoPunct) return false;
+    }
+
+    return true;
+  });
 
   // Deduplicate errors by original + correction
   const uniqueErrors = allErrors.filter(
