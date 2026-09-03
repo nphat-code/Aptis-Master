@@ -56,6 +56,8 @@ export default function WritingAiFeedbackCard({
 
   const badgeColor = cefrColorMap[cefrLevel] || 'bg-[#24085A] text-white';
 
+  const isPart1 = partTitle?.toLowerCase().includes('part 1') || partTitle?.toLowerCase().includes('part1');
+
   const allErrors = [
     ...(grammarAndSpelling?.corrections || []).map((c) => ({
       questionIndex: c.questionIndex,
@@ -82,7 +84,8 @@ export default function WritingAiFeedbackCard({
     (err) =>
       Boolean(err.original && err.correction) &&
       err.original.trim().toLowerCase() !== err.correction.trim().toLowerCase() &&
-      !err.type?.toLowerCase().includes('độ dài')
+      !err.type?.toLowerCase().includes('độ dài') &&
+      !(isPart1 && err.correction.trim().split(/\s+/).filter(Boolean).length > 5)
   );
 
   // Deduplicate errors by original + correction

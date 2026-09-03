@@ -561,9 +561,18 @@ function enforceExactScoreMath(
       exp.includes('mượt mà') ||
       exp.includes('tự nhiên hơn');
 
+    const corrWords = c.correction.trim().split(/\s+/).filter(Boolean).length;
+    const isPart1FragmentPenalty = isPart1 && (
+      corrWords > 5 ||
+      exp.includes('rút gọn') ||
+      exp.includes('fragment') ||
+      exp.includes('thiếu chủ ngữ') ||
+      exp.includes('câu hoàn chỉnh')
+    );
+
     if (isOffTopicCorrection) {
       offTopicQuestionIndices.add(c.questionIndex || 1);
-    } else if (!isStyleRewrite) {
+    } else if (!isStyleRewrite && !isPart1FragmentPenalty) {
       realCorrections.push(c);
     }
   }
@@ -974,7 +983,10 @@ export async function POST(request: Request) {
     const partRulesText = isPart1
       ? `APTIS WRITING PART 1 (Personal Information / Short Answers):
 - Exactly 5 short questions. Word limit: 1 to 5 words per answer.
-- Focus: Direct answers, capitalization, punctuation, correct spelling.`
+- Focus: Direct answers, capitalization, punctuation, correct spelling.
+- Sentence structures: Words, phrases, and sentence fragments (noun phrases, adjective phrases, prepositional phrases, single words) are 100% grammatically valid and fully accepted in Part 1. Candidates are NOT required to write full Subject-Verb sentences.
+- Strict constraint: NEVER penalize an answer for lacking a full Subject-Verb clause or being a sentence fragment in Part 1.
+- Strict constraint: Any suggested correction or improved model answer for Part 1 MUST strictly stay within 1 to 5 words. NEVER suggest a correction that exceeds 5 words.`
       : isPart2
       ? `APTIS WRITING PART 2 (Form Filling / Social Network Profile):
 - 1 prompt. Word limit: STRICTLY 20 to 30 words total.
