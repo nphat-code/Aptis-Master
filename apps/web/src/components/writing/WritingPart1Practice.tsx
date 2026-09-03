@@ -146,7 +146,7 @@ function WritingResultsView({
                   <div className="p-4 bg-[#ecfdf5] space-y-1.5">
                     <span className="text-xs font-bold text-[#064e3b] uppercase tracking-wider flex items-center gap-1">
                       <span className="material-symbols-outlined text-[16px] text-emerald-600">auto_awesome</span>
-                      <span>Bài mẫu cải thiện (AI tối ưu từ bài của bạn)</span>
+                      <span>Bài mẫu tham khảo</span>
                     </span>
                     <p className="font-normal text-emerald-950 text-[14px] leading-relaxed">
                       {displaySample}

@@ -166,7 +166,7 @@ export default function WritingAiFeedbackCard({
           </p>
         </div>
 
-        <div className="flex flex-col items-start md:items-end gap-2 shrink-0">
+        <div className="flex flex-col items-start md:items-end shrink-0">
           <div className="flex items-baseline gap-1">
             <span className="text-3xl sm:text-4xl font-extrabold text-[#162544]">
               {score}
@@ -175,21 +175,6 @@ export default function WritingAiFeedbackCard({
               /{maxScore} điểm
             </span>
           </div>
-
-          <span className="px-3.5 py-1 text-[13px] font-bold rounded-full bg-[#FEAD5D] text-white shadow-2xs flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-[16px]">star</span>
-            <span>
-              {score >= 9
-                ? 'Excellent (Xuất sắc)'
-                : score >= 7
-                ? 'Good (Tốt)'
-                : score >= 5
-                ? 'Pass (Đạt yêu cầu)'
-                : score >= 3
-                ? 'Satisfactory (Cần cố gắng)'
-                : 'Needs Work (Cần ôn luyện lại)'}
-            </span>
-          </span>
         </div>
       </div>
 
