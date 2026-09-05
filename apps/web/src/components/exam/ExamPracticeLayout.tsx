@@ -510,15 +510,15 @@ export default function ExamPracticeLayout({
           {/* Main Results View */}
           <div className="space-y-6">
             {/* Card 1: Summary Card */}
-            {moduleName === 'Writing' ? (
+            {moduleName === 'Writing' || moduleName === 'Speaking' ? (
               <div className="bg-[#FAFAFA] rounded-3xl p-8 text-center space-y-5 border border-slate-200/70 shadow-sm animate-result-appear">
                 <div className="space-y-1">
                   <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200 mb-1">
                     <span className="material-symbols-outlined text-[16px]">check_circle</span>
-                    <span>Đã hoàn thành bài thi</span>
+                    <span>Đã hoàn thành bài luyện tập</span>
                   </div>
                   <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
-                    Kết quả bài làm Writing
+                    Kết quả phần thi {moduleName}
                   </h2>
                   <p className="text-[14px] text-slate-500 font-medium">
                     {testTitle}
@@ -526,7 +526,9 @@ export default function ExamPracticeLayout({
                 </div>
 
                 <p className="text-[14px] text-slate-600 font-normal leading-relaxed max-w-xl mx-auto">
-                  Bạn đã nộp bài thành công! Dưới đây là bài làm của bạn được đối chiếu chi tiết với bài mẫu chuẩn. Bạn cũng có thể sao chép nhanh đề bài và bài làm để gửi cho Gemini hỗ trợ luyện tập.
+                  {moduleName === 'Speaking'
+                    ? 'Bạn đã hoàn thành lượt luyện nói! Dưới đây là nội dung câu hỏi và gợi ý câu trả lời mẫu chuẩn. Bạn cũng có thể sao chép nhanh đề bài để mở phòng luyện nói tương tác cùng Gemini.'
+                    : 'Bạn đã nộp bài thành công! Dưới đây là bài làm của bạn được đối chiếu chi tiết với bài mẫu chuẩn. Bạn cũng có thể sao chép nhanh đề bài và bài làm để gửi cho Gemini hỗ trợ luyện tập.'}
                 </p>
 
                 {/* Action Buttons Row */}

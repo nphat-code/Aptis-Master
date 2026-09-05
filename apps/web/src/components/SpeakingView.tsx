@@ -2,6 +2,11 @@
 
 import React from 'react';
 import SkillPracticeView, { PartTab, PartTabContent } from './SkillPracticeView';
+import scrapedData from '@/data/scraped_data.json';
+import SpeakingPart1Practice from './speaking/SpeakingPart1Practice';
+import SpeakingPart2Practice from './speaking/SpeakingPart2Practice';
+import SpeakingPart3Practice from './speaking/SpeakingPart3Practice';
+import SpeakingPart4Practice from './speaking/SpeakingPart4Practice';
 
 interface SpeakingViewProps {
   onBackToHome?: () => void;
@@ -10,6 +15,12 @@ interface SpeakingViewProps {
 }
 
 export default function SpeakingView({ onBackToHome, onExamStateChange, data }: SpeakingViewProps) {
+  const rawSpeaking = (scrapedData as any)?.speaking || {};
+  const countPart1 = Math.ceil(((rawSpeaking.part1_practice || []).length || 28) / 3);
+  const countPart2 = (rawSpeaking.part2_practice || []).length || 37;
+  const countPart3 = (rawSpeaking.part3_practice || []).length || 25;
+  const countPart4 = Math.max(0, ((rawSpeaking.part4_practice || []).length || 53) - 1) || 52;
+
   const partTabs: PartTab[] = [
     { id: 'full', label: 'Full Part – Tất cả các Part' },
     { id: 'part1', label: 'Part 1 – Personal info' },
@@ -27,27 +38,27 @@ export default function SpeakingView({ onBackToHome, onExamStateChange, data }: 
     },
     part1: {
       title: 'Part 1 – Personal information',
-      subtitle: '15 bộ đề luyện tập (Trả lời 3 câu hỏi cá nhân • 30s/câu)',
+      subtitle: `${countPart1} bộ đề luyện tập`,
       badge: 'Part 1',
-      testCount: 15,
+      testCount: countPart1,
     },
     part2: {
       title: 'Part 2 – Describe, express opinion',
-      subtitle: '15 bộ đề luyện tập (Miêu tả tranh & Bày tỏ quan điểm • 45s/câu)',
+      subtitle: `${countPart2} bộ đề luyện tập`,
       badge: 'Part 2',
-      testCount: 15,
+      testCount: countPart2,
     },
     part3: {
       title: 'Part 3 – Describe, compare & provide reasons',
-      subtitle: '12 bộ đề luyện tập (So sánh 2 bức tranh • 45s/câu)',
+      subtitle: `${countPart3} bộ đề luyện tập`,
       badge: 'Part 3',
-      testCount: 12,
+      testCount: countPart3,
     },
     part4: {
       title: 'Part 4 – Discuss personal experience & opinion',
-      subtitle: '10 bộ đề luyện tập (Trả lời 3 câu hỏi sâu • 2 phút nói liên tục)',
+      subtitle: `${countPart4} bộ đề luyện tập`,
       badge: 'Part 4',
-      testCount: 10,
+      testCount: countPart4,
     },
   };
 
@@ -155,6 +166,82 @@ export default function SpeakingView({ onBackToHome, onExamStateChange, data }: 
       onExamStateChange={onExamStateChange}
       tipsTitle="Mẹo thi Aptis Speaking"
       tipsContent={tipsContent}
+      getCustomCardProps={(partId, testNum) => {
+        const testNumberStr = testNum < 10 ? '0' + testNum : `${testNum}`;
+        if (partId === 'full') {
+          return {
+            title: `Đề ${testNumberStr} - Full Part Speaking`,
+            badge: 'Full Part',
+            durationText: '12 phút',
+          };
+        }
+        if (partId === 'part1') {
+          return {
+            title: `Đề ${testNumberStr} - Personal info`,
+            badge: 'Part 1',
+            durationText: '2 phút',
+          };
+        }
+        if (partId === 'part2') {
+          return {
+            title: `Đề ${testNumberStr} - Describe picture`,
+            badge: 'Part 2',
+            durationText: '3 phút',
+          };
+        }
+        if (partId === 'part3') {
+          return {
+            title: `Đề ${testNumberStr} - Compare pictures`,
+            badge: 'Part 3',
+            durationText: '3 phút',
+          };
+        }
+        if (partId === 'part4') {
+          const topicObj = (rawSpeaking.part4_practice || [])[testNum] || {};
+          const topicRaw = topicObj.question || '';
+          const cleanTopic = topicRaw.replace(/\s*\(.*\)\s*$/, '').trim();
+          return {
+            title: cleanTopic ? `Đề ${testNumberStr} - ${cleanTopic}` : `Đề ${testNumberStr} - Personal experience`,
+            badge: 'Part 4',
+            durationText: '3 phút',
+          };
+        }
+        return null;
+      }}
+      renderPracticeExam={({ partId, testIndex, onExit }) => {
+        if (partId === 'part1') {
+          return <SpeakingPart1Practice testIndex={testIndex} onExit={onExit} />;
+        }
+        if (partId === 'part2') {
+          return <SpeakingPart2Practice testIndex={testIndex} onExit={onExit} />;
+        }
+        if (partId === 'part3') {
+          return <SpeakingPart3Practice testIndex={testIndex} onExit={onExit} />;
+        }
+        if (partId === 'part4') {
+          return <SpeakingPart4Practice testIndex={testIndex} onExit={onExit} />;
+        }
+        return (
+          <div className="max-w-xl mx-auto my-12 p-8 bg-white rounded-2xl border border-slate-200 text-center space-y-4 shadow-sm">
+            <div className="w-12 h-12 rounded-full bg-orange-100 text-[#CC1C01] flex items-center justify-center mx-auto text-xl font-bold">
+              🗣️
+            </div>
+            <h3 className="text-lg font-bold text-slate-900">
+              Luyện tập Full Part Speaking
+            </h3>
+            <p className="text-sm text-slate-600">
+              Vui lòng chọn từng Part (Part 1, 2, 3 hoặc 4) ở thanh chọn phía trên để luyện tập từng dạng đề chuyên sâu.
+            </p>
+            <button
+              type="button"
+              onClick={onExit}
+              className="mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#162544] text-white text-sm font-semibold hover:bg-[#0f1a30] transition-colors cursor-pointer"
+            >
+              Quay lại danh sách đề thi
+            </button>
+          </div>
+        );
+      }}
     />
   );
 }
