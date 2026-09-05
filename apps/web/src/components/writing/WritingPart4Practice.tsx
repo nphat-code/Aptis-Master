@@ -5,8 +5,6 @@ import scrapedData from '@/data/scraped_data.json';
 import BasePracticeExam from '../exam/BasePracticeExam';
 import DetailedAnswersCard from '../exam/DetailedAnswersCard';
 import WritingPart4View, { WritingPart4Data, countWords, formatMainEmail } from './WritingPart4View';
-import WritingAiFeedbackCard from './WritingAiFeedbackCard';
-import { WritingAiFeedbackResponse } from '@/app/api/writing/evaluate/route';
 
 export interface WritingPart4PracticeProps {
   testIndex?: number;
@@ -18,77 +16,14 @@ interface WritingPart4ResultsViewProps {
   data: WritingPart4Data;
   clubName: string;
   onRetake?: () => void;
-  onAiEvaluated?: (score: number | undefined, cefrLevel: string | undefined) => void;
 }
 
 function WritingPart4ResultsView({
   userAnswers,
   data,
   clubName,
-  onRetake,
-  onAiEvaluated,
 }: WritingPart4ResultsViewProps) {
-  const [aiFeedback, setAiFeedback] = useState<WritingAiFeedbackResponse | null>(null);
-  const [isAiAnalyzing, setIsAiAnalyzing] = useState<boolean>(false);
-  const [hasEvaluated, setHasEvaluated] = useState<boolean>(false);
-
-  const runAiEvaluation = async () => {
-    setIsAiAnalyzing(true);
-    setAiFeedback(null);
-    if (onAiEvaluated) {
-      onAiEvaluated(undefined, undefined);
-    }
-
-    try {
-      const payloadQuestions = [
-        {
-          id: 1,
-          questionText: data.task1Text || 'Write a short email to your friend (about 50 words).',
-          sampleAnswer: data.sampleAnswer1 || '',
-          userAnswer: userAnswers[0] || '',
-        },
-        {
-          id: 2,
-          questionText: data.task2Text || 'Write an email to the president of the club (about 120-150 words).',
-          sampleAnswer: data.sampleAnswer2 || '',
-          userAnswer: userAnswers[1] || '',
-        },
-      ];
-
-      const res = await fetch('/api/writing/evaluate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          partId: 'part4',
-          clubName,
-          questions: payloadQuestions,
-        }),
-      });
-
-      if (!res.ok) throw new Error('API evaluation request failed');
-      const feedbackData: WritingAiFeedbackResponse = await res.json();
-      setAiFeedback(feedbackData);
-      if (onAiEvaluated) {
-        onAiEvaluated(feedbackData.score, feedbackData.cefrLevel);
-      }
-    } catch (err) {
-      console.error('AI Evaluation error:', err);
-    } finally {
-      setIsAiAnalyzing(false);
-      setHasEvaluated(true);
-    }
-  };
-
-  React.useEffect(() => {
-    if (!hasEvaluated && !isAiAnalyzing) {
-      runAiEvaluation();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  if (!aiFeedback) {
-    return null;
-  }
+  const [copied, setCopied] = useState(false);
 
   const formattedClubName = clubName ? clubName.replace(/^Topic:\s*/i, '').trim() : 'Club';
   const cleanClub = formattedClubName.toLowerCase();
@@ -101,23 +36,62 @@ function WritingPart4ResultsView({
     return ans.replace(/<br\s*\/?>/gi, '\n').trim();
   };
 
+  const handleCopyForGemini = () => {
+    const text = `ĐỀ THI WRITING APTIS - PART 4
+Chủ đề: ${formattedClubName}
+Thư thông báo từ câu lạc bộ (${clubText}):
+"${data.mainEmail}"
+
+---
+TASK 1: Viết email cho một người bạn (khoảng 50 từ)
+Yêu cầu: Bày tỏ cảm xúc về thông báo trên và bạn nghĩ CLB nên làm gì.
+- Bài làm của tôi:
+${userAnswers[0] || '(Chưa điền)'}
+
+- Bài mẫu tham khảo:
+${cleanSample(data.sampleAnswer1) || 'N/A'}
+
+---
+TASK 2: Viết email trang trọng cho Chủ tịch câu lạc bộ (khoảng 120-150 từ)
+Yêu cầu: Bày tỏ cảm xúc và đề xuất giải pháp xử lý tình huống.
+- Bài làm của tôi:
+${userAnswers[1] || '(Chưa điền)'}
+
+- Bài mẫu tham khảo:
+${cleanSample(data.sampleAnswer2) || 'N/A'}
+
+---
+YÊU CẦU CHO GEMINI:
+Hãy nhận xét chi tiết 2 bức thư của tôi:
+1. Task 1 (Informal): Đã đúng giọng điệu thân mật (informal tone), độ dài ~50 từ chưa? Lỗi ngữ pháp, cách diễn đạt tự nhiên hơn.
+2. Task 2 (Formal): Đã chuẩn phong cách trang trọng (formal tone, salutation, sign-off), bố cục 3 đoạn, độ dài 120-150 từ chưa? Từ vựng nâng cao chuẩn C1/B2.
+3. Gợi ý bản sửa hoàn chỉnh cho cả 2 bức thư.`;
+
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
+
   return (
     <div className="space-y-6">
-      {/* AI Evaluation Card */}
-      <WritingAiFeedbackCard
-        feedback={aiFeedback}
-        partTitle="Kết Quả Đánh Giá Writing - Part 4"
-        clubName={clubName}
-        hideModelAnswerBox={true}
-        onReEvaluate={runAiEvaluation}
-        onRetake={onRetake}
-      />
-
       {/* Standard Answer Details Card */}
       <DetailedAnswersCard
         title="Đánh giá chi tiết từng câu"
         subtitle={`You are a member of ${clubText}. You have received this email from the club:`}
       >
+        <div className="flex justify-end mb-4">
+          <button
+            type="button"
+            onClick={handleCopyForGemini}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs font-bold shadow-xs hover:from-purple-700 hover:to-indigo-700 hover:shadow-md transition-all cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[16px]">
+              {copied ? 'check' : 'content_copy'}
+            </span>
+            <span>{copied ? 'Đã sao chép vào Clipboard!' : 'Sao chép đề & bài làm để luyện cùng Gemini'}</span>
+          </button>
+        </div>
+
         <div className="space-y-6 text-left">
           {/* Main Email Display */}
           <p className="font-normal text-slate-800 text-[14px] leading-relaxed whitespace-pre-line">
@@ -139,22 +113,17 @@ function WritingPart4ResultsView({
                 {userAnswers[0] || <span className="italic text-slate-400">(Bỏ trống)</span>}
               </p>
             </div>
-            {(() => {
-              const aiImproved1 = aiFeedback?.improvedAnswers?.[0]?.improvedText;
-              const displaySample1 = aiImproved1 || cleanSample(data.sampleAnswer1);
-              if (!displaySample1) return null;
-              return (
-                <div className="text-[14px]">
-                  <div className="p-3 bg-[#ecfdf5] border border-emerald-300/90 rounded-xl text-emerald-900 font-normal text-[14px] space-y-1">
-                    <span className="text-xs font-bold text-[#064e3b] uppercase tracking-wider flex items-center gap-1">
-                      <span className="material-symbols-outlined text-[16px] text-emerald-600">auto_awesome</span>
-                      <span>Bài mẫu tham khảo</span>
-                    </span>
-                    <p className="font-normal text-emerald-950 whitespace-pre-line">{displaySample1}</p>
-                  </div>
+            {cleanSample(data.sampleAnswer1) && (
+              <div className="text-[14px]">
+                <div className="p-3 bg-[#ecfdf5] border border-emerald-300/90 rounded-xl text-emerald-900 font-normal text-[14px] space-y-1">
+                  <span className="text-xs font-bold text-[#064e3b] uppercase tracking-wider flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[16px] text-emerald-600">auto_awesome</span>
+                    <span>Bài mẫu tham khảo</span>
+                  </span>
+                  <p className="font-normal text-emerald-950 whitespace-pre-line">{cleanSample(data.sampleAnswer1)}</p>
                 </div>
-              );
-            })()}
+              </div>
+            )}
           </div>
 
           {/* Task 2 Review */}
@@ -172,22 +141,17 @@ function WritingPart4ResultsView({
                 {userAnswers[1] || <span className="italic text-slate-400">(Bỏ trống)</span>}
               </p>
             </div>
-            {(() => {
-              const aiImproved2 = aiFeedback?.improvedAnswers?.[1]?.improvedText;
-              const displaySample2 = aiImproved2 || cleanSample(data.sampleAnswer2);
-              if (!displaySample2) return null;
-              return (
-                <div className="text-[14px]">
-                  <div className="p-3 bg-[#ecfdf5] border border-emerald-300/90 rounded-xl text-emerald-900 font-normal text-[14px] space-y-1">
-                    <span className="text-xs font-bold text-[#064e3b] uppercase tracking-wider flex items-center gap-1">
-                      <span className="material-symbols-outlined text-[16px] text-emerald-600">auto_awesome</span>
-                      <span>Bài mẫu tham khảo</span>
-                    </span>
-                    <p className="font-normal text-emerald-950 whitespace-pre-line">{displaySample2}</p>
-                  </div>
+            {cleanSample(data.sampleAnswer2) && (
+              <div className="text-[14px]">
+                <div className="p-3 bg-[#ecfdf5] border border-emerald-300/90 rounded-xl text-emerald-900 font-normal text-[14px] space-y-1">
+                  <span className="text-xs font-bold text-[#064e3b] uppercase tracking-wider flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[16px] text-emerald-600">auto_awesome</span>
+                    <span>Bài mẫu tham khảo</span>
+                  </span>
+                  <p className="font-normal text-emerald-950 whitespace-pre-line">{cleanSample(data.sampleAnswer2)}</p>
                 </div>
-              );
-            })()}
+              </div>
+            )}
           </div>
         </div>
       </DetailedAnswersCard>
@@ -203,8 +167,6 @@ export default function WritingPart4Practice({
   const rawWritingTests = (scrapedData as any)?.writing || {};
   const testKeys = useMemo(() => Object.keys(rawWritingTests), [rawWritingTests]);
   const totalSets = testKeys.length || 40;
-
-  const [aiScore, setAiScore] = useState<number | undefined>(undefined);
 
   const safeTestIndex = isAllPractice ? 0 : (((testIndex % totalSets) + totalSets) % totalSets);
 
@@ -236,7 +198,6 @@ export default function WritingPart4Practice({
       defaultTimeSeconds={1800}
       subQuestionsPerSet={2}
       pointsPerSubQuestion={5} // Total max score 10 for Part 4 (5 pts per email)
-      customScore={aiScore}
       isAnswerCorrect={(idx, val) => {
         const wc = countWords(val);
         const subIdx = idx % 2;
@@ -279,9 +240,6 @@ export default function WritingPart4Practice({
             data={activeData}
             clubName={activeClubName}
             onRetake={onRetake}
-            onAiEvaluated={(score) => {
-              setAiScore(score);
-            }}
           />
         );
       }}

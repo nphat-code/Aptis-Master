@@ -1,12 +1,10 @@
 'use client';
 
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import scrapedData from '@/data/scraped_data.json';
 import BasePracticeExam from '../exam/BasePracticeExam';
 import DetailedAnswersCard from '../exam/DetailedAnswersCard';
 import WritingPart1View, { WritingPart1Item, countWords } from './WritingPart1View';
-import WritingAiFeedbackCard from './WritingAiFeedbackCard';
-import { WritingAiFeedbackResponse } from '@/app/api/writing/evaluate/route';
 
 export interface WritingPart1PracticeProps {
   testIndex?: number;
@@ -18,65 +16,14 @@ interface WritingResultsViewProps {
   targetQuestions: WritingPart1Item[];
   clubName: string;
   onRetake?: () => void;
-  onAiEvaluated?: (score: number | undefined, cefrLevel: string | undefined) => void;
 }
 
 function WritingResultsView({
   userAnswers,
   targetQuestions,
   clubName,
-  onRetake,
-  onAiEvaluated,
 }: WritingResultsViewProps) {
-  const [aiFeedback, setAiFeedback] = useState<WritingAiFeedbackResponse | null>(null);
-  const [isAiAnalyzing, setIsAiAnalyzing] = useState<boolean>(false);
-  const [hasEvaluated, setHasEvaluated] = useState<boolean>(false);
-
-  const runAiEvaluation = async () => {
-    setIsAiAnalyzing(true);
-    setAiFeedback(null);
-    if (onAiEvaluated) {
-      onAiEvaluated(undefined, undefined);
-    }
-
-    try {
-      const payloadQuestions = targetQuestions.map((q, idx) => ({
-        id: idx + 1,
-        questionText: q.questionText,
-        sampleAnswer: q.sampleAnswer,
-        userAnswer: userAnswers[idx] || '',
-      }));
-
-      const res = await fetch('/api/writing/evaluate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          partId: 'part1',
-          clubName,
-          questions: payloadQuestions,
-        }),
-      });
-
-      if (!res.ok) throw new Error('API evaluation request failed');
-      const data: WritingAiFeedbackResponse = await res.json();
-      setAiFeedback(data);
-      if (onAiEvaluated) {
-        onAiEvaluated(data.score, data.cefrLevel);
-      }
-    } catch (err) {
-      console.error('AI Evaluation error:', err);
-    } finally {
-      setIsAiAnalyzing(false);
-      setHasEvaluated(true);
-    }
-  };
-
-  useEffect(() => {
-    if (!hasEvaluated && !isAiAnalyzing) {
-      runAiEvaluation();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const [copied, setCopied] = useState(false);
 
   const cleanClub = (clubName || 'club').trim().toLowerCase();
   const clubText = (cleanClub.startsWith('a ') || cleanClub.startsWith('an '))
@@ -87,34 +34,46 @@ function WritingResultsView({
 
   const instructionSubtitle = `You want to join ${clubText}. You have 5 messages from a member of the club. Write short answers (1–5 words) to each message. Recommended time: 3 minutes.`;
 
-  if (!aiFeedback) {
-    return null;
-  }
+  const handleCopyForGemini = () => {
+    const text = `ĐỀ THI WRITING APTIS - PART 1
+Chủ đề: ${clubName || 'Club'}
+Hướng dẫn: ${instructionSubtitle}
+
+NỘI DUNG CÂU HỎI VÀ BÀI LÀM CỦA TÔI:
+${targetQuestions.map((q, idx) => `Câu ${idx + 1}: ${q.questionText}\n- Bài làm của tôi: ${userAnswers[idx] || '(Chưa điền)'}\n- Bài mẫu tham khảo: ${q.sampleAnswer || 'N/A'}`).join('\n\n')}
+
+YÊU CẦU:
+Hãy nhận xét chi tiết bài làm của tôi: kiểm tra ngữ pháp, tính phù hợp với câu hỏi (độ dài 1-5 từ), và gợi ý các cách trả lời tự nhiên, đạt điểm tối đa trong bài thi Aptis.`;
+
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
 
   return (
     <div className="space-y-6">
-      {/* AI Evaluation Card */}
-      <WritingAiFeedbackCard
-        feedback={aiFeedback}
-        partTitle="Kết Quả Đánh Giá Writing - Part 1"
-        clubName={clubName}
-        hideModelAnswerBox={true}
-        onReEvaluate={runAiEvaluation}
-        onRetake={onRetake}
-      />
-
       {/* Standard Answer Details Card */}
       <DetailedAnswersCard
         title="Đánh giá chi tiết từng câu"
         subtitle={instructionSubtitle}
       >
+        <div className="flex justify-end mb-4">
+          <button
+            type="button"
+            onClick={handleCopyForGemini}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs font-bold shadow-xs hover:from-purple-700 hover:to-indigo-700 hover:shadow-md transition-all cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[16px]">
+              {copied ? 'check' : 'content_copy'}
+            </span>
+            <span>{copied ? 'Đã sao chép vào Clipboard!' : 'Sao chép đề & bài làm để luyện cùng Gemini'}</span>
+          </button>
+        </div>
+
         <div className="space-y-4 text-left">
           {targetQuestions.map((q, idx) => {
             const userAns = userAnswers[idx] || '';
-            const wc = countWords(userAns);
-            const isValid = wc >= 1 && wc <= 5;
-            const aiImproved = aiFeedback?.improvedAnswers?.find((a) => a.questionIndex === idx + 1)?.improvedText;
-            const displaySample = aiImproved || q.sampleAnswer || 'N/A';
+            const displaySample = q.sampleAnswer || 'N/A';
 
             return (
               <div
@@ -171,9 +130,6 @@ export default function WritingPart1Practice({
   const testKeys = useMemo(() => Object.keys(rawWritingTests), [rawWritingTests]);
   const totalSets = testKeys.length || 40;
 
-  const [aiScore, setAiScore] = useState<number | undefined>(undefined);
-  const [aiCefrLevel, setAiCefrLevel] = useState<string | undefined>(undefined);
-
   const safeTestIndex = isAllPractice ? 0 : (((testIndex % totalSets) + totalSets) % totalSets);
 
   // Transform scrapedData writing questions1 into structured WritingPart1Item lists
@@ -212,7 +168,6 @@ export default function WritingPart1Practice({
       defaultTimeSeconds={180} // 3 mins for Writing Part 1
       subQuestionsPerSet={5}
       pointsPerSubQuestion={2} // Total max score 10 for Part 1 (2 pts per sub-question)
-      customScore={aiScore}
       isAnswerCorrect={(idx, val) => {
         const wc = countWords(val);
         return wc >= 1 && wc <= 5;
@@ -247,10 +202,6 @@ export default function WritingPart1Practice({
             targetQuestions={targetQuestions}
             clubName={activeClubName}
             onRetake={onRetake}
-            onAiEvaluated={(score, cefr) => {
-              setAiScore(score);
-              setAiCefrLevel(cefr);
-            }}
           />
         );
       }}

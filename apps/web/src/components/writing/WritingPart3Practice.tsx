@@ -5,8 +5,6 @@ import scrapedData from '@/data/scraped_data.json';
 import BasePracticeExam from '../exam/BasePracticeExam';
 import DetailedAnswersCard from '../exam/DetailedAnswersCard';
 import WritingPart3View, { WritingPart3Item, countWords } from './WritingPart3View';
-import WritingAiFeedbackCard from './WritingAiFeedbackCard';
-import { WritingAiFeedbackResponse } from '@/app/api/writing/evaluate/route';
 
 export interface WritingPart3PracticeProps {
   testIndex?: number;
@@ -18,94 +16,58 @@ interface WritingPart3ResultsViewProps {
   targetQuestions: WritingPart3Item[];
   clubName: string;
   onRetake?: () => void;
-  onAiEvaluated?: (score: number | undefined, cefrLevel: string | undefined) => void;
 }
 
 function WritingPart3ResultsView({
   userAnswers,
   targetQuestions,
   clubName,
-  onRetake,
-  onAiEvaluated,
 }: WritingPart3ResultsViewProps) {
-  const [aiFeedback, setAiFeedback] = useState<WritingAiFeedbackResponse | null>(null);
-  const [isAiAnalyzing, setIsAiAnalyzing] = useState<boolean>(false);
-  const [hasEvaluated, setHasEvaluated] = useState<boolean>(false);
-
-  const runAiEvaluation = async () => {
-    setIsAiAnalyzing(true);
-    setAiFeedback(null);
-    if (onAiEvaluated) {
-      onAiEvaluated(undefined, undefined);
-    }
-
-    try {
-      const payloadQuestions = targetQuestions.map((q, idx) => ({
-        id: idx + 1,
-        questionText: q.questionText,
-        sampleAnswer: q.sampleAnswer,
-        userAnswer: userAnswers[idx] || '',
-      }));
-
-      const res = await fetch('/api/writing/evaluate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          partId: 'part3',
-          clubName,
-          questions: payloadQuestions,
-        }),
-      });
-
-      if (!res.ok) throw new Error('API evaluation request failed');
-      const data: WritingAiFeedbackResponse = await res.json();
-      setAiFeedback(data);
-      if (onAiEvaluated) {
-        onAiEvaluated(data.score, data.cefrLevel);
-      }
-    } catch (err) {
-      console.error('AI Evaluation error:', err);
-    } finally {
-      setIsAiAnalyzing(false);
-      setHasEvaluated(true);
-    }
-  };
-
-  React.useEffect(() => {
-    if (!hasEvaluated && !isAiAnalyzing) {
-      runAiEvaluation();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  if (!aiFeedback) {
-    return null;
-  }
+  const [copied, setCopied] = useState(false);
 
   const formattedClubName = clubName ? clubName.replace(/^Topic:\s*/i, '').trim() : 'Club';
+  const instructionSubtitle = `You are communicating online with other members of the ${formattedClubName}. Reply to their questions. Write in sentences. Use 30–40 words per answer. Recommended time: 10 minutes.`;
+
+  const handleCopyForGemini = () => {
+    const text = `ĐỀ THI WRITING APTIS - PART 3
+Chủ đề: ${formattedClubName}
+Hướng dẫn: ${instructionSubtitle}
+
+NỘI DUNG CÂU HỎI VÀ BÀI LÀM CỦA TÔI:
+${targetQuestions.map((q, idx) => `Câu ${idx + 1}: ${q.questionText}\n- Bài làm của tôi: ${userAnswers[idx] || '(Chưa điền)'}\n- Bài mẫu tham khảo: ${q.sampleAnswer || 'N/A'}`).join('\n\n')}
+
+YÊU CẦU:
+Hãy nhận xét chi tiết 3 câu trả lời của tôi: kiểm tra số lượng từ (yêu cầu 30-40 từ mỗi câu), ngữ pháp, từ vựng và sự mạch lạc trong văn phong hội thoại trực tuyến (social club chat). Gợi ý thêm cách diễn đạt tự nhiên hơn.`;
+
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
 
   return (
     <div className="space-y-6">
-      {/* AI Evaluation Card */}
-      <WritingAiFeedbackCard
-        feedback={aiFeedback}
-        partTitle="Kết Quả Đánh Giá Writing - Part 3"
-        clubName={clubName}
-        hideModelAnswerBox={true}
-        onReEvaluate={runAiEvaluation}
-        onRetake={onRetake}
-      />
-
       {/* Standard Answer Details Card */}
       <DetailedAnswersCard
         title="Đánh giá chi tiết từng câu"
-        subtitle={`You are communicating online with other members of the ${formattedClubName}. Reply to their questions. Write in sentences. Use 30–40 words per answer. Recommended time: 10 minutes.`}
+        subtitle={instructionSubtitle}
       >
+        <div className="flex justify-end mb-4">
+          <button
+            type="button"
+            onClick={handleCopyForGemini}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs font-bold shadow-xs hover:from-purple-700 hover:to-indigo-700 hover:shadow-md transition-all cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[16px]">
+              {copied ? 'check' : 'content_copy'}
+            </span>
+            <span>{copied ? 'Đã sao chép vào Clipboard!' : 'Sao chép đề & bài làm để luyện cùng Gemini'}</span>
+          </button>
+        </div>
+
         <div className="space-y-4 text-left">
           {targetQuestions.map((q, idx) => {
             const userAns = userAnswers[idx] || '';
-            const aiImproved = aiFeedback?.improvedAnswers?.find((a) => a.questionIndex === idx + 1)?.improvedText;
-            const displaySample = aiImproved || q.sampleAnswer;
+            const displaySample = q.sampleAnswer;
 
             return (
               <div
@@ -159,8 +121,6 @@ export default function WritingPart3Practice({
   const testKeys = useMemo(() => Object.keys(rawWritingTests), [rawWritingTests]);
   const totalSets = testKeys.length || 40;
 
-  const [aiScore, setAiScore] = useState<number | undefined>(undefined);
-
   const safeTestIndex = isAllPractice ? 0 : (((testIndex % totalSets) + totalSets) % totalSets);
 
   // Transform scrapedData writing questions3 into structured WritingPart3Item lists
@@ -206,7 +166,6 @@ export default function WritingPart3Practice({
       defaultTimeSeconds={600} // 10 mins for Writing Part 3
       subQuestionsPerSet={3}
       pointsPerSubQuestion={3.3333333333333335} // Total max score 10 for Part 3 (3.33 pts per sub-question)
-      customScore={aiScore}
       isAnswerCorrect={(idx, val) => {
         const wc = countWords(val);
         return wc >= 30 && wc <= 40;
@@ -249,9 +208,6 @@ export default function WritingPart3Practice({
             targetQuestions={targetQuestions}
             clubName={activeClubName}
             onRetake={onRetake}
-            onAiEvaluated={(score) => {
-              setAiScore(score);
-            }}
           />
         );
       }}

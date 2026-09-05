@@ -509,22 +509,50 @@ export default function ExamPracticeLayout({
 
           {/* Main Results View */}
           <div className="space-y-6">
-            {/* Card 1: Summary Card (Hidden for Writing module to avoid duplicate score headers) */}
-            {moduleName === 'Writing' && customScore === undefined ? (
-              <div className="bg-white rounded-3xl p-12 border border-slate-200/80 text-center space-y-5 shadow-sm my-2 animate-pulse max-w-2xl mx-auto">
-                <div className="w-16 h-16 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mx-auto text-3xl font-bold">
-                  🤖
-                </div>
-                <div className="space-y-2">
-                  <h3 className="text-xl font-bold text-slate-900">
-                    AI đang phân tích bài làm & chấm điểm theo chuẩn CEFR...
-                  </h3>
-                  <p className="text-[14px] text-slate-500 font-normal leading-relaxed max-w-lg mx-auto">
-                    Hệ thống đang kiểm tra câu trả lời đúng trọng tâm, lỗi chính tả, cấu trúc ngữ pháp và vốn từ vựng của bạn. Vui lòng đợi trong giây lát!
+            {/* Card 1: Summary Card */}
+            {moduleName === 'Writing' ? (
+              <div className="bg-[#FAFAFA] rounded-3xl p-8 text-center space-y-5 border border-slate-200/70 shadow-sm animate-result-appear">
+                <div className="space-y-1">
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200 mb-1">
+                    <span className="material-symbols-outlined text-[16px]">check_circle</span>
+                    <span>Đã hoàn thành bài thi</span>
+                  </div>
+                  <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
+                    Kết quả bài làm Writing
+                  </h2>
+                  <p className="text-[14px] text-slate-500 font-medium">
+                    {testTitle}
                   </p>
                 </div>
+
+                <p className="text-[14px] text-slate-600 font-normal leading-relaxed max-w-xl mx-auto">
+                  Bạn đã nộp bài thành công! Dưới đây là bài làm của bạn được đối chiếu chi tiết với bài mẫu chuẩn. Bạn cũng có thể sao chép nhanh đề bài và bài làm để gửi cho Gemini hỗ trợ luyện tập.
+                </p>
+
+                {/* Action Buttons Row */}
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                  <button
+                    onClick={onExit}
+                    className="px-5 py-2.5 rounded-xl border border-[#CC1C01] text-[#CC1C01] font-bold text-sm bg-white hover:bg-orange-50 hover:-translate-y-1 hover:shadow-md active:translate-y-0 active:scale-95 transition-all duration-200 cursor-pointer flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4 text-[#CC1C01]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                    </svg>
+                    <span>Quay lại</span>
+                  </button>
+
+                  <button
+                    onClick={handleRetakeExam}
+                    className="px-5 py-2.5 rounded-xl bg-[#CC1C01] hover:bg-[#b01801] text-white font-extrabold text-sm shadow-md hover:shadow-lg hover:-translate-y-1 active:translate-y-0 active:scale-95 transition-all duration-200 cursor-pointer flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                    </svg>
+                    <span>Làm lại bài này</span>
+                  </button>
+                </div>
               </div>
-            ) : moduleName === 'Writing' ? null : (
+            ) : (
               <div className="bg-[#FAFAFA] rounded-3xl p-8 text-center space-y-6 border border-slate-200/70 shadow-sm animate-result-appear">
                 <div className="space-y-1">
                   <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
