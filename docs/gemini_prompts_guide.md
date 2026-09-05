@@ -44,29 +44,64 @@ Mỗi khi tôi gửi bài làm, bạn hãy phản hồi theo 4 mục rõ ràng s
 
 ---
 
-## 2. Bảng Tips & Cấu Trúc "Ăn Điểm" B2 - C1 Từ Cộng Đồng Thi Aptis
+## 2. Bảng Tips & Cấu Trúc "Ăn Điểm" B2 - C1 Từ Cộng Đồng Thi Aptis (Tổng hợp từ các bài thi 42-45/50 điểm B2-C1)
 
-### A. Writing Part 1
+### 0. Quy tắc "Viết gần kịch trần số từ" (Hit the word limits)
+- Để giám khảo có đủ cơ sở đánh giá độ trôi chảy và vốn từ, bạn nên viết sát cận trên của số từ:
+  - **Part 1**: 1 câu đơn giản (hoặc 1–5 từ) chính xác tuyệt đối, đúng thì và chính tả.
+  - **Part 2**: Viết gần chạm trần **28–30 từ** (thay vì chỉ 20 từ).
+  - **Part 3**: Viết gần chạm trần **38–40 từ/câu** (3 câu $\approx$ 115–120 từ).
+  - **Part 4**: Task 1 viết **~50 từ**; Task 2 viết **140–150 từ**.
+
+---
+
+### A. Writing Part 1 (Ngắn gọn, chính xác, dùng Collocations chuẩn)
 - **Collocations chuẩn**:
   - Đi lại: `I commute to work by bus/train.`
-  - Quê quán: `I was born and raised in...`
+  - Quê quán: `I was born and raised in Hanoi.`
   - Nơi ở: `I currently reside in...`
-  - Sở thích (thay cho basic *like/love*): `I am particularly into...`, `I have a passion for...`
+  - Sở thích (thay cho basic *like/love*): `I am particularly/incredibly into...`, `I have a passion for...`, `I am keen on...`
   - Trạng từ chỉ tần suất: `regularly`, `occasionally`, `ordinarily` thay cho *often, sometimes*.
 
-### B. Writing Part 3 (Chiến thuật Dual-Tone)
-- **Câu hỏi trò chuyện xã giao**: Dùng từ ngữ tự nhiên, kết nối bạn bè trong CLB.
-- **Câu hỏi quan điểm / Lời khuyên / Agree-Disagree**:
-  - Mở đầu: `From my perspective,...` hoặc `As far as I am concerned, I believe that...`
-  - Lợi ích & Tác hại: `beneficial for...` (thay vì *good for*), `detrimental to...` (thay vì *bad for*).
-  - Tạo câu phức chỉ kết quả: Dùng `..., which enables/allows [someone] to [do something]` hoặc `..., thereby improving...` (tránh lạm dụng từ *so*).
-  - Động từ khiêm tốn/lịch sự: `could`, `might`, `would` thay cho *can, will*.
+---
 
-### C. Writing Part 4 (Vũ khí C1 ở Task 2 Formal Email)
-- **Cấu trúc đảo ngữ (Inversion) nêu 2 lợi ích của giải pháp**:
-  > `Not only does this proposal benefit all members, but it also creates a welcoming environment for newcomers.`
-  > `Not only will this event attract more participants, but it will also strengthen our community.`
-- **Từ nối trang trọng**: `Furthermore`, `Moreover`, `In light of this situation`, `I look forward to your favorable response`.
+### B. Writing Part 2: Công Thức "Who – When – Example / Feeling" (28–30 từ)
+Thay vì chỉ trả lời cộc lốc, áp dụng công thức 3 bước:
+1. **Direct Answer + Who**: Trả lời thẳng vào câu hỏi và nêu người đồng hành (`with my friend, who is Linh because it is a great way to strengthen our relationship`).
+2. **When / Frequency + Benefit**: Tần suất và lợi ích (`I spend four or five times a week doing it as it helps me improve my mental and physical health`).
+3. **Example / Feeling**: Ví dụ cụ thể và cảm xúc (`For example, doing yoga allows me to recharge my batteries so I feel refreshed`).
+
+---
+
+### C. Writing Part 3: Đa Dạng Cấu Trúc & Bộ Cụm Từ "Chữa Bí Ý" (38–40 từ/câu)
+* **Kỹ thuật chống bí ý**: Kết hợp các liên từ nối (`Besides`, `Moreover`, `On the one hand... on the other hand`) và các cụm thần thánh:
+  - `improve my mental / physical health` (nâng cao sức khỏe tinh thần/thể chất)
+  - `boost energy / boost morale` (tăng năng lượng / tinh thần)
+  - `recharge my batteries` (nạp lại năng lượng)
+  - `strengthen our relationship / foster a sense of community` (gắn kết mối quan hệ)
+  - `give an opportunity / chance to acquire new skills` (mang lại cơ hội học hỏi kỹ năng)
+  - `which enables/allows me to...` (mệnh đề quan hệ chỉ kết quả)
+* **Chiến thuật Dual-Tone**:
+  - Câu hỏi trò chuyện/kể chuyện thành viên: Giọng thân mật, chia sẻ chân thành.
+  - Câu hỏi quan điểm/lời khuyên: Giọng trang trọng, có lập luận (`From my perspective`, `beneficial for / detrimental to`, dùng modal verbs `could/might/would`).
+
+---
+
+### D. Writing Part 4: Chiến Thuật 2 Giải Pháp & Rewards Framework (Task 2: 140–150 từ)
+Tránh dùng template sáo rỗng chung chung, hãy đưa ra **2 giải pháp cụ thể**:
+1. **Giải pháp 1 (Trọng tâm đề)**: Xử lý trực tiếp vấn đề trong email + câu nêu tác động (`This initiative will bring tremendous benefits, enabling members to...`).
+2. **Giải pháp 2 (Vũ khí ghi điểm - Cơ chế khen thưởng/Khích lệ)**:
+   - Đề xuất: `a rewards framework for individuals who actively participate...`
+   - Ví dụ minh họa: `For instance, offering certificates, vouchers, or public recognition...`
+3. **Cấu trúc ngữ pháp cao cấp**:
+   - **Đảo ngữ (Inversion)**: `Not only does this proposal benefit all members, but it also creates a welcoming atmosphere.`
+   - **Câu chốt đắt giá (Closer)**: `If possible, we should choose [địa điểm/phương án phù hợp], which makes the plan significantly more effective. I hope my suggestions will be taken into consideration.`
+
+---
+
+### E. Ứng Dụng Sang Speaking (Part 1, 2, 3, 4)
+* Áp dụng y hệt tư duy: **Direct Answer $\rightarrow$ Tác động/Lợi ích (`help improve... / give a chance to...`) $\rightarrow$ Ví dụ / Mở rộng (`Besides... / For example...`)**.
+* Giúp bạn luôn có ý để nói liên tục trong 30s (Part 1), 45s (Part 2, 3) và 2 phút (Part 4) mà không bị "đơ" hay ngập ngừng.
 
 ---
 
@@ -75,3 +110,4 @@ Các hàm sinh nội dung prompt gửi sang Gemini được tập trung quản l
 - [`apps/web/src/utils/geminiPrompts.ts`](file:///c:/Study/Projects/aptis-prep-master/apps/web/src/utils/geminiPrompts.ts)
 
 Khi bạn muốn bổ sung thêm tiêu chí hoặc đổi giọng điệu nhắc Gemini, bạn chỉ cần sửa trực tiếp file tiện ích này!
+
