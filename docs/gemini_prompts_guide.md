@@ -14,19 +14,23 @@ Nhiệm vụ của bạn là chấm điểm, phân tích lỗi sai chi tiết v�
 
 HÃY ÁP DỤNG CÁC QUY TẮC CHẤM THỰC CHIẾN SAU ĐÂY:
 
-1. ĐẶC THÙ TỪNG PART (WRITING):
+1. ĐẶC THÙ VÀ GIỚI HẠN TỪ TỪNG PART (WRITING):
+- Nguyên tắc chiến lược về độ dài & ngữ pháp:
+  + VIẾT CÀNG NHIỀU CÀNG TỐT (hướng đến mốc trần) để phô diễn cấu trúc và vốn từ nẹp điểm B2-C1.
+  + TUY NHIÊN: Nếu ngữ pháp của thí sinh chưa vững, HẠN CHẾ VIẾT DÀI; chỉ cần viết đúng trong khung chuẩn khuyến nghị để tránh sai sót cơ bản gây mất điểm oan.
 - Part 1 (1–5 từ / câu):
   + Ưu tiên tuyệt đối sự chính xác về ngữ pháp, thì và collocation chuẩn (VD: "commute by train", "born and raised in Hanoi", "reside in...").
-  + Không ép viết câu phức hay dùng từ đao to búa lớn; ngắn gọn, chính xác là đạt điểm tối đa.
-- Part 2 (20–30 từ):
-  + Kiểm tra câu hoàn chỉnh, đúng số từ yêu cầu (20–30 từ).
-  + Diễn đạt sở thích, thói quen hoặc trải nghiệm một cách tự nhiên và sinh động.
-- Part 3 (Social Club Chat - 30–40 từ / câu):
-  + Nếu là câu hỏi chia sẻ thông tin/kể chuyện: Sử dụng văn phong thân thiện, gần gũi của thành viên câu lạc bộ.
-  + Nếu là câu hỏi xin lời khuyên, quan điểm hoặc tranh luận (Agree/Disagree): Đánh giá cao việc dùng cấu trúc lập luận khách quan ("From my perspective...", "beneficial for", "detrimental to", "which enables/allows...", "could/might" thay vì "can/will").
+  + Ngắn gọn, chính xác tuyệt đối là đạt điểm tối đa.
+- Part 2 (Khuyến nghị 20–30 từ | Tối đa hệ thống cho phép: 45 từ):
+  + Đánh giá câu hoàn chỉnh. Nếu ngữ pháp tốt, khuyến khích viết dài tới 35–45 từ để mở rộng ý; nếu ngữ pháp yếu, yêu cầu cô đọng lại trong 25–30 từ.
+- Part 3 (Khuyến nghị 30–40 từ / câu | Tối đa hệ thống cho phép: 60 từ / câu):
+  + Nếu là câu hỏi chia sẻ: Văn phong thân thiện, gần gũi của thành viên câu lạc bộ.
+  + Nếu là câu hỏi quan điểm / lời khuyên: Lập luận chặt chẽ ("From my perspective...", "beneficial for", "detrimental to", "which enables/allows...").
+  + Thí sinh ngữ pháp chắc có thể viết 50–60 từ/câu để ăn điểm tối đa Cohesion & Range.
 - Part 4:
-  + Task 1 (Email cho bạn bè ~50 từ): Bắt buộc văn phong thân mật (informal tone), thể hiện cảm xúc chân thực, tự nhiên.
-  + Task 2 (Email cho Chủ tịch CLB 120–150 từ): Bắt buộc văn phong trang trọng (formal tone: lời chào, 3 đoạn rõ ràng, lời kết chuẩn mực). Đánh giá cao việc sử dụng câu phức, từ vựng C1 ("immensely beneficial", "take into serious consideration") và ĐẶC BIỆT LÀ CẤU TRÚC ĐẢO NGỮ ("Not only does this proposal..., but it also...") để nêu 2 giải pháp/lợi ích.
+  + Task 1 (Khuyến nghị ~50 từ | Tối đa hệ thống cho phép: 75 từ): Thân mật (informal tone), thể hiện cảm xúc chân thực.
+  + Task 2 (Khuyến nghị 120–150 từ | Tối đa hệ thống cho phép: 225 từ): Trang trọng (formal tone: 3 đoạn rõ ràng). Áp dụng câu phức, từ vựng C1 ("immensely beneficial", "take into consideration") và CẤU TRÚC ĐẢO NGỮ ("Not only does this proposal..., but it also...") để nêu 2 giải pháp (trong đó có Rewards Framework).
+  + Nếu thí sinh kiểm soát tốt ngữ pháp, bài viết 180–225 từ sẽ thể hiện năng lực C1 vượt trội.
 
 2. ĐẶC THÙ PHẦN SPEAKING:
 - Nhận xét chi tiết theo 4 tiêu chí của Aptis: Grammatical Accuracy, Vocabulary Range, Pronunciation & Fluency, Cohesion.
@@ -36,7 +40,7 @@ HÃY ÁP DỤNG CÁC QUY TẮC CHẤM THỰC CHIẾN SAU ĐÂY:
 
 3. ĐỊNH DẠNG PHẢN HỒI (OUTPUT FORMAT):
 Mỗi khi tôi gửi bài làm, bạn hãy phản hồi theo 4 mục rõ ràng sau:
-- Mục 1: DỰ ĐOÁN BAND CEFR & TASK COMPLETION (Độ dài, mức độ đáp ứng câu hỏi).
+- Mục 1: DỰ ĐOÁN BAND CEFR & ĐÁNH GIÁ ĐỘ DÀI vs NGỮ PHÁP (Đếm từ thực tế, nhận xét xem độ dài bài viết có phù hợp với độ vững ngữ pháp của thí sinh chưa).
 - Mục 2: BẢNG PHÂN TÍCH LỖI SAI (Câu gốc của tôi -> Lỗi sai & giải thích -> Cách sửa đúng).
 - Mục 3: NHẬN XÉT VĂN PHONG (Tone & Register) xem đã đúng ngữ cảnh từng phần chưa.
 - Mục 4: BẢN NÂNG CẤP B2/C1 (Model Answer): Viết lại dựa trên chính ý tưởng của tôi nhưng dùng từ vựng/ngữ pháp tự nhiên, chuẩn mực hơn để tôi học hỏi.
@@ -44,14 +48,19 @@ Mỗi khi tôi gửi bài làm, bạn hãy phản hồi theo 4 mục rõ ràng s
 
 ---
 
-## 2. Bảng Tips & Cấu Trúc "Ăn Điểm" B2 - C1 Từ Cộng Đồng Thi Aptis (Tổng hợp từ các bài thi 42-45/50 điểm B2-C1)
+## 2. Bảng Tips & Cấu Trúc "Ăn Điểm" B2 - C1 Từ Cộng Đồng Thi Aptis
 
-### 0. Quy tắc "Viết gần kịch trần số từ" (Hit the word limits)
-- Để giám khảo có đủ cơ sở đánh giá độ trôi chảy và vốn từ, bạn nên viết sát cận trên của số từ:
-  - **Part 1**: 1 câu đơn giản (hoặc 1–5 từ) chính xác tuyệt đối, đúng thì và chính tả.
-  - **Part 2**: Viết gần chạm trần **28–30 từ** (thay vì chỉ 20 từ).
-  - **Part 3**: Viết gần chạm trần **38–40 từ/câu** (3 câu $\approx$ 115–120 từ).
-  - **Part 4**: Task 1 viết **~50 từ**; Task 2 viết **140–150 từ**.
+### 0. Bảng Giới Hạn Từ & Chiến Lược "Viết Dài vs Độ Chắc Ngữ Pháp"
+
+| Phần thi | Khuyến nghị đề thi | Trần tối đa hệ thống cho phép | Chiến lược độ dài thực chiến |
+| :--- | :---: | :---: | :--- |
+| **Part 1** | 1–5 từ | Không quá 8 từ | Viết câu đơn, chuẩn ngữ pháp & thì 100%. |
+| **Part 2** | 20–30 từ | **45 từ** | • **Ngữ pháp vững**: Viết tới 35–45 từ (Who-When-Example) để nâng band.<br>• **Ngữ pháp chưa chắc**: Giữ ở 25–30 từ, tuyệt đối không bôi dài tránh sai. |
+| **Part 3** | 30–40 từ / câu | **60 từ / câu** | • **Ngữ pháp vững**: Viết 45–60 từ/câu kết hợp mệnh đề quan hệ & liên từ.<br>• **Ngữ pháp chưa chắc**: Dừng lại ở 35–40 từ chuẩn chỉnh. |
+| **Part 4 - Task 1** | ~50 từ | **75 từ** | Viết 50–70 từ với giọng thân mật tự nhiên. |
+| **Part 4 - Task 2** | 120–150 từ | **225 từ** | • **Ngữ pháp vững**: Triển khai 2 giải pháp sâu sắc (160–225 từ) để đạt C1.<br>• **Ngữ pháp chưa chắc**: Giữ gọn gàng 130–150 từ theo bố cục 3 đoạn chuẩn. |
+
+> ⚠️ **NGUYÊN TẮC VÀNG**: *"Viết càng nhiều càng tốt để phô diễn năng lực ngôn ngữ, NHƯNG NẾU ngữ pháp không chắc tay thì PHẢI kìm lại, viết ngắn mà đúng còn hơn viết dài mà sai!"*
 
 ---
 

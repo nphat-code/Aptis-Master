@@ -49,17 +49,19 @@ export function buildWritingPart2GeminiPrompt(input: WritingPart2PromptInput): s
   return `ĐỀ THI WRITING APTIS - PART 2 (Short Text Writing)
 Chủ đề: ${input.clubName || 'Club'}
 Hướng dẫn: ${input.instruction}
+Quy định số từ: Khuyến nghị 20–30 từ | Hệ thống cho phép tối đa 45 từ.
+Nguyên tắc chiến lược: Viết càng nhiều càng tốt (hướng tới 35–45 từ) nếu ngữ pháp vững để mở rộng ý và khoe từ vựng; hạn chế viết dài nếu ngữ pháp chưa chắc để tránh lỗi sai.
 
 NỘI DUNG CÂU HỎI VÀ BÀI LÀM CỦA TÔI:
 Câu hỏi: ${input.questionText}
 - Bài làm của tôi: ${input.userAnswer || '(Chưa điền)'}
 - Bài mẫu tham khảo: ${input.sampleAnswer || 'N/A'}
 
-YÊU CẦU CHO GEMINI:
+YÊU CẦU CHO GEMINI (TIÊU CHÍ CHẤM B2–C1 THỰC CHIẾN):
 Hãy đóng vai trò Giám khảo Aptis ESOL (British Council Examiner):
-1. Kiểm tra số lượng từ (chuẩn 20–30 từ), ngữ pháp, mạo từ và sự liên kết câu.
-2. Đánh giá mức độ tự nhiên khi chia sẻ sở thích/hoạt động cá nhân.
-3. Cung cấp 1 phiên bản viết lại (Model Answer) dựa trên chính ý tưởng của tôi đạt chuẩn CEFR B1–B2.`;
+1. Đếm chính xác số từ của bài làm (so sánh với mốc chuẩn 20–30 từ và trần 45 từ).
+2. Đánh giá chiến lược độ dài vs ngữ pháp: Bài viết có đang bị "ham viết dài mà gãy ngữ pháp/sai cơ bản" không? Có áp dụng công thức Who - When - Example/Feeling tự nhiên không?
+3. Sửa lỗi ngữ pháp/từ vựng (nếu có) và cung cấp 1 phiên bản viết lại chuẩn C1 (giữ nguyên ý tưởng của tôi).`;
 }
 
 // --- WRITING PART 3 ---
@@ -78,7 +80,8 @@ export function buildWritingPart3GeminiPrompt(input: WritingPart3PromptInput): s
   return `ĐỀ THI WRITING APTIS - PART 3 (Social Club Chat)
 Câu lạc bộ: "${input.clubName || 'Club'}"
 ${input.instruction ? `Hướng dẫn: ${input.instruction}\n` : ''}
-Yêu cầu: Trả lời 3 câu hỏi (mỗi câu 30–40 từ. Khuyến nghị thực chiến: viết gần kịch trần 38–40 từ/câu, đa dạng hóa cấu trúc).
+Quy định số từ: Khuyến nghị 30–40 từ/câu | Hệ thống cho phép tối đa 60 từ/câu.
+Nguyên tắc chiến lược: Viết càng nhiều càng tốt (45–60 từ) nếu ngữ pháp vững để đa dạng hóa cấu trúc câu; nếu ngữ pháp chưa chắc thì dừng ở 35–40 từ chuẩn chỉnh, tuyệt đối không bôi dài tránh sai sót.
 
 ${input.questions
   .map(
@@ -95,11 +98,11 @@ ${q.sampleAnswer || 'N/A'}`
 ---
 YÊU CẦU CHO GEMINI (TIÊU CHÍ CHẤM B2–C1 THỰC CHIẾN):
 Hãy đóng vai trò Giám khảo Aptis ESOL:
-1. Đếm số từ từng câu (mục tiêu: 38–40 từ/câu).
-2. Kiểm tra tính ĐA DẠNG CẤU TRÚC & LIÊN TỪ (Who-When-Reason, Besides, Moreover, Which enables...):
-   - Câu hỏi xã giao/thành viên: giọng thân mật, chia sẻ trải nghiệm cá nhân, sử dụng các cụm "give a chance/opportunity to", "recharge my batteries", "improve mental/physical health".
-   - Câu hỏi thảo luận/quan điểm/lời khuyên: giọng văn có lập luận, dùng liên từ liên kết và mệnh đề quan hệ.
-3. Chỉ ra lỗi sai và viết lại từng câu đạt chuẩn C1 (đạt 38–40 từ) dựa trên đúng ý tưởng của tôi.`;
+1. Đếm số từ từng câu (so sánh với mức chuẩn 30–40 từ và mức trần 60 từ).
+2. Đánh giá tính ĐA DẠNG CẤU TRÚC & ĐỘ AN TOÀN NGỮ PHÁP:
+   - Thí sinh có kiểm soát tốt các câu phức, liên từ (Besides, Moreover, Which enables...), cụm từ tự nhiên ("recharge my batteries", "improve mental/physical health") không?
+   - Có bị lỗi sai ngữ pháp do cố viết dài không? Nếu có, hãy khuyên thí sinh nên viết gọn câu nào.
+3. Sửa lỗi chi tiết và viết lại từng câu đạt chuẩn C1 dựa trên đúng ý tưởng của tôi.`;
 }
 
 // --- WRITING PART 4 ---
@@ -119,8 +122,8 @@ Email thông báo từ câu lạc bộ:
 "${input.mainEmail}"
 
 ---
-TASK 1: Email gửi bạn bè (~50 từ - viết gần kịch trần 48–50 từ)
-Yêu cầu: Bày tỏ cảm xúc về thông báo và dự định sẽ làm gì (giọng thân mật, tự nhiên).
+TASK 1: Email gửi bạn bè (Khuyến nghị ~50 từ | Tối đa hệ thống cho phép: 75 từ)
+Yêu cầu: Bày tỏ cảm xúc về thông báo và dự định sẽ làm gì (văn phong thân mật, tự nhiên).
 - Bài làm của tôi:
 ${input.userAnswer1 || '(Chưa điền)'}
 
@@ -128,8 +131,9 @@ ${input.userAnswer1 || '(Chưa điền)'}
 ${input.sampleAnswer1 || 'N/A'}
 
 ---
-TASK 2: Email gửi Ban quản lý / Chủ tịch câu lạc bộ (120–150 từ - viết gần kịch trần 140–150 từ)
-Yêu cầu: Bày tỏ quan điểm và đề xuất hướng giải quyết (giọng trang trọng).
+TASK 2: Email gửi Ban quản lý / Chủ tịch CLB (Khuyến nghị 120–150 từ | Tối đa hệ thống cho phép: 225 từ)
+Yêu cầu: Bày tỏ quan điểm và đề xuất 2 giải pháp (văn phong trang trọng).
+Nguyên tắc chiến lược: Nếu ngữ pháp vững, viết 160–225 từ với 2 giải pháp sâu sắc để thể hiện band C1; nếu ngữ pháp chưa chắc thì giữ 130–150 từ để tránh lỗi sai.
 - Bài làm của tôi:
 ${input.userAnswer2 || '(Chưa điền)'}
 
@@ -139,12 +143,13 @@ ${input.sampleAnswer2 || 'N/A'}
 ---
 YÊU CẦU CHO GEMINI (TIÊU CHÍ CHẤM B2–C1 THỰC CHIẾN):
 Hãy đóng vai trò Giám khảo Aptis ESOL (British Council Examiner):
-1. Đếm từ Task 1 (mục tiêu ~50 từ) và Task 2 (mục tiêu 140–150 từ).
-2. Đánh giá Task 2 theo CHIẾN THUẬT 2 GIẢI PHÁP THỰC CHIẾN:
-   - Giải pháp 1: Trực diện vào vấn đề trong thông báo + câu phân tích tác động tích cực ("This will bring...", "This enables...").
-   - Giải pháp 2 (Rewards Framework): Có đề xuất cơ chế khen thưởng/khích lệ ("a rewards framework for participants...") hoặc chính sách hỗ trợ kèm ví dụ minh họa không?
-   - Cấu trúc ngữ pháp cao cấp: Áp dụng đảo ngữ ("Not only does this proposal..., but it also...") và câu chốt ("If possible, we should choose..., which makes the plan more effective").
-3. Đưa ra bản sửa lỗi chi tiết và viết lại 2 email hoàn chỉnh đạt band C1 (Task 1: 50 từ, Task 2: 145 từ) dựa trên ý tưởng của tôi.`;
+1. Đếm từ thực tế của Task 1 và Task 2 (đối chiếu với khung khuyến nghị và trần tối đa 75 từ / 225 từ).
+2. Đánh giá Task 2 theo CHIẾN THUẬT 2 GIẢI PHÁP & ĐỘ VỮNG NGỮ PHÁP:
+   - Giải pháp 1: Trực diện vào vấn đề + câu phân tích tác động ("This will bring...", "This enables...").
+   - Giải pháp 2 (Rewards Framework): Đề xuất cơ chế khen thưởng/khích lệ ("a rewards framework for participants...") kèm ví dụ minh họa.
+   - Cấu trúc cao cấp: Áp dụng đảo ngữ ("Not only does this proposal..., but it also...") và câu chốt ("If possible, we should choose...").
+   - Đánh giá xem độ dài có tương xứng với độ chắc ngữ pháp không (có bị dài dòng gây sai ngữ pháp không?).
+3. Đưa ra bản sửa lỗi chi tiết và viết lại 2 email hoàn chỉnh đạt band C1 dựa trên ý tưởng của tôi.`;
 }
 
 // --- SPEAKING PART 1 ---
