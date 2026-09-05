@@ -5,6 +5,7 @@ import scrapedData from '@/data/scraped_data.json';
 import BasePracticeExam from '../exam/BasePracticeExam';
 import DetailedAnswersCard from '../exam/DetailedAnswersCard';
 import SpeakingPart1View, { SpeakingPart1Question } from './SpeakingPart1View';
+import { buildSpeakingPart1FullSetPrompt } from '@/utils/geminiPrompts';
 
 export interface SpeakingPart1PracticeProps {
   testIndex?: number;
@@ -54,17 +55,7 @@ export default function SpeakingPart1Practice({
     : 'Personal information';
 
   const handleCopyAllForGemini = () => {
-    const text = `ĐỀ THI APTIS SPEAKING - PART 1 (Personal Information)
-Đề số: ${safeTestIndex + 1}
-Thời gian: 3 câu hỏi (30 giây/câu)
-
-DANH SÁCH CÂU HỎI:
-${currentQuestions.map((q, idx) => `Câu ${idx + 1}: ${q.questionText}\n- Gợi ý câu trả lời 1: ${q.answer1}\n- Gợi ý câu trả lời 2: ${q.answer2}`).join('\n\n')}
-
-YÊU CẦU CHO GEMINI:
-Hãy đóng vai trò Giám khảo Aptis Speaking (Aptis Examiner).
-Lần lượt đặt từng câu hỏi trên cho tôi, chờ tôi nói/gõ câu trả lời, sau đó nhận xét phát âm, ngữ điệu, từ vựng và chỉ ra các lỗi cần khắc phục để đạt chuẩn B2/C1.`;
-
+    const text = buildSpeakingPart1FullSetPrompt(safeTestIndex, currentQuestions);
     navigator.clipboard.writeText(text);
     setCopiedAll(true);
     setTimeout(() => setCopiedAll(false), 2500);

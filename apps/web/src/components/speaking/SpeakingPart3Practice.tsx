@@ -6,6 +6,7 @@ import scrapedData from '@/data/scraped_data.json';
 import BasePracticeExam from '../exam/BasePracticeExam';
 import DetailedAnswersCard from '../exam/DetailedAnswersCard';
 import SpeakingPart3View, { SpeakingPart3Data } from './SpeakingPart3View';
+import { buildSpeakingPart3FullSetPrompt } from '@/utils/geminiPrompts';
 
 export interface SpeakingPart3PracticeProps {
   testIndex?: number;
@@ -62,19 +63,12 @@ export default function SpeakingPart3Practice({
   };
 
   const handleCopyAllForGemini = () => {
-    const text = `ĐỀ THI APTIS SPEAKING - PART 3 (Compare two pictures)
-Đề số: ${safeTestIndex + 1}
-Thời gian: 3 câu hỏi (45 giây/câu)
-Link ảnh 1: ${currentData.imageUrl1}
-Link ảnh 2: ${currentData.imageUrl2}
-
-DANH SÁCH CÂU HỎI:
-${currentData.questions.map((q) => `Câu ${q.num}: ${q.text}\n- Gợi ý câu trả lời mẫu: ${cleanText(q.sampleAnswer)}`).join('\n\n')}
-
-YÊU CẦU CHO GEMINI:
-Hãy đóng vai trò Giám khảo Aptis Speaking (Aptis Examiner).
-Lần lượt đặt từng câu hỏi trên cho tôi, chờ tôi nói/gõ câu trả lời, sau đó nhận xét phát âm, khả năng so sánh, sử dụng liên từ và độ mạch lạc để đạt chuẩn B2/C1.`;
-
+    const questionsForPrompt = currentData.questions.map((q) => ({
+      num: q.num,
+      text: q.text,
+      sampleAnswer: cleanText(q.sampleAnswer),
+    }));
+    const text = buildSpeakingPart3FullSetPrompt(safeTestIndex, currentData.imageUrl1, currentData.imageUrl2, questionsForPrompt);
     navigator.clipboard.writeText(text);
     setCopiedAll(true);
     setTimeout(() => setCopiedAll(false), 2500);

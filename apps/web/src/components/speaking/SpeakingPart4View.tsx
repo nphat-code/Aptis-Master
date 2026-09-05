@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { buildSpeakingPart4GeminiPrompt } from '@/utils/geminiPrompts';
 
 export interface SpeakingPart4Data {
   id: string;
@@ -54,16 +55,7 @@ export default function SpeakingPart4View({ data }: SpeakingPart4ViewProps) {
   };
 
   const handleCopy = () => {
-    const promptText = `CÂU HỎI LUYỆN NÓI APTIS - SPEAKING PART 4 (Personal Experience)
-Chủ đề: "${data.topic}"
-Cấu trúc: 1 phút chuẩn bị + 2 phút nói liên tục (Long turn)
-
-YÊU CẦU CHO GEMINI:
-Hãy đóng vai trò Giám khảo Aptis Speaking (Aptis Examiner).
-Lắng nghe hoặc đọc bài nói 2 phút của tôi về chủ đề trên, sau đó:
-1. Đánh giá tính liên kết (coherence & cohesion), vốn từ vựng học thuật/idiomatic expressions, ngữ pháp và cấu trúc kể chuyện (narrative tenses).
-2. Gợi ý phiên bản bài nói mẫu hoàn chỉnh đạt band C1 Aptis.`;
-
+    const promptText = buildSpeakingPart4GeminiPrompt(data.topic);
     navigator.clipboard.writeText(promptText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);

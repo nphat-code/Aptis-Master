@@ -5,6 +5,7 @@ import scrapedData from '@/data/scraped_data.json';
 import BasePracticeExam from '../exam/BasePracticeExam';
 import DetailedAnswersCard from '../exam/DetailedAnswersCard';
 import SpeakingPart4View, { SpeakingPart4Data } from './SpeakingPart4View';
+import { buildSpeakingPart4FullSetPrompt } from '@/utils/geminiPrompts';
 
 export interface SpeakingPart4PracticeProps {
   testIndex?: number;
@@ -56,19 +57,7 @@ export default function SpeakingPart4Practice({
   };
 
   const handleCopyAllForGemini = () => {
-    const text = `ĐỀ THI APTIS SPEAKING - PART 4 (Personal Experience & Abstract Talk)
-Chủ đề: "${currentData.topic}"
-Cấu trúc thi: 1 phút chuẩn bị + 2 phút nói liên tục (Long turn)
-
-DÀN Ý & BÀI NÓI MẪU THAM KHẢO:
-${cleanText(currentData.sampleAnswer)}
-
-YÊU CẦU CHO GEMINI:
-Hãy đóng vai trò Giám khảo Aptis Speaking (Aptis Examiner).
-Lắng nghe hoặc đọc bài nói 2 phút của tôi về chủ đề trên, sau đó:
-1. Đánh giá phát âm, tính trôi chảy (fluency), vốn từ vựng học thuật, ngữ pháp và cấu trúc kể chuyện (narrative tenses).
-2. Chỉ ra các lỗi ngữ pháp/phát âm và gợi ý phiên bản nói tự nhiên, đạt band C1 Aptis.`;
-
+    const text = buildSpeakingPart4FullSetPrompt(currentData.topic, cleanText(currentData.sampleAnswer));
     navigator.clipboard.writeText(text);
     setCopiedAll(true);
     setTimeout(() => setCopiedAll(false), 2500);

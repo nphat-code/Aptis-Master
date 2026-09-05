@@ -5,6 +5,7 @@ import scrapedData from '@/data/scraped_data.json';
 import BasePracticeExam from '../exam/BasePracticeExam';
 import DetailedAnswersCard from '../exam/DetailedAnswersCard';
 import WritingPart3View, { WritingPart3Item, countWords } from './WritingPart3View';
+import { buildWritingPart3GeminiPrompt } from '@/utils/geminiPrompts';
 
 export interface WritingPart3PracticeProps {
   testIndex?: number;
@@ -29,15 +30,16 @@ function WritingPart3ResultsView({
   const instructionSubtitle = `You are communicating online with other members of the ${formattedClubName}. Reply to their questions. Write in sentences. Use 30–40 words per answer. Recommended time: 10 minutes.`;
 
   const handleCopyForGemini = () => {
-    const text = `ĐỀ THI WRITING APTIS - PART 3
-Chủ đề: ${formattedClubName}
-Hướng dẫn: ${instructionSubtitle}
-
-NỘI DUNG CÂU HỎI VÀ BÀI LÀM CỦA TÔI:
-${targetQuestions.map((q, idx) => `Câu ${idx + 1}: ${q.questionText}\n- Bài làm của tôi: ${userAnswers[idx] || '(Chưa điền)'}\n- Bài mẫu tham khảo: ${q.sampleAnswer || 'N/A'}`).join('\n\n')}
-
-YÊU CẦU:
-Hãy nhận xét chi tiết 3 câu trả lời của tôi: kiểm tra số lượng từ (yêu cầu 30-40 từ mỗi câu), ngữ pháp, từ vựng và sự mạch lạc trong văn phong hội thoại trực tuyến (social club chat). Gợi ý thêm cách diễn đạt tự nhiên hơn.`;
+    const text = buildWritingPart3GeminiPrompt({
+      clubName: formattedClubName,
+      instruction: instructionSubtitle,
+      questions: targetQuestions.map((q, idx) => ({
+        num: idx + 1,
+        text: q.questionText,
+        userAnswer: userAnswers[idx] || '',
+        sampleAnswer: q.sampleAnswer || '',
+      })),
+    });
 
     navigator.clipboard.writeText(text);
     setCopied(true);

@@ -5,6 +5,7 @@ import scrapedData from '@/data/scraped_data.json';
 import BasePracticeExam from '../exam/BasePracticeExam';
 import DetailedAnswersCard from '../exam/DetailedAnswersCard';
 import WritingPart1View, { WritingPart1Item, countWords } from './WritingPart1View';
+import { buildWritingPart1GeminiPrompt } from '@/utils/geminiPrompts';
 
 export interface WritingPart1PracticeProps {
   testIndex?: number;
@@ -35,15 +36,16 @@ function WritingResultsView({
   const instructionSubtitle = `You want to join ${clubText}. You have 5 messages from a member of the club. Write short answers (1–5 words) to each message. Recommended time: 3 minutes.`;
 
   const handleCopyForGemini = () => {
-    const text = `ĐỀ THI WRITING APTIS - PART 1
-Chủ đề: ${clubName || 'Club'}
-Hướng dẫn: ${instructionSubtitle}
-
-NỘI DUNG CÂU HỎI VÀ BÀI LÀM CỦA TÔI:
-${targetQuestions.map((q, idx) => `Câu ${idx + 1}: ${q.questionText}\n- Bài làm của tôi: ${userAnswers[idx] || '(Chưa điền)'}\n- Bài mẫu tham khảo: ${q.sampleAnswer || 'N/A'}`).join('\n\n')}
-
-YÊU CẦU:
-Hãy nhận xét chi tiết bài làm của tôi: kiểm tra ngữ pháp, tính phù hợp với câu hỏi (độ dài 1-5 từ), và gợi ý các cách trả lời tự nhiên, đạt điểm tối đa trong bài thi Aptis.`;
+    const text = buildWritingPart1GeminiPrompt({
+      clubName,
+      instruction: instructionSubtitle,
+      questions: targetQuestions.map((q, idx) => ({
+        num: idx + 1,
+        text: q.questionText,
+        userAnswer: userAnswers[idx] || '',
+        sampleAnswer: q.sampleAnswer || '',
+      })),
+    });
 
     navigator.clipboard.writeText(text);
     setCopied(true);

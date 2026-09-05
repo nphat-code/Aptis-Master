@@ -5,6 +5,7 @@ import scrapedData from '@/data/scraped_data.json';
 import BasePracticeExam from '../exam/BasePracticeExam';
 import DetailedAnswersCard from '../exam/DetailedAnswersCard';
 import WritingPart2View, { WritingPart2Item, countWords } from './WritingPart2View';
+import { buildWritingPart2GeminiPrompt } from '@/utils/geminiPrompts';
 
 export interface WritingPart2PracticeProps {
   testIndex?: number;
@@ -32,15 +33,14 @@ function WritingPart2ResultsView({
   const instructionSubtitle = `You are a new member of ${clubText}. Fill in the form. Write in sentences. Use 20–30 words. Recommended time: 7 minutes.`;
 
   const handleCopyForGemini = () => {
-    const text = `ĐỀ THI WRITING APTIS - PART 2
-Chủ đề: ${cleanClub}
-Hướng dẫn: ${instructionSubtitle}
-
-NỘI DUNG CÂU HỎI VÀ BÀI LÀM CỦA TÔI:
-${targetQuestions.map((q, idx) => `Câu hỏi: ${q.questionText}\n- Bài làm của tôi: ${userAnswers[idx] || '(Chưa điền)'}\n- Bài mẫu tham khảo: ${q.sampleAnswer || 'N/A'}`).join('\n\n')}
-
-YÊU CẦU:
-Hãy nhận xét chi tiết bài làm của tôi: kiểm tra ngữ pháp, số lượng từ (yêu cầu 20-30 từ), mức độ tự nhiên và từ vựng phù hợp chuẩn CEFR B1-B2 Aptis. Gợi ý thêm các cách viết hay hơn.`;
+    const q = targetQuestions[0] || { questionText: '', sampleAnswer: '' };
+    const text = buildWritingPart2GeminiPrompt({
+      clubName: cleanClub,
+      instruction: instructionSubtitle,
+      questionText: q.questionText,
+      userAnswer: userAnswers[0] || '',
+      sampleAnswer: q.sampleAnswer || '',
+    });
 
     navigator.clipboard.writeText(text);
     setCopied(true);

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { buildSpeakingPart2GeminiPrompt } from '@/utils/geminiPrompts';
 
 export interface SpeakingPart2Data {
   id: string;
@@ -51,16 +52,7 @@ export default function SpeakingPart2View({
 
   const handleCopy = () => {
     if (!currentQ) return;
-    const promptText = `CÂU HỎI LUYỆN NÓI APTIS - SPEAKING PART 2 (Describe a picture)
-Câu hỏi ${currentQ.num}/3: "${currentQ.text}"
-Thời gian trả lời: 45 giây
-
-YÊU CẦU CHO GEMINI:
-Hãy đóng vai trò Giám khảo Aptis Speaking (Aptis Examiner).
-Lắng nghe hoặc đọc câu trả lời của tôi, sau đó:
-1. Đánh giá từ vựng miêu tả tranh/quan điểm, ngữ pháp, thì động từ (hiện tại tiếp diễn, thì hoàn thành).
-2. Gợi ý phiên bản câu trả lời trôi chảy, đạt điểm B2/C1.`;
-
+    const promptText = buildSpeakingPart2GeminiPrompt(currentQ.num, currentQ.text);
     navigator.clipboard.writeText(promptText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);

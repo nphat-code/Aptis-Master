@@ -5,6 +5,7 @@ import scrapedData from '@/data/scraped_data.json';
 import BasePracticeExam from '../exam/BasePracticeExam';
 import DetailedAnswersCard from '../exam/DetailedAnswersCard';
 import WritingPart4View, { WritingPart4Data, countWords, formatMainEmail } from './WritingPart4View';
+import { buildWritingPart4GeminiPrompt } from '@/utils/geminiPrompts';
 
 export interface WritingPart4PracticeProps {
   testIndex?: number;
@@ -37,35 +38,14 @@ function WritingPart4ResultsView({
   };
 
   const handleCopyForGemini = () => {
-    const text = `ĐỀ THI WRITING APTIS - PART 4
-Chủ đề: ${formattedClubName}
-Thư thông báo từ câu lạc bộ (${clubText}):
-"${data.mainEmail}"
-
----
-TASK 1: Viết email cho một người bạn (khoảng 50 từ)
-Yêu cầu: Bày tỏ cảm xúc về thông báo trên và bạn nghĩ CLB nên làm gì.
-- Bài làm của tôi:
-${userAnswers[0] || '(Chưa điền)'}
-
-- Bài mẫu tham khảo:
-${cleanSample(data.sampleAnswer1) || 'N/A'}
-
----
-TASK 2: Viết email trang trọng cho Chủ tịch câu lạc bộ (khoảng 120-150 từ)
-Yêu cầu: Bày tỏ cảm xúc và đề xuất giải pháp xử lý tình huống.
-- Bài làm của tôi:
-${userAnswers[1] || '(Chưa điền)'}
-
-- Bài mẫu tham khảo:
-${cleanSample(data.sampleAnswer2) || 'N/A'}
-
----
-YÊU CẦU CHO GEMINI:
-Hãy nhận xét chi tiết 2 bức thư của tôi:
-1. Task 1 (Informal): Đã đúng giọng điệu thân mật (informal tone), độ dài ~50 từ chưa? Lỗi ngữ pháp, cách diễn đạt tự nhiên hơn.
-2. Task 2 (Formal): Đã chuẩn phong cách trang trọng (formal tone, salutation, sign-off), bố cục 3 đoạn, độ dài 120-150 từ chưa? Từ vựng nâng cao chuẩn C1/B2.
-3. Gợi ý bản sửa hoàn chỉnh cho cả 2 bức thư.`;
+    const text = buildWritingPart4GeminiPrompt({
+      clubName: formattedClubName,
+      mainEmail: data.mainEmail,
+      userAnswer1: userAnswers[0] || '',
+      sampleAnswer1: cleanSample(data.sampleAnswer1),
+      userAnswer2: userAnswers[1] || '',
+      sampleAnswer2: cleanSample(data.sampleAnswer2),
+    });
 
     navigator.clipboard.writeText(text);
     setCopied(true);

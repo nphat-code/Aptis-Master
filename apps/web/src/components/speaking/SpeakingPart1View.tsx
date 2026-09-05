@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { buildSpeakingPart1GeminiPrompt } from '@/utils/geminiPrompts';
 
 export interface SpeakingPart1Question {
   id: string;
@@ -49,15 +50,7 @@ export default function SpeakingPart1View({
 
   const handleCopy = () => {
     if (!currentQ) return;
-    const promptText = `CÂU HỎI LUYỆN NÓI APTIS - SPEAKING PART 1 (Personal Information)
-Câu hỏi: "${currentQ.questionText}"
-Thời gian chuẩn bị & trả lời: 30 giây
-
-YÊU CẦU:
-Hãy đóng vai trò Giám khảo Aptis Speaking (Aptis Examiner). Bạn hãy nghe/đọc câu trả lời của tôi, sau đó:
-1. Đánh giá phát âm, ngữ pháp, độ trôi chảy (fluency) theo khung CEFR.
-2. Gợi ý 2 cách trả lời tự nhiên, đạt band B2 - C1.`;
-
+    const promptText = buildSpeakingPart1GeminiPrompt(currentQ.questionText);
     navigator.clipboard.writeText(promptText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
