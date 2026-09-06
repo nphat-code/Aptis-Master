@@ -974,7 +974,7 @@ export default function ExamPracticeLayout({
             <div className="space-y-3">
               <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
                 <h3 className="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight">
-                  Mục lục marathon
+                  Mục lục All-in-One
                 </h3>
                 <button
                   onClick={() => setShowMarathonTocDrawer(false)}

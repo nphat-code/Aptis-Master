@@ -55,7 +55,7 @@ export function TestPracticeCard({
               : 'bg-[#f3efe6] text-[#162544] border-[#e5ded3]'
           }`}
         >
-          {isMarathon ? '🔥 MARATHON FULL' : badge}
+          {isMarathon ? '🔥 ALL-IN-ONE' : badge}
         </span>
 
         {isCompleted ? (

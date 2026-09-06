@@ -338,7 +338,7 @@ export default function SkillPracticeView({
                 >
                   <TestPracticeCard
                     title={marathonInfo.title}
-                    badge="Marathon"
+                    badge="ALL-IN-ONE"
                     isMarathon={true}
                     subtitle={marathonInfo.subtitle}
                     actionText="Bắt đầu"
