@@ -78,6 +78,25 @@ export default function SkillPracticeView({
   }, [activePracticeTestIndex, onExamStateChange]);
 
   const currentTabInfo = partTabContent[activePartTab] || partTabContent[partTabs[0]?.id || 'full'];
+  const totalAvailableTests = currentTabInfo ? currentTabInfo.testCount : 10;
+
+  // Compute dynamic completed tests count for the current part tab (placed before early return to obey React Rules of Hooks)
+  const realCompletedCount = React.useMemo(() => {
+    let count = 0;
+    for (let i = 1; i <= totalAvailableTests; i++) {
+      if (completedTestKeys.has(`${activePartTab}_${i}`)) {
+        count++;
+      }
+    }
+    return count;
+  }, [completedTestKeys, activePartTab, totalAvailableTests]);
+
+  const progressPercent = totalAvailableTests > 0
+    ? Math.min(Math.round((realCompletedCount / totalAvailableTests) * 100), 100)
+    : 0;
+
+  const marathonInfo = getMarathonCardProps ? getMarathonCardProps(activePartTab) : null;
+  const isCurrentPartSupported = supportedPartIds.includes(activePartTab);
 
   const markTestCompleted = (partId: string, testIndex: number) => {
     const key = `${partId}_${testIndex + 1}`;
@@ -103,26 +122,6 @@ export default function SkillPracticeView({
       },
     });
   }
-
-  const marathonInfo = getMarathonCardProps ? getMarathonCardProps(activePartTab) : null;
-  const isCurrentPartSupported = supportedPartIds.includes(activePartTab);
-
-  const totalAvailableTests = currentTabInfo ? currentTabInfo.testCount : 10;
-
-  // Compute dynamic completed tests count for the current part tab
-  const realCompletedCount = React.useMemo(() => {
-    let count = 0;
-    for (let i = 1; i <= totalAvailableTests; i++) {
-      if (completedTestKeys.has(`${activePartTab}_${i}`)) {
-        count++;
-      }
-    }
-    return count;
-  }, [completedTestKeys, activePartTab, totalAvailableTests]);
-
-  const progressPercent = totalAvailableTests > 0
-    ? Math.min(Math.round((realCompletedCount / totalAvailableTests) * 100), 100)
-    : 0;
 
   return (
     <div key={`skill-view-${skillId}`} className="min-h-screen bg-[#faf8f5] text-[#141413] font-sans pb-16 pt-4 sm:pt-6 animate-tab-fade-up">
