@@ -104,6 +104,14 @@ export default function ExamPracticeLayout({
         { title: 'Part 4 – Inference - longer monologues', startIndex: 21, count: 4, targetPartIndex: 15 },
       ];
     }
+    if (customTotalSubQuestions === 11 && totalQuestions === 4) {
+      return [
+        { title: 'Part 1 – Word-level writing', startIndex: 0, count: 5, targetPartIndex: 0 },
+        { title: 'Part 2 – Short text writing', startIndex: 5, count: 1, targetPartIndex: 1 },
+        { title: 'Part 3 – Three written responses', startIndex: 6, count: 3, targetPartIndex: 2 },
+        { title: 'Part 4 – Formal & informal writing', startIndex: 9, count: 2, targetPartIndex: 3 },
+      ];
+    }
     return [
       { title: activePartTitle, startIndex: 0, count: displayTotalSubCount, targetPartIndex: 0 },
     ];
@@ -123,6 +131,12 @@ export default function ExamPracticeLayout({
       if (subIdx <= 20) return 14;
       if (subIdx <= 22) return 15;
       return 16;
+    }
+    if (customTotalSubQuestions === 11 && totalQuestions === 4) {
+      if (subIdx <= 4) return 0;
+      if (subIdx === 5) return 1;
+      if (subIdx <= 8) return 2;
+      return 3;
     }
     if (totalQuestions > 1) {
       return Math.min(totalQuestions - 1, Math.floor(subIdx / subPerPart));

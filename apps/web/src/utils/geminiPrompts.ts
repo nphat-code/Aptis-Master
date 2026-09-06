@@ -152,6 +152,109 @@ Hãy đóng vai trò Giám khảo Aptis ESOL (British Council Examiner):
 3. Đưa ra bản sửa lỗi chi tiết và viết lại 2 email hoàn chỉnh đạt band C1 dựa trên ý tưởng của tôi.`;
 }
 
+// --- WRITING FULL EXAM (ALL 4 PARTS) ---
+export interface WritingFullPromptInput {
+  clubName: string;
+  part1Questions: Array<{
+    num: number;
+    text: string;
+    userAnswer: string;
+    sampleAnswer: string;
+  }>;
+  part2: {
+    questionText: string;
+    userAnswer: string;
+    sampleAnswer: string;
+  };
+  part3Questions: Array<{
+    num: number;
+    text: string;
+    userAnswer: string;
+    sampleAnswer: string;
+  }>;
+  part4: {
+    mainEmail: string;
+    userAnswer1: string;
+    sampleAnswer1: string;
+    userAnswer2: string;
+    sampleAnswer2: string;
+  };
+}
+
+export function buildWritingFullGeminiPrompt(input: WritingFullPromptInput): string {
+  return `BÀI THI THỬ WRITING APTIS FULL (4 PHẦN - 50 PHÚT - THANG 50 ĐIỂM)
+Chủ đề xuyên suốt: "${input.clubName || 'Club'}"
+
+==================================================
+PHẦN 1: WORD-LEVEL WRITING (5 câu - 5 điểm)
+Yêu cầu: Viết câu trả lời ngắn 1–5 từ cho 5 tin nhắn từ thành viên CLB.
+${input.part1Questions
+  .map(
+    (q) => `Q${q.num}: ${q.text}
+- Bài làm của tôi: ${q.userAnswer || '(Bỏ trống)'}
+- Bài mẫu: ${q.sampleAnswer || 'N/A'}`
+  )
+  .join('\n\n')}
+
+==================================================
+PHẦN 2: SHORT TEXT WRITING (1 câu - 5 điểm)
+Yêu cầu: Điền form thành viên mới, viết câu hoàn chỉnh (20–30 từ, tối đa 45 từ).
+Câu hỏi: ${input.part2.questionText}
+- Bài làm của tôi: ${input.part2.userAnswer || '(Bỏ trống)'}
+- Bài mẫu: ${input.part2.sampleAnswer || 'N/A'}
+
+==================================================
+PHẦN 3: SOCIAL CLUB CHAT (3 câu - 15 điểm)
+Yêu cầu: Trả lời 3 thành viên trong phòng chat, câu hoàn chỉnh (30–40 từ/câu, tối đa 60 từ).
+${input.part3Questions
+  .map(
+    (q) => `Câu hỏi ${q.num}: "${q.text}"
+- Bài làm của tôi: ${q.userAnswer || '(Bỏ trống)'}
+- Gợi ý mẫu: ${q.sampleAnswer || 'N/A'}`
+  )
+  .join('\n\n')}
+
+==================================================
+PHẦN 4: FORMAL & INFORMAL WRITING (2 emails - 25 điểm)
+Thông báo từ CLB:
+"${input.part4.mainEmail}"
+
+TASK 1 - Email gửi bạn bè (~50 từ, tối đa 75 từ - Thân mật):
+- Bài làm của tôi:
+${input.part4.userAnswer1 || '(Bỏ trống)'}
+- Bài mẫu: ${input.part4.sampleAnswer1 || 'N/A'}
+
+TASK 2 - Email gửi Chủ tịch CLB (120–150 từ, tối đa 225 từ - Trang trọng, 2 giải pháp):
+- Bài làm của tôi:
+${input.part4.userAnswer2 || '(Bỏ trống)'}
+- Bài mẫu: ${input.part4.sampleAnswer2 || 'N/A'}
+
+==================================================
+YÊU CẦU ĐÁNH GIÁ TỔNG QUAN VÀ CHI TIẾT (APTIS EXAMINER):
+Hãy đóng vai trò Giám khảo Aptis ESOL (British Council Examiner):
+
+1. BẢNG ĐIỂM DỰ ĐOÁN & XẾP LOẠI CEFR:
+   - Part 1: .../5 điểm
+   - Part 2: .../5 điểm
+   - Part 3: .../15 điểm
+   - Part 4: .../25 điểm (Task 1: .../10, Task 2: .../15)
+   => TỔNG ĐIỂM: .../50 điểm | TRÌNH ĐỘ CEFR DỰ ĐOÁN: (C1 / B2 / B1 / A2 / A1 / A0)
+
+2. NHẬN XÉT 4 TIÊU CHÍ CHÍNH CỦA APTIS:
+   - Task Fulfilment (Độ dài từ ngữ, giải quyết đủ yêu cầu, văn phong informal vs formal).
+   - Grammatical Range & Accuracy (Độ chính xác và độ đa dạng thì, mệnh đề quan hệ, đảo ngữ...).
+   - Lexical Resource (Từ vựng theo chủ đề, collocation tự nhiên, tránh lỗi dùng từ sai ngữ cảnh).
+   - Cohesion & Coherence (Liên từ, độ mạch lạc, bố cục logic).
+
+3. ĐÁNH GIÁ ĐỘ DÀI VS ĐỘ CHẮC NGỮ PHÁP:
+   - Chỉ ra những chỗ thí sinh cố viết dài dẫn đến gãy cấu trúc / sai ngữ pháp.
+   - Nhận xét kỹ thuật 2 giải pháp (kèm Rewards Framework) ở Part 4 Task 2.
+
+4. BẢN SỬA LỖI & VIẾT LẠI CHUẨN C1:
+   - Sửa các lỗi sai cụ thể trong bài làm.
+   - Cung cấp phiên bản viết lại đạt chuẩn band C1 cho cả 4 phần (giữ nguyên ý tưởng chính của tôi).`;
+}
+
 // --- SPEAKING PART 1 ---
 export function buildSpeakingPart1GeminiPrompt(questionText: string): string {
   return `CÂU HỎI LUYỆN NÓI APTIS - SPEAKING PART 1 (Personal Information)

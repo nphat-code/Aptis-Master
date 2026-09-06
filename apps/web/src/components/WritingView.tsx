@@ -7,6 +7,7 @@ import WritingPart1Practice from './writing/WritingPart1Practice';
 import WritingPart2Practice from './writing/WritingPart2Practice';
 import WritingPart3Practice from './writing/WritingPart3Practice';
 import WritingPart4Practice from './writing/WritingPart4Practice';
+import WritingFullPractice from './writing/WritingFullPractice';
 
 interface WritingViewProps {
   onBackToHome?: () => void;
@@ -247,6 +248,9 @@ export default function WritingView({ onBackToHome, onExamStateChange, data }: W
         return null;
       }}
       renderPracticeExam={({ partId, testIndex, onExit }) => {
+        if (partId === 'full') {
+          return <WritingFullPractice testIndex={testIndex} onExit={onExit} />;
+        }
         if (partId === 'part1') {
           return <WritingPart1Practice testIndex={testIndex} onExit={onExit} />;
         }
@@ -259,26 +263,7 @@ export default function WritingView({ onBackToHome, onExamStateChange, data }: W
         if (partId === 'part4') {
           return <WritingPart4Practice testIndex={testIndex} onExit={onExit} />;
         }
-        return (
-          <div className="max-w-xl mx-auto my-12 p-8 bg-white rounded-2xl border border-slate-200 text-center space-y-4 shadow-sm">
-            <div className="w-12 h-12 rounded-full bg-orange-100 text-[#CC1C01] flex items-center justify-center mx-auto text-xl font-bold">
-              ✍️
-            </div>
-            <h3 className="text-lg font-bold text-slate-900">
-              Tính năng Luyện tập Writing đang được hoàn thiện
-            </h3>
-            <p className="text-sm text-slate-600">
-              Chế độ luyện tập cho phần này sẽ sớm ra mắt trong phiên bản tiếp theo.
-            </p>
-            <button
-              type="button"
-              onClick={onExit}
-              className="mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#24085A] text-white text-sm font-semibold hover:bg-[#340b82] transition-colors cursor-pointer"
-            >
-              Quay lại danh sách bài tập
-            </button>
-          </div>
-        );
+        return null;
       }}
     />
   );

@@ -20,10 +20,10 @@ interface NavItem {
 
 const SKILL_NAV_ITEMS: NavItem[] = [
   { id: 'reading', label: 'Reading', icon: 'menu_book', badge: '14 đề', dotColor: '#059669' },
-  { id: 'listening', label: 'Listening', icon: 'headphones', badge: '14 đề', dotColor: '#d97706' },
-  { id: 'writing', label: 'Writing', icon: 'edit_note', badge: '10 đề', dotColor: '#4f46e5' },
+  { id: 'listening', label: 'Listening', icon: 'headphones', badge: '15 đề', dotColor: '#d97706' },
+  { id: 'writing', label: 'Writing', icon: 'edit_note', badge: '40 đề', dotColor: '#4f46e5' },
   { id: 'speaking', label: 'Speaking', icon: 'mic', badge: '10 đề', dotColor: '#e11d48' },
-  { id: 'grammar', label: 'Grammar & Vocab', icon: 'spellcheck', badge: '14 đề', dotColor: '#2563eb' },
+  { id: 'grammar', label: 'Grammar & Vocab', icon: 'spellcheck', badge: '5 đề', dotColor: '#2563eb' },
 ];
 
 export default function Sidebar({ activeTab, setActiveTab, setSelectedSubPart }: SidebarProps) {
