@@ -55,7 +55,7 @@ export default function ListeningPart1Practice({
       testIndex={testIndex}
       totalSets={totalSets}
       defaultTimeSeconds={480} // 8 mins
-      subQuestionsPerSet={13}
+      subQuestionsPerSet={1}
       customTotalQuestions={totalQuestionsCount}
       pointsPerSubQuestion={2}
       isAnswerCorrect={(idx, val) => {
