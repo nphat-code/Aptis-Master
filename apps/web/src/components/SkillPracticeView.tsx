@@ -108,7 +108,21 @@ export default function SkillPracticeView({
   const isCurrentPartSupported = supportedPartIds.includes(activePartTab);
 
   const totalAvailableTests = currentTabInfo ? currentTabInfo.testCount : 10;
-  const progressPercent = Math.min(Math.round((completedCount / (totalAvailableTests || 1)) * 100), 100);
+
+  // Compute dynamic completed tests count for the current part tab
+  const realCompletedCount = React.useMemo(() => {
+    let count = 0;
+    for (let i = 1; i <= totalAvailableTests; i++) {
+      if (completedTestKeys.has(`${activePartTab}_${i}`)) {
+        count++;
+      }
+    }
+    return count;
+  }, [completedTestKeys, activePartTab, totalAvailableTests]);
+
+  const progressPercent = totalAvailableTests > 0
+    ? Math.min(Math.round((realCompletedCount / totalAvailableTests) * 100), 100)
+    : 0;
 
   return (
     <div key={`skill-view-${skillId}`} className="min-h-screen bg-[#faf8f5] text-[#141413] font-sans pb-16 pt-4 sm:pt-6 animate-tab-fade-up">
@@ -170,12 +184,12 @@ export default function SkillPracticeView({
               <div>
                 <h3 className="text-lg font-serif font-semibold text-[#162544] mb-1">Tiến độ học tập</h3>
                 <p className="text-xs sm:text-sm text-[#6b6860]">
-                  Đã hoàn thành <strong className="text-[#d97706] font-semibold">{completedCount}</strong> bài luyện tập.
+                  Đã hoàn thành <strong className="text-[#d97706] font-semibold">{realCompletedCount}/{totalAvailableTests}</strong> bài luyện tập.
                 </p>
                 <div className="mt-4">
                   <span className="text-[#d97706] font-medium text-xs flex items-center gap-1">
-                    <span>Đang tiến bộ đều đặn</span>
-                    <span className="material-symbols-outlined text-sm">trending_up</span>
+                    <span>{realCompletedCount > 0 ? 'Đang tiến bộ đều đặn' : 'Chưa bắt đầu'}</span>
+                    <span className="material-symbols-outlined text-sm">{realCompletedCount > 0 ? 'trending_up' : 'not_started'}</span>
                   </span>
                 </div>
               </div>
